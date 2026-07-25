@@ -981,24 +981,9 @@ export default function ClientDetail() {
   };
 
   // Mapped variables from API response with NO static fallbacks.
-  // If API yields empty arrays (403/404), reconstruct them dynamically using client's real parameters.
-  const resolvedInvestments = Array.isArray(stateInvestmentsData) && stateInvestmentsData.length > 0
-    ? stateInvestmentsData
-    : (client.totalInvestment > 0 ? [
-        {
-          _id: `inv_${client._id}`,
-          segment: 'Trading & Syndication',
-          investmentAmount: client.totalInvestment,
-          roiPercentage: client.roiPercent,
-          riskPercentage: 15,
-          allocationDate: client._id === '6a464e2aca6673a6be3ef57e' ? '2026-07-14' : (client.contractStartDate || client.dateOfJoining),
-          status: 'Active'
-        }
-      ] : []);
+  const resolvedInvestments = (Array.isArray(stateInvestmentsData) ? stateInvestmentsData : []).filter(inv => inv.segment && inv.segment !== 'Unallocated');
 
-  const perksList = Array.isArray(statePerksData) && statePerksData.length > 0
-    ? statePerksData
-    : getPerksForTier(client.category);
+  const perksList = Array.isArray(statePerksData) ? statePerksData : [];
 
   const resolvedDocs = Array.isArray(stateDocsData) && stateDocsData.length > 0
     ? stateDocsData
@@ -1348,7 +1333,14 @@ export default function ClientDetail() {
                 </thead>
                 <tbody>
                   {resolvedInvestments.length === 0 ? (
-                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: '48px', color: 'var(--color-text-muted)' }}>No investments found.</td></tr>
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: 'center', padding: '48px', color: 'var(--color-text-muted)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-secondary, #475569)' }}>No Project Allocated Yet</span>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted, #94a3b8)' }}>Super Admin has not assigned any active project/segment allocation to this client.</span>
+                        </div>
+                      </td>
+                    </tr>
                   ) : resolvedInvestments.map(inv => (
                     <tr key={inv._id || inv.id}>
                       <td className="kfpl-table-cell-primary">{inv.segment}</td>

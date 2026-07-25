@@ -286,10 +286,10 @@ export default function CommissionOverview() {
     const fetchData = async () => {
       try {
         const [commResponse, clientsResponse, profileResponse, slabsResponse] = await Promise.all([
-          apiRequest('/api/agent/commissions'),
+          apiRequest('/api/agent/commissions').catch(() => null),
           apiRequest('/api/agent/clients').catch(() => null),
           apiRequest('/api/agent/profile').catch(() => null),
-          apiRequest('/api/super-admin/commission-slabs').catch(() => null)
+          apiRequest('/api/agent/commission-slabs').catch(() => null)
         ]);
 
         const list = Array.isArray(commResponse) ? commResponse : (commResponse.data?.commissions || commResponse.commissions || commResponse.history || (Array.isArray(commResponse.data) ? commResponse.data : []));
@@ -514,24 +514,17 @@ export default function CommissionOverview() {
     return list;
   };
 
-  const dbEnriched = commissions.filter(c => {
-    const cid = c.clientId?._id || c.clientId?.id || c.clientId || c.client?._id || c.client?.id || c.client;
-    if (!cid) return false;
-    return clients.some(cl => {
-      const clid = cl._id || cl.id || cl.user?._id || cl.profile?.userId;
-      return String(clid) === String(cid);
-    });
-  }).map(c => {
+  const dbEnriched = commissions.map(c => {
     const cid = c.clientId?._id || c.clientId?.id || c.clientId || c.client?._id || c.client?.id || c.client;
     const foundClient = clients.find(cl => {
       const clid = cl._id || cl.id || cl.user?._id || cl.profile?.userId;
-      return String(clid) === String(cid);
+      return clid && cid && String(clid) === String(cid);
     });
     return {
       ...c,
-      clientName: foundClient.fullName || foundClient.name || foundClient.profile?.fullName || '—',
-      clientCode: formatClientID(foundClient.clientCode || foundClient.clientId || foundClient.profile?.clientCode || ''),
-      investmentAmount: foundClient.totalInvestment || foundClient.investmentAmount || foundClient.profile?.totalPortfolioValue || 0,
+      clientName: c.clientName || (foundClient ? (foundClient.fullName || foundClient.name || foundClient.profile?.fullName) : '—'),
+      clientCode: c.clientCode || (foundClient ? formatClientID(foundClient.clientCode || foundClient.clientId || foundClient.profile?.clientCode || '') : '—'),
+      investmentAmount: c.investmentAmount || (foundClient ? (foundClient.totalInvestment || foundClient.investmentAmount || foundClient.profile?.totalPortfolioValue || 0) : 0),
       slabPercentage: c.slabPercentage || c.slabPercent || (normalizeType(c.type || c.commissionType) === 'one-time' ? (agentProfile?.oneTimeCommission || 5) : (agentProfile?.monthlySlab || 2))
     };
   });
