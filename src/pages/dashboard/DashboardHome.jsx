@@ -13,6 +13,7 @@ import Badge from '../../components/ui/Badge';
 import DonutChart from '../../components/charts/DonutChart';
 import LineChart from '../../components/charts/LineChart';
 import { apiRequest, getAgentCacheKey } from '../../config/apiHelper';
+import KycAgreementCard from '../../components/common/KycAgreementCard';
 
 // ── Activity Icons ───────────────────────
 const activityIcons = {
@@ -60,6 +61,17 @@ export default function DashboardHome() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [agentName, setAgentName] = useState('Agent');
+  const [agentProfile, setAgentProfile] = useState(() => {
+    try {
+      const cacheKey = getAgentCacheKey('kfpl_dashboard_cache');
+      const cacheData = localStorage.getItem(cacheKey);
+      if (cacheData) {
+        const parsed = JSON.parse(cacheData);
+        if (parsed.agentProfile) return parsed.agentProfile;
+      }
+    } catch (e) {}
+    return null;
+  });
   const [rewardsList, setRewardsList] = useState([]);
 
   useEffect(() => {
@@ -84,6 +96,7 @@ export default function DashboardHome() {
         if (parsed.clients) setClients(parsed.clients);
         if (parsed.commissions) setCommissions(parsed.commissions);
         if (parsed.agentName) setAgentName(parsed.agentName);
+        if (parsed.agentProfile) setAgentProfile(parsed.agentProfile);
         setLoading(false);
       }
     } catch (e) {
@@ -102,9 +115,11 @@ export default function DashboardHome() {
         ]);
 
         let freshName = currentLocalName.split(' ')[0];
+        let fetchedProfile = null;
         if (profRes) {
-          const profile = profRes.profile || profRes.agent || profRes.data || profRes;
-          const nameVal = profile.name || profile.fullName;
+          fetchedProfile = profRes.profile || profRes.agent || profRes.data || profRes;
+          setAgentProfile(fetchedProfile);
+          const nameVal = fetchedProfile.name || fetchedProfile.fullName;
           if (nameVal) {
             freshName = nameVal.split(' ')[0];
             setAgentName(freshName);
@@ -216,7 +231,8 @@ export default function DashboardHome() {
           stats: newStats,
           clients: resolvedClients,
           commissions: rawComms,
-          agentName: freshName
+          agentName: freshName,
+          agentProfile: fetchedProfile || agentProfile
         }));
 
       } catch (err) {
@@ -349,6 +365,20 @@ export default function DashboardHome() {
           <div className="kfpl-welcome-circle kfpl-welcome-circle--2" />
           <div className="kfpl-welcome-circle kfpl-welcome-circle--3" />
         </div>
+      </div>
+
+      {/* KYC AGENT AGREEMENT CARD */}
+      <div style={{ marginTop: '20px' }}>
+        <KycAgreementCard
+          agreementUrl={agentProfile?.agreementDocument}
+          agreementVerified={agentProfile?.agreementDocumentVerified}
+          agreementVerifiedAt={agentProfile?.agreementDocumentVerifiedAt}
+          agentName={agentName}
+          isDashboardHome={true}
+          onUploadSuccess={(newUrl) => {
+            setAgentProfile(prev => ({ ...prev, agreementDocument: newUrl }));
+          }}
+        />
       </div>
 
       {/* ═══════════════ 6 KPI CARDS (2x3 Grid) ═══════════════ */}

@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { formatCurrency } from '../../utils/formatters';
 import { useToast } from '../../components/ui/Toast';
 import { apiRequest, getAgentCacheKey } from '../../config/apiHelper';
+import KycAgreementCard from '../../components/common/KycAgreementCard';
 
 const profileIcons = {
   user: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
@@ -239,6 +240,18 @@ export default function Profile() {
             Profile details. Nominee changes request approval ke through update honge.
           </p>
         </div>
+      </div>
+
+      {/* KYC AGENT AGREEMENT CARD */}
+      <div style={{ marginTop: '20px' }}>
+        <KycAgreementCard
+          agreementUrl={profile.agreementDocument}
+          agreementVerified={profile.agreementDocumentVerified}
+          agentName={name}
+          onUploadSuccess={(newUrl) => {
+            setProfile(prev => ({ ...prev, agreementDocument: newUrl }));
+          }}
+        />
       </div>
 
       <div className="kfpl-profile-hero">
