@@ -483,7 +483,7 @@ export default function ServiceRequests() {
                           border: '1px solid rgba(212, 175, 55, 0.2)'
                         }}
                       >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66"/></svg>
                         View Uploaded File
                       </a>
                       {/\.(jpg|jpeg|png|gif|webp)$/i.test(getAttachmentUrl(selectedRequest)) && (
@@ -501,14 +501,14 @@ export default function ServiceRequests() {
               </div>
 
               {/* Admin response */}
-              {(selectedRequest.adminRemarks || selectedRequest.adminNote) && (
+              {(selectedRequest.adminRemarks || selectedRequest.adminNote || selectedRequest.remarks) && (
                 <div className="kfpl-card" style={{ padding: '24px', borderRadius: '12px', borderLeft: '4px solid var(--color-gold)', background: 'var(--color-gold-light)', borderTop: '1px solid var(--color-border)', borderRight: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--color-gold-dark)' }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-gold-dark)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Official Administrator Response</h4>
+                    <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-gold-dark)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Official Administrator Response / Remarks</h4>
                   </div>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>
-                    {selectedRequest.adminRemarks || selectedRequest.adminNote}
+                  <p style={{ fontSize: '0.95rem', color: 'var(--color-navy)', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap', fontWeight: 600 }}>
+                    {selectedRequest.adminRemarks || selectedRequest.adminNote || selectedRequest.remarks}
                   </p>
                 </div>
               )}
