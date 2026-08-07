@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../../config/apiHelper';
 import { useToast } from '../../components/ui/Toast';
+import { WORLD_COUNTRY_CODES } from '../../data/countryCodes';
 
 const DEFAULT_ONE_TIME_SLABS = [
   { label: '2.0% (Up to ₹5L)', percentage: 2.0 },
@@ -59,10 +60,10 @@ export default function Login() {
 
   // Register form state
   const [regForm, setRegForm] = useState({
-    name: '', email: '', phone: '', pan: '', aadhaar: '', passport: '',
+    name: '', email: '', phone: '', phoneCountryCode: '+91', address: '', pan: '', aadhaar: '', passport: '',
     bankName: '', accountNo: '', confirmAccountNo: '', ifsc: '',
     commissionOneTime: '', commissionMonthly: '', commissionSpecial: '',
-    nomineeName: '', nomineeRelation: '', nomineeContact: '', nomineeEmail: '',
+    nomineeName: '', nomineeRelation: '', nomineeContact: '', nomineePhoneCountryCode: '+91', nomineeEmail: '',
     citizenship: 'National',
     nomineeCitizenship: 'National',
     password: '',
@@ -236,8 +237,10 @@ export default function Login() {
     try {
       const formData = new FormData();
       formData.append('fullName', regForm.name);
-      formData.append('phone', regForm.phone);
+      const fullPhone = regForm.phone ? `${regForm.phoneCountryCode} ${regForm.phone.replace(/^\+\d+\s*/, '')}`.trim() : '';
+      formData.append('phone', fullPhone);
       formData.append('email', regForm.email);
+      formData.append('address', regForm.address || '');
       formData.append('residencyStatus', regForm.citizenship === 'International' ? 'International' : 'National (Domestic)');
       formData.append('panNumber', regForm.pan);
       if (regForm.aadhaar) formData.append('aadhaarNumber', regForm.aadhaar.replace(/\s/g, ''));
@@ -251,7 +254,8 @@ export default function Login() {
       formData.append('specialCommission', regForm.commissionSpecial || '0');
       formData.append('nomineeName', regForm.nomineeName || '');
       formData.append('nomineeRelation', regForm.nomineeRelation || '');
-      formData.append('nomineePhone', regForm.nomineeContact || '');
+      const fullNomineePhone = regForm.nomineeContact ? `${regForm.nomineePhoneCountryCode} ${regForm.nomineeContact.replace(/^\+\d+\s*/, '')}`.trim() : '';
+      formData.append('nomineePhone', fullNomineePhone);
       formData.append('nomineeEmail', regForm.nomineeEmail || '');
       formData.append('nomineeResidency', regForm.nomineeCitizenship === 'International' ? 'International' : 'National (Domestic)');
       formData.append('password', regForm.password);
@@ -490,7 +494,12 @@ export default function Login() {
                     </div>
                     <div className="kfpl-login-input-group">
                       <label className="kfpl-login-label">Phone *</label>
-                      <input type="text" name="phone" className="kfpl-login-input" placeholder="Enter your phone number" value={regForm.phone} onChange={handleRegisterChange} required />
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <select name="phoneCountryCode" value={regForm.phoneCountryCode} onChange={handleRegisterChange} className="kfpl-login-input" style={{ width: '110px', padding: '10px 6px', fontSize: '0.8rem' }}>
+                          {WORLD_COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
+                        </select>
+                        <input type="text" name="phone" className="kfpl-login-input" placeholder="Phone number" value={regForm.phone} onChange={handleRegisterChange} required style={{ flex: 1 }} />
+                      </div>
                     </div>
                   </div>
                   <div className="kfpl-login-form-row">
@@ -501,6 +510,10 @@ export default function Login() {
                         <option value="International">International</option>
                       </select>
                     </div>
+                  </div>
+                  <div className="kfpl-login-input-group">
+                    <label className="kfpl-login-label">Residential Address</label>
+                    <input type="text" name="address" className="kfpl-login-input" placeholder="Enter your residential address" value={regForm.address} onChange={handleRegisterChange} />
                   </div>
                   <div className="kfpl-login-form-row">
                     <div className="kfpl-login-input-group">
@@ -567,7 +580,12 @@ export default function Login() {
                   <div className="kfpl-login-form-row">
                     <div className="kfpl-login-input-group">
                       <label className="kfpl-login-label">Nominee Phone</label>
-                      <input type="text" name="nomineeContact" className="kfpl-login-input" placeholder="Enter nominee phone number" value={regForm.nomineeContact} onChange={handleRegisterChange} />
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <select name="nomineePhoneCountryCode" value={regForm.nomineePhoneCountryCode} onChange={handleRegisterChange} className="kfpl-login-input" style={{ width: '110px', padding: '10px 6px', fontSize: '0.8rem' }}>
+                          {WORLD_COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
+                        </select>
+                        <input type="text" name="nomineeContact" className="kfpl-login-input" placeholder="Phone number" value={regForm.nomineeContact} onChange={handleRegisterChange} style={{ flex: 1 }} />
+                      </div>
                     </div>
                     <div className="kfpl-login-input-group">
                       <label className="kfpl-login-label">Nominee Email</label>
