@@ -226,14 +226,27 @@ export default function DashboardHome() {
         }
 
         // Save fresh details to cache
-        const cacheKey = getAgentCacheKey('kfpl_dashboard_cache');
-        localStorage.setItem(cacheKey, JSON.stringify({
-          stats: newStats,
-          clients: resolvedClients,
-          commissions: rawComms,
-          agentName: freshName,
-          agentProfile: fetchedProfile || agentProfile
-        }));
+        try {
+          const sanitizeClients = Array.isArray(resolvedClients) ? resolvedClients.map(c => {
+            const copy = { ...c };
+            if (copy.profilePic && copy.profilePic.length > 2000) delete copy.profilePic;
+            return copy;
+          }) : resolvedClients;
+
+          const sanitizeProfile = fetchedProfile || agentProfile ? { ...(fetchedProfile || agentProfile) } : null;
+          if (sanitizeProfile?.profilePic && sanitizeProfile.profilePic.length > 2000) {
+            delete sanitizeProfile.profilePic;
+          }
+
+          const cacheKey = getAgentCacheKey('kfpl_dashboard_cache');
+          localStorage.setItem(cacheKey, JSON.stringify({
+            stats: newStats,
+            clients: sanitizeClients,
+            commissions: rawComms,
+            agentName: freshName,
+            agentProfile: sanitizeProfile
+          }));
+        } catch (_) {}
 
       } catch (err) {
         console.error('Failed to load dashboard data:', err);

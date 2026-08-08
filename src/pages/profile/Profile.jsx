@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { formatCurrency } from '../../utils/formatters';
 import { useToast } from '../../components/ui/Toast';
-import { apiRequest, getAgentCacheKey } from '../../config/apiHelper';
+import { apiRequest, getAgentCacheKey, safeSetLocalStorage } from '../../config/apiHelper';
 import KycAgreementCard from '../../components/common/KycAgreementCard';
 
 const profileIcons = {
@@ -172,10 +172,13 @@ export default function Profile() {
 
         // Save fresh values to cache
         const cacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
-        localStorage.setItem(cacheKey, JSON.stringify({
-          profile: rawProfile,
-          stats: freshStats
-        }));
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify({
+            profile: rawProfile,
+            stats: freshStats
+          }));
+        } catch (_) {}
+        window.dispatchEvent(new Event('agentProfileUpdated'));
 
       } catch (err) {
         console.error('Failed to load profile:', err);
@@ -231,6 +234,127 @@ export default function Profile() {
   const nomineeContact = profile.nomineePhone || profile.nominee?.contact || '—';
   const nomineeEmail = profile.nomineeEmail || profile.nominee?.email || 'Not provided';
 
+  const compressImage = (file, maxSide = 300, quality = 0.8) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > maxSide) {
+              height = Math.round((height * maxSide) / width);
+              width = maxSide;
+            }
+          } else {
+            if (height > maxSide) {
+              width = Math.round((width * maxSide) / height);
+              height = maxSide;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast('Please select an image file (PNG, JPG, JPEG, WEBP).', 'error', 'Invalid File');
+      return;
+    }
+
+    try {
+      toast('Optimizing and saving profile picture...', 'info', 'Uploading Avatar');
+      const base64Image = await compressImage(file, 300, 0.8);
+
+      const res = await apiRequest('/api/agent/profile', {
+        method: 'PATCH',
+        body: JSON.stringify({ profilePic: base64Image })
+      });
+
+      const updatedPicUrl = res?.data?.profilePic || res?.data?.user?.profilePic || res?.data?.profile?.profilePic || base64Image;
+
+      setProfile(prev => ({ ...prev, profilePic: updatedPicUrl }));
+
+      const cacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
+      const stored = localStorage.getItem(cacheKey);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.profile) parsed.profile.profilePic = updatedPicUrl;
+          safeSetLocalStorage(cacheKey, parsed);
+        } catch (e) {}
+      }
+
+      const authData = localStorage.getItem('kfpl_agent_auth');
+      if (authData) {
+        try {
+          const parsed = JSON.parse(authData);
+          if (parsed.agent) parsed.agent.profilePic = updatedPicUrl;
+          if (parsed.user) parsed.user.profilePic = updatedPicUrl;
+          safeSetLocalStorage('kfpl_agent_auth', parsed);
+        } catch (e) {}
+      }
+
+      window.dispatchEvent(new Event('agentProfileUpdated'));
+      toast('Your profile photo has been updated successfully!', 'success', 'Profile Picture Updated');
+    } catch (err) {
+      console.error('Failed to upload agent avatar:', err);
+      toast(err.message || 'Failed to update profile picture.', 'error', 'Upload Failed');
+    }
+  };
+
+  const handleAvatarRemove = async () => {
+    try {
+      toast('Removing profile picture...', 'info', 'Removing Avatar');
+      await apiRequest('/api/agent/profile/avatar', {
+        method: 'DELETE'
+      });
+
+      setProfile(prev => ({ ...prev, profilePic: '' }));
+
+      const cacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
+      const stored = localStorage.getItem(cacheKey);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.profile) parsed.profile.profilePic = '';
+          safeSetLocalStorage(cacheKey, parsed);
+        } catch (e) {}
+      }
+
+      const authData = localStorage.getItem('kfpl_agent_auth');
+      if (authData) {
+        try {
+          const parsed = JSON.parse(authData);
+          if (parsed.agent) parsed.agent.profilePic = '';
+          if (parsed.user) parsed.user.profilePic = '';
+          safeSetLocalStorage('kfpl_agent_auth', parsed);
+        } catch (e) {}
+      }
+
+      window.dispatchEvent(new Event('agentProfileUpdated'));
+      toast('Your profile photo has been removed successfully!', 'success', 'Profile Picture Removed');
+    } catch (err) {
+      console.error('Failed to remove agent avatar:', err);
+      toast(err.message || 'Failed to remove profile picture.', 'error', 'Removal Failed');
+    }
+  };
+
   return (
     <div className="kfpl-page" id="profile-page">
       <div className="kfpl-page-header">
@@ -255,8 +379,78 @@ export default function Profile() {
       </div>
 
       <div className="kfpl-profile-hero">
-        <div className="kfpl-profile-avatar-lg">
-          {name.charAt(0)}
+        <div style={{ position: 'relative', flexShrink: 0, zIndex: 5 }}>
+          <div className="kfpl-profile-avatar-lg" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+            {profile.profilePic ? (
+              <img src={profile.profilePic} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              name.charAt(0)
+            )}
+          </div>
+          <label
+            htmlFor="agent-avatar-upload"
+            title="Upload Profile Picture"
+            style={{
+              position: 'absolute',
+              bottom: '-2px',
+              right: '-2px',
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              background: '#10B981',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 10px rgba(0,0,0,0.4)',
+              border: '2px solid #061D13',
+              zIndex: 10,
+              transition: 'transform 0.2s ease, background 0.2s ease'
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}>
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+          </label>
+          {Boolean(profile.profilePic) && (
+            <button
+              type="button"
+              title="Remove Profile Picture"
+              onClick={handleAvatarRemove}
+              style={{
+                position: 'absolute',
+                bottom: '-2px',
+                left: '-2px',
+                width: '30px',
+                height: '30px',
+                borderRadius: '50%',
+                background: '#EF4444',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.4)',
+                border: '2px solid #061D13',
+                zIndex: 10,
+                transition: 'transform 0.2s ease, background 0.2s ease'
+              }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '14px', height: '14px' }}>
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+            </button>
+          )}
+          <input
+            type="file"
+            id="agent-avatar-upload"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleAvatarUpload}
+          />
         </div>
         <div className="kfpl-profile-hero-info">
           <div className="kfpl-profile-eyebrow">Agent account</div>

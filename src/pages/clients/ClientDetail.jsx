@@ -614,16 +614,22 @@ export default function ClientDetail() {
 
     const fetchClient = async () => {
       try {
-        // Concurrently run ALL independent requests with fallback chains
-        const [singleRes, listRes, payoutsRes, superAdminClientRes] = await Promise.all([
+        // Concurrently run ALL client detail requests in PARALLEL
+        const [singleRes, payoutsRes, superAdminClientRes, investmentsRes, perksRes, docsRes] = await Promise.all([
           apiRequest(`/api/agent/clients/${id}`).catch(() => null),
-          apiRequest('/api/agent/clients').catch(() => null),
           apiRequest(`/api/agent/clients/${id}/payouts`)
-            .catch(() => apiRequest(`/api/agent/roi/payouts?status=All&recipientType=All`))
             .catch(() => apiRequest(`/api/agent/roi/payouts`))
-            .catch(() => apiRequest(`/api/super-admin/roi/payouts?status=All&recipientType=All`))
             .catch(() => null),
-          apiRequest(`/api/super-admin/clients/${id}`).catch(() => null)
+          apiRequest(`/api/super-admin/clients/${id}`).catch(() => null),
+          apiRequest(`/api/agent/clients/${id}/investments`)
+            .catch(() => apiRequest(`/api/super-admin/clients/${id}/investments`))
+            .catch(() => null),
+          apiRequest(`/api/agent/clients/${id}/perks`)
+            .catch(() => apiRequest(`/api/super-admin/clients/${id}/perks`))
+            .catch(() => null),
+          apiRequest(`/api/agent/clients/${id}/documents`)
+            .catch(() => apiRequest(`/api/super-admin/clients/${id}/documents`))
+            .catch(() => null)
         ]);
 
         const extractClient = (res) => {
@@ -636,23 +642,9 @@ export default function ClientDetail() {
           return res;
         };
 
-        const extractList = (res) => {
-          if (!res) return [];
-          if (Array.isArray(res)) return res;
-          if (res.data) {
-            if (Array.isArray(res.data)) return res.data;
-            if (res.data.clients && Array.isArray(res.data.clients)) return res.data.clients;
-          }
-          if (res.clients && Array.isArray(res.clients)) return res.clients;
-          return [];
-        };
-
-        // Use super-admin response as primary source (it has header/profile/summaryCards structure)
-        // Fall back to agent API response
         let clientObj = null;
         let superAdminData = superAdminClientRes ? (superAdminClientRes.data || superAdminClientRes) : null;
-        
-        // If super admin endpoint failed (403), use agent endpoint singleRes as primary data source
+
         const primaryDataObj = superAdminData || (singleRes ? (singleRes.data || singleRes) : null);
         if (primaryDataObj) {
           const saProfile = primaryDataObj.profile || primaryDataObj;
@@ -660,23 +652,18 @@ export default function ClientDetail() {
             ...primaryDataObj,
             ...saProfile,
             _id: saProfile._id || primaryDataObj._id || id,
-            _superAdminData: primaryDataObj, // keep raw reference for normalizer
+            _superAdminData: primaryDataObj,
           };
         }
 
         if (!clientObj || !(clientObj._id || clientObj.id)) {
           clientObj = extractClient(singleRes);
         }
-        if (!clientObj || !(clientObj._id || clientObj.id)) {
-          const list = extractList(listRes);
-          clientObj = list.find(c => (c._id || c.id) === id || c.clientId === id || c.clientCode === id);
-        }
 
         if (!clientObj) {
-          throw new Error('Client object not found in list or detail response');
+          throw new Error('Client object not found in response');
         }
 
-        // Preserve the super-admin structured data for proper normalization
         if (superAdminData) {
           clientObj._superAdminData = superAdminData;
         }
@@ -686,23 +673,7 @@ export default function ClientDetail() {
         const profileId = clientObj.profile?._id || clientObj._id || clientObj.id;
         const recipientUserId = clientObj.userId || clientObj._id || clientObj.id;
 
-        // Concurrently run stage 2: investments, perks, and documents using profileId & id (fallback chains from agent to super-admin)
-        const [investmentsRes, perksRes, docsRes] = await Promise.all([
-          apiRequest(`/api/agent/clients/${id}/investments`)
-            .catch(() => apiRequest(`/api/agent/clients/${profileId}/investments`))
-            .catch(() => apiRequest(`/api/super-admin/clients/${profileId}/investments`))
-            .catch(() => null),
-          apiRequest(`/api/agent/clients/${id}/perks`)
-            .catch(() => apiRequest(`/api/agent/clients/${profileId}/perks`))
-            .catch(() => apiRequest(`/api/super-admin/clients/${profileId}/perks`))
-            .catch(() => null),
-          apiRequest(`/api/agent/clients/${id}/documents`)
-            .catch(() => apiRequest(`/api/agent/clients/${profileId}/documents`))
-            .catch(() => apiRequest(`/api/super-admin/clients/${profileId}/documents`))
-            .catch(() => null)
-        ]);
-
-        // Process ROI payouts list (matches super admin mapping)
+        // Process ROI payouts list
         let calculatedRoiHistory = [];
         if (payoutsRes) {
           const data = payoutsRes.data || payoutsRes;
@@ -764,50 +735,20 @@ export default function ClientDetail() {
         setDocsData(resolvedDocs);
         setVerifiedDocs(verifiedMap);
 
-        // Run diagnostic checks for other potential agent endpoints
+        // Save fresh values to SWR cache safely with try/catch
         try {
-          const testPaths = [
-            `/api/agent/investments`,
-            `/api/agent/investments/${id}`,
-            `/api/agent/investments?clientId=${id}`,
-            `/api/agent/clients/${id}/investments`,
-            `/api/agent/clients/${profileId}/investments`,
-            `/api/agent/perks`,
-            `/api/agent/perks/${id}`,
-            `/api/agent/perks?clientId=${id}`,
-            `/api/agent/clients/${id}/perks`,
-            `/api/agent/clients/${profileId}/perks`,
-            `/api/agent/payouts`,
-            `/api/agent/roi/payouts`,
-            `/api/agent/clients/${id}/payouts`,
-            `/api/agent/clients/${profileId}/payouts`,
-            `/api/super-admin/clients/${profileId}/investments`
-          ];
-          const testResults = await Promise.all(
-            testPaths.map(async path => {
-              try {
-                const res = await apiRequest(path);
-                return { path, status: '200 OK', isArray: Array.isArray(res), length: Array.isArray(res) ? res.length : (res?.data && Array.isArray(res.data) ? res.data.length : (res?.investments && Array.isArray(res.investments) ? res.investments.length : null)) };
-              } catch (err) {
-                return { path, status: err.status || 'Error/Forbidden' };
-              }
-            })
-          );
-          setDebugInfo(testResults);
-        } catch (e) {
-          console.warn('Diagnostics failed:', e);
+          const cacheKey = getAgentCacheKey(`kfpl_agent_client_detail_${id}`);
+          localStorage.setItem(cacheKey, JSON.stringify({
+            rawClient: clientObj,
+            roiHistory: calculatedRoiHistory,
+            investmentsData: resolvedInvestments,
+            perksData: resolvedPerks,
+            docsData: resolvedDocs,
+            verifiedDocs: verifiedMap
+          }));
+        } catch (cacheErr) {
+          console.warn('Could not write client detail to SWR cache (quota exceeded):', cacheErr);
         }
-
-        // Save fresh values to SWR cache
-        const cacheKey = getAgentCacheKey(`kfpl_agent_client_detail_${id}`);
-        localStorage.setItem(cacheKey, JSON.stringify({
-          rawClient: clientObj,
-          roiHistory: calculatedRoiHistory,
-          investmentsData: resolvedInvestments,
-          perksData: resolvedPerks,
-          docsData: resolvedDocs,
-          verifiedDocs: verifiedMap
-        }));
 
       } catch (err) {
         console.error('Failed to load client details:', err);
@@ -898,6 +839,7 @@ export default function ClientDetail() {
     },
     status: (saHeader.status || saProfile.status || rawClient.status || 'active').toLowerCase(),
     category: (saHeader.tier || saProfile.tier || 'silver').toLowerCase(),
+    profilePic: saHeader.profilePic || saProfile.profilePic || rawClient.profilePic || rawClient.user?.profilePic || '',
   };
 
   // Use API-provided tier, fall back to calculation from totalInvestment
@@ -1091,8 +1033,12 @@ export default function ClientDetail() {
         {/* Premium Gradient Header Card */}
         <div className="kfpl-detail-card-header">
           <div className="kfpl-detail-profile">
-            <div className="kfpl-detail-avatar">
-              {(client.name || 'Client').split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase()}
+            <div className="kfpl-detail-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {(client.profilePic || rawClient.profilePic || rawClient.profile?.profilePic || rawClient.user?.profilePic) ? (
+                <img src={client.profilePic || rawClient.profilePic || rawClient.profile?.profilePic || rawClient.user?.profilePic} alt={client.name} style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+              ) : (
+                (client.name || 'Client').split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase()
+              )}
             </div>
             <div>
               <h2 className="kfpl-detail-name" style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{client.name}</h2>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { apiRequest } from '../../config/apiHelper';
+import { getApiUrl } from '../../config/apiUrl';
 import { useToast } from '../../components/ui/Toast';
 
 const statusColors = {
@@ -465,7 +466,7 @@ export default function ServiceRequests() {
                     <h4 style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Attachments</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       <a 
-                        href={getAttachmentUrl(selectedRequest).startsWith('http') ? getAttachmentUrl(selectedRequest) : `http://192.168.1.28:5000${getAttachmentUrl(selectedRequest).startsWith('/') ? '' : '/'}${getAttachmentUrl(selectedRequest)}`}
+                        href={getAttachmentUrl(selectedRequest).startsWith('http') ? getAttachmentUrl(selectedRequest) : getApiUrl(getAttachmentUrl(selectedRequest).startsWith('/') ? getAttachmentUrl(selectedRequest) : '/' + getAttachmentUrl(selectedRequest))}
                         target="_blank" 
                         rel="noreferrer" 
                         style={{ 
@@ -489,7 +490,7 @@ export default function ServiceRequests() {
                       {/\.(jpg|jpeg|png|gif|webp)$/i.test(getAttachmentUrl(selectedRequest)) && (
                         <div style={{ marginTop: '4px' }}>
                           <img 
-                            src={getAttachmentUrl(selectedRequest).startsWith('http') ? getAttachmentUrl(selectedRequest) : `http://192.168.1.28:5000${getAttachmentUrl(selectedRequest).startsWith('/') ? '' : '/'}${getAttachmentUrl(selectedRequest)}`}
+                            src={getAttachmentUrl(selectedRequest).startsWith('http') ? getAttachmentUrl(selectedRequest) : getApiUrl(getAttachmentUrl(selectedRequest).startsWith('/') ? getAttachmentUrl(selectedRequest) : '/' + getAttachmentUrl(selectedRequest))}
                             alt="Attachment Preview"
                             style={{ maxWidth: '100%', maxHeight: '240px', borderRadius: '8px', border: '1px solid var(--color-border)', objectFit: 'contain', background: '#f8fafc', padding: '6px' }}
                           />

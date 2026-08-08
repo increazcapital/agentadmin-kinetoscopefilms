@@ -5,7 +5,7 @@
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
-import { apiRequest } from '../../config/apiHelper';
+import { apiRequest, getAgentCacheKey } from '../../config/apiHelper';
 
 const routeTitles = {
   '/dashboard': 'Dashboard',
@@ -32,19 +32,45 @@ export default function Header({ isCollapsed, onMenuClick }) {
   const dropdownRef = useRef(null);
   const notifRef = useRef(null);
 
-  const [agentName, setAgentName] = useState(() => {
-    const authData = localStorage.getItem('kfpl_agent_auth');
-    if (authData) {
-      try {
+  const readAgentInfo = () => {
+    let name = 'Agent';
+    let profilePic = '';
+
+    try {
+      const authData = localStorage.getItem('kfpl_agent_auth');
+      if (authData) {
         const parsed = JSON.parse(authData);
         const agentObj = parsed.agent || parsed.user || {};
-        return agentObj.name || agentObj.fullName || 'Agent';
-      } catch (e) {
-        console.error('Failed to parse agent auth:', e);
+        name = agentObj.name || agentObj.fullName || name;
+        if (agentObj.profilePic !== undefined) profilePic = agentObj.profilePic || '';
       }
-    }
-    return 'Agent';
-  });
+    } catch (e) {}
+
+    try {
+      const cacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
+      const cacheData = localStorage.getItem(cacheKey);
+      if (cacheData) {
+        const parsed = JSON.parse(cacheData);
+        const p = parsed.profile || {};
+        if (p.name || p.fullName) name = p.name || p.fullName;
+        if (p.profilePic !== undefined) profilePic = p.profilePic || '';
+      }
+    } catch (e) {}
+
+    return { name, profilePic };
+  };
+
+  const [agentInfo, setAgentInfo] = useState(() => readAgentInfo());
+  const agentName = agentInfo.name;
+  const agentPic = agentInfo.profilePic;
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setAgentInfo(readAgentInfo());
+    };
+    window.addEventListener('agentProfileUpdated', handleUpdate);
+    return () => window.removeEventListener('agentProfileUpdated', handleUpdate);
+  }, []);
 
   // Fetch notifications
   const fetchNotifications = async () => {
@@ -332,8 +358,12 @@ export default function Header({ isCollapsed, onMenuClick }) {
 
         {/* Agent Profile Pill */}
         <div className="kfpl-header-agent-pill" ref={dropdownRef} onClick={() => setShowDropdown(!showDropdown)} style={{ position: 'relative' }}>
-          <div className="kfpl-header-agent-pill-avatar">
-            {agentName.charAt(0)}
+          <div className="kfpl-header-agent-pill-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {agentPic ? (
+              <img src={agentPic} alt={agentName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              agentName.charAt(0)
+            )}
           </div>
           <span className="kfpl-header-agent-pill-name">{agentName}</span>
           <svg className="kfpl-header-agent-pill-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

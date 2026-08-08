@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiRequest } from '../../config/apiHelper';
+import { apiRequest, safeSetLocalStorage } from '../../config/apiHelper';
 import { useToast } from '../../components/ui/Toast';
 import { WORLD_COUNTRY_CODES } from '../../data/countryCodes';
 
@@ -143,11 +143,11 @@ export default function Login() {
         addToast('Verification code sent to your registered email address.', 'info', '2FA Verification');
       } else {
         const agentObj = response.data?.user || response.agent || response.user || response.profile || { email, name: response.fullName || 'Agent' };
-        localStorage.setItem('kfpl_agent_auth', JSON.stringify({
+        safeSetLocalStorage('kfpl_agent_auth', {
           token: response.token,
           agent: agentObj,
           user: agentObj,
-        }));
+        });
         window.location.href = '/dashboard';
       }
     } catch (err) {
@@ -165,13 +165,13 @@ export default function Login() {
       }
 
       if (localAgent) {
-        localStorage.setItem('kfpl_agent_auth', JSON.stringify({
+        safeSetLocalStorage('kfpl_agent_auth', {
           token: 'mock-jwt-agent-token-12345',
           agent: {
             ...localAgent,
             name: localAgent.name || 'Agent'
           }
-        }));
+        });
         addToast('Logged in successfully (Local Mock)', 'success');
         setTimeout(() => {
           window.location.href = '/dashboard';
@@ -195,21 +195,21 @@ export default function Login() {
         method: 'POST',
         body: JSON.stringify({ email, otp })
       });
-      
+
       const payload = response.data || response;
-      localStorage.setItem('kfpl_agent_auth', JSON.stringify({
+      safeSetLocalStorage('kfpl_agent_auth', {
         token: payload.token,
         agent: payload.agent || payload.user || payload.profile || { email, name: payload.fullName || payload.name || 'Agent' },
-      }));
+      });
       window.location.href = '/dashboard';
     } catch (err) {
       console.error('2FA Verification error:', err);
       if ((tempAuthData && otp === tempAuthData.otpCode) || (mockOtp && otp === mockOtp)) {
         const authPayload = tempAuthData || { token: 'mock-jwt-agent-token-12345' };
-        localStorage.setItem('kfpl_agent_auth', JSON.stringify({
+        safeSetLocalStorage('kfpl_agent_auth', {
           token: authPayload.token,
           agent: authPayload.agent || authPayload.user || authPayload.profile || { email, name: authPayload.fullName || authPayload.name || 'Agent' },
-        }));
+        });
         window.location.href = '/dashboard';
       } else {
         setOtpError(err.message || 'Invalid OTP code.');
@@ -279,14 +279,14 @@ export default function Login() {
         email: regForm.email,
         name: regForm.name
       };
-      localStorage.setItem('kfpl_agent_auth', JSON.stringify({
+      safeSetLocalStorage('kfpl_agent_auth', {
         token,
         agent: {
           ...agentPayload,
           name: agentPayload.fullName || agentPayload.name || regForm.name || 'Agent',
           email: regForm.email
         }
-      }));
+      });
       addToast('Account created successfully! Welcome to Kinetoscope Agent Portal.', 'success', 'Account Created');
       window.location.href = '/dashboard';
     } catch (err) {
@@ -360,7 +360,7 @@ export default function Login() {
           <div style={{ background: '#ffffff', padding: '6px', width: '68px', height: '68px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', marginBottom: '16px' }}>
             <img src="/logokfpl.jpeg" alt="KFPL Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '10px', display: 'block' }} />
           </div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', margin: 0, lineHeight: 1.15 }}>Kinetoscope Film Pvt Ltd</h1>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', margin: 0, lineHeight: 1.15 }}>Kinetoscope Films Pvt Ltd</h1>
           <p style={{ fontSize: '12px', color: 'rgba(240, 253, 244, 0.9)', letterSpacing: '1.5px', textTransform: 'uppercase', marginTop: '6px', marginBottom: '12px', fontWeight: '700' }}>A Global Media Fund</p>
           <p>Agent commission tracking and client management engine. Oversee portfolios, verify investments, and maximize slabs.</p>
         </div>
@@ -811,7 +811,7 @@ export default function Login() {
           )}
 
           <div className="kfpl-login-footer">
-            © 2026 Kinetoscope Film Pvt Ltd. All rights reserved.
+            © 2026 Kinetoscope Films Pvt Ltd. All rights reserved.
           </div>
         </div>
       </div>

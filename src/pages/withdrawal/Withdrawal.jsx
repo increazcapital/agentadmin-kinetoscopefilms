@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { formatCurrency } from '../../utils/formatters';
 import { useToast } from '../../components/ui/Toast';
-import { apiRequest } from '../../config/apiHelper';
+import { apiRequest, getAgentCacheKey } from '../../config/apiHelper';
 
 export default function Withdrawal() {
   const toastHelper = useToast();
@@ -19,6 +19,18 @@ export default function Withdrawal() {
     bankAccount: 'N/A',
     ifsc: 'N/A'
   });
+
+  const getAgentId = () => {
+    try {
+      const auth = localStorage.getItem('kfpl_agent_auth');
+      if (auth) {
+        const parsed = JSON.parse(auth);
+        const a = parsed.agent || parsed.user || {};
+        return a.id || a._id || 'default';
+      }
+    } catch (_) {}
+    return 'default';
+  };
 
   const fetchWithdrawalData = async () => {
     try {
@@ -68,7 +80,7 @@ export default function Withdrawal() {
         }
       }
       // Save to SWR Cache
-      const cacheKey = `kfpl_agent_withdrawal_cache_${getAgentId()}`;
+      const cacheKey = getAgentCacheKey('kfpl_agent_withdrawal_cache');
       localStorage.setItem(cacheKey, JSON.stringify({
         bankInfo: {
           bankName: profileRes ? (profileRes.data?.bankName || profileRes.bankName || 'N/A') : 'N/A',
@@ -76,20 +88,26 @@ export default function Withdrawal() {
           ifsc: profileRes ? (profileRes.data?.ifscCode || profileRes.data?.ifsc || profileRes.ifscCode || 'N/A') : 'N/A'
         },
         pendingBalance: dashRes ? (dashRes.data?.commissionPending ?? dashRes.commissionPending ?? 0) : 0,
-        history: specificRes ? (specificRes.data || specificRes.withdrawals || specificRes || []) : (dashRes?.withdrawals || [])
+        history: (() => {
+          if (specificRes) {
+            const d = specificRes.data || specificRes.withdrawals;
+            return Array.isArray(d) ? d : [];
+          }
+          return Array.isArray(dashRes?.withdrawals) ? dashRes.withdrawals : [];
+        })()
       }));
 
     } catch (e) {
       console.error('Error loading withdrawal details:', e);
       // Rollback to SWR Cache
       try {
-        const cacheKey = `kfpl_agent_withdrawal_cache_${getAgentId()}`;
+        const cacheKey = getAgentCacheKey('kfpl_agent_withdrawal_cache');
         const cache = localStorage.getItem(cacheKey);
         if (cache) {
           const parsed = JSON.parse(cache);
           if (parsed.bankInfo) setBankInfo(parsed.bankInfo);
           if (parsed.pendingBalance !== undefined) setPendingBalance(parsed.pendingBalance);
-          if (parsed.history) setHistory(parsed.history);
+          if (Array.isArray(parsed.history)) setHistory(parsed.history);
           return;
         }
       } catch (_) {}
@@ -98,29 +116,22 @@ export default function Withdrawal() {
     }
   };
 
-  const getAgentId = () => {
-    try {
-      const auth = localStorage.getItem('kfpl_agent_auth');
-      if (auth) {
-        const parsed = JSON.parse(auth);
-        const a = parsed.agent || parsed.user || {};
-        return a.id || a._id || 'default';
-      }
-    } catch (_) {}
-    return 'default';
-  };
-
   useEffect(() => {
     // --- SWR Cache Initialization for Instant Load (0ms) ---
     try {
-      const cacheKey = `kfpl_agent_withdrawal_cache_${getAgentId()}`;
+      const cacheKey = getAgentCacheKey('kfpl_agent_withdrawal_cache');
       const cache = localStorage.getItem(cacheKey);
       if (cache) {
         const parsed = JSON.parse(cache);
-        if (parsed.bankInfo) setBankInfo(parsed.bankInfo);
-        if (parsed.pendingBalance !== undefined) setPendingBalance(parsed.pendingBalance);
-        if (parsed.history) setHistory(parsed.history);
-        setLoading(false); // bypass loading screen
+        // Auto-purge corrupted cache where history is not an array
+        if (parsed.history && !Array.isArray(parsed.history)) {
+          localStorage.removeItem(cacheKey);
+        } else {
+          if (parsed.bankInfo) setBankInfo(parsed.bankInfo);
+          if (parsed.pendingBalance !== undefined) setPendingBalance(parsed.pendingBalance);
+          if (Array.isArray(parsed.history)) setHistory(parsed.history);
+          setLoading(false); // bypass loading screen
+        }
       }
     } catch (_) {}
     fetchWithdrawalData();
@@ -273,7 +284,7 @@ export default function Withdrawal() {
               </tr>
             </thead>
             <tbody>
-              {history.length === 0 ? (
+              {(!Array.isArray(history) || history.length === 0) ? (
                 <tr>
                   <td colSpan="5" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
                     No withdrawal history recorded.

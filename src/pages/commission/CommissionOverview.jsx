@@ -100,7 +100,7 @@ function downloadStatementPDF(com, agentName, agentClients = []) {
       <div class="header">
         <div>
           <h1 class="title">Commission Statement</h1>
-          <p style="margin: 4px 0 0; font-size: 12px; color: #4B6B5B; font-weight: 500;">Kinetoscope Film Production Pvt Ltd</p>
+          <p style="margin: 4px 0 0; font-size: 12px; color: #4B6B5B; font-weight: 500;">Kinetoscope Films Production Pvt Ltd</p>
         </div>
         <div style="font-size: 12px; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.5px;">Official Statement</div>
       </div>

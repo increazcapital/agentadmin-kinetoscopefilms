@@ -64,8 +64,15 @@ export default function MyClients() {
         };
         const list = extractClients(response);
         setClients(list);
-        const cacheKey = getAgentCacheKey('kfpl_agent_clients_cache');
-        localStorage.setItem(cacheKey, JSON.stringify(list));
+        try {
+          const cacheableList = list.map(c => {
+            const copy = { ...c };
+            if (copy.profilePic && copy.profilePic.length > 2000) delete copy.profilePic;
+            return copy;
+          });
+          const cacheKey = getAgentCacheKey('kfpl_agent_clients_cache');
+          localStorage.setItem(cacheKey, JSON.stringify(cacheableList));
+        } catch (_) {}
       } catch (err) {
         console.error('Failed to load clients:', err);
       } finally {
@@ -129,7 +136,26 @@ export default function MyClients() {
     {
       header: 'Client Name',
       accessor: 'name',
-      render: (row) => <span style={{ fontWeight: 600 }}>{row.name || row.fullName}</span>
+      render: (row) => {
+        const pic = row.profilePic || row.user?.profilePic || row.profile?.profilePic;
+        const displayName = row.name || row.fullName || 'N/A';
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: '50%', background: 'var(--color-navy-light, #11442F)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'var(--color-gold, #10B981)', fontWeight: 800, fontSize: 14, flexShrink: 0, overflow: 'hidden'
+            }}>
+              {pic ? (
+                <img src={pic} alt={displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                displayName.charAt(0).toUpperCase()
+              )}
+            </div>
+            <span style={{ fontWeight: 600 }}>{displayName}</span>
+          </div>
+        );
+      }
     },
     { header: 'Email Address', accessor: 'email' },
     {
