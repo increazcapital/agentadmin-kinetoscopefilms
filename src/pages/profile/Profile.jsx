@@ -278,8 +278,30 @@ export default function Profile() {
     }
 
     try {
-      toast('Optimizing and saving profile picture...', 'info', 'Uploading Avatar');
+      toast('Saving profile picture...', 'info', 'Uploading Avatar');
       const base64Image = await compressImage(file, 300, 0.8);
+
+      // INSTANT OPTIMISTIC UI UPDATE (0ms)
+      setProfile(prev => ({ ...prev, profilePic: base64Image }));
+      const cacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
+      try {
+        const stored = localStorage.getItem(cacheKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.profile) parsed.profile.profilePic = base64Image;
+          safeSetLocalStorage(cacheKey, parsed);
+        }
+      } catch (e) {}
+      try {
+        const authData = localStorage.getItem('kfpl_agent_auth');
+        if (authData) {
+          const parsed = JSON.parse(authData);
+          if (parsed.agent) parsed.agent.profilePic = base64Image;
+          if (parsed.user) parsed.user.profilePic = base64Image;
+          safeSetLocalStorage('kfpl_agent_auth', parsed);
+        }
+      } catch (e) {}
+      window.dispatchEvent(new Event('agentProfileUpdated'));
 
       const res = await apiRequest('/api/agent/profile', {
         method: 'PATCH',
@@ -290,25 +312,24 @@ export default function Profile() {
 
       setProfile(prev => ({ ...prev, profilePic: updatedPicUrl }));
 
-      const cacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
-      const stored = localStorage.getItem(cacheKey);
-      if (stored) {
-        try {
+      try {
+        const stored = localStorage.getItem(cacheKey);
+        if (stored) {
           const parsed = JSON.parse(stored);
           if (parsed.profile) parsed.profile.profilePic = updatedPicUrl;
           safeSetLocalStorage(cacheKey, parsed);
-        } catch (e) {}
-      }
+        }
+      } catch (e) {}
 
-      const authData = localStorage.getItem('kfpl_agent_auth');
-      if (authData) {
-        try {
+      try {
+        const authData = localStorage.getItem('kfpl_agent_auth');
+        if (authData) {
           const parsed = JSON.parse(authData);
           if (parsed.agent) parsed.agent.profilePic = updatedPicUrl;
           if (parsed.user) parsed.user.profilePic = updatedPicUrl;
           safeSetLocalStorage('kfpl_agent_auth', parsed);
-        } catch (e) {}
-      }
+        }
+      } catch (e) {}
 
       window.dispatchEvent(new Event('agentProfileUpdated'));
       toast('Your profile photo has been updated successfully!', 'success', 'Profile Picture Updated');
@@ -320,35 +341,32 @@ export default function Profile() {
 
   const handleAvatarRemove = async () => {
     try {
-      toast('Removing profile picture...', 'info', 'Removing Avatar');
-      await apiRequest('/api/agent/profile/avatar', {
-        method: 'DELETE'
-      });
-
+      // INSTANT OPTIMISTIC REMOVAL (0ms)
       setProfile(prev => ({ ...prev, profilePic: '' }));
-
       const cacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
-      const stored = localStorage.getItem(cacheKey);
-      if (stored) {
-        try {
+      try {
+        const stored = localStorage.getItem(cacheKey);
+        if (stored) {
           const parsed = JSON.parse(stored);
           if (parsed.profile) parsed.profile.profilePic = '';
           safeSetLocalStorage(cacheKey, parsed);
-        } catch (e) {}
-      }
-
-      const authData = localStorage.getItem('kfpl_agent_auth');
-      if (authData) {
-        try {
+        }
+      } catch (e) {}
+      try {
+        const authData = localStorage.getItem('kfpl_agent_auth');
+        if (authData) {
           const parsed = JSON.parse(authData);
           if (parsed.agent) parsed.agent.profilePic = '';
           if (parsed.user) parsed.user.profilePic = '';
           safeSetLocalStorage('kfpl_agent_auth', parsed);
-        } catch (e) {}
-      }
-
+        }
+      } catch (e) {}
       window.dispatchEvent(new Event('agentProfileUpdated'));
       toast('Your profile photo has been removed successfully!', 'success', 'Profile Picture Removed');
+
+      await apiRequest('/api/agent/profile/avatar', {
+        method: 'DELETE'
+      });
     } catch (err) {
       console.error('Failed to remove agent avatar:', err);
       toast(err.message || 'Failed to remove profile picture.', 'error', 'Removal Failed');
