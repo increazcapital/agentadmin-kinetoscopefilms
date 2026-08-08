@@ -107,7 +107,7 @@ export default function Header({ isCollapsed, onMenuClick }) {
           const parsed = JSON.parse(authData);
           const agentObj = parsed.agent || parsed.user || {};
           currentLocalName = agentObj.name || agentObj.fullName || 'Agent';
-          setAgentName(currentLocalName);
+          setAgentInfo(prev => ({ ...prev, name: currentLocalName }));
         } catch (e) {
           console.error(e);
         }
@@ -127,7 +127,7 @@ export default function Header({ isCollapsed, onMenuClick }) {
             freshName = currentLocalName;
           }
 
-          setAgentName(freshName);
+          setAgentInfo(prev => ({ ...prev, name: freshName }));
 
           if (authData) {
             const parsed = JSON.parse(authData);
