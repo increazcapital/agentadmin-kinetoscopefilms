@@ -63,6 +63,15 @@ export default function DashboardHome() {
   const [agentName, setAgentName] = useState('Agent');
   const [agentProfile, setAgentProfile] = useState(() => {
     try {
+      const profCacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
+      const profCacheData = localStorage.getItem(profCacheKey);
+      if (profCacheData) {
+        const parsed = JSON.parse(profCacheData);
+        if (parsed.profile) return parsed.profile;
+      }
+    } catch (e) {}
+
+    try {
       const cacheKey = getAgentCacheKey('kfpl_dashboard_cache');
       const cacheData = localStorage.getItem(cacheKey);
       if (cacheData) {
@@ -70,6 +79,16 @@ export default function DashboardHome() {
         if (parsed.agentProfile) return parsed.agentProfile;
       }
     } catch (e) {}
+
+    try {
+      const authData = localStorage.getItem('kfpl_agent_auth');
+      if (authData) {
+        const parsed = JSON.parse(authData);
+        if (parsed.profile) return parsed.profile;
+        if (parsed.agent) return parsed.agent;
+      }
+    } catch (e) {}
+
     return null;
   });
   const [rewardsList, setRewardsList] = useState([]);
@@ -103,6 +122,15 @@ export default function DashboardHome() {
       console.warn('Failed to parse dashboard cache:', e);
     }
 
+    try {
+      const profCacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
+      const profCacheData = localStorage.getItem(profCacheKey);
+      if (profCacheData) {
+        const parsed = JSON.parse(profCacheData);
+        if (parsed.profile) setAgentProfile(parsed.profile);
+      }
+    } catch (e) {}
+
     const loadDashboardData = async () => {
       try {
         // Parallelized fetch for all API endpoints concurrently
@@ -119,6 +147,10 @@ export default function DashboardHome() {
         if (profRes) {
           fetchedProfile = profRes.profile || profRes.agent || profRes.data || profRes;
           setAgentProfile(fetchedProfile);
+          try {
+            const profCacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
+            localStorage.setItem(profCacheKey, JSON.stringify({ profile: fetchedProfile }));
+          } catch (e) {}
           const nameVal = fetchedProfile.name || fetchedProfile.fullName;
           if (nameVal) {
             freshName = nameVal.split(' ')[0];

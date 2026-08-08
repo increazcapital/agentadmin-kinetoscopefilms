@@ -142,12 +142,17 @@ export default function Login() {
         setStep('otp');
         addToast('Verification code sent to your registered email address.', 'info', '2FA Verification');
       } else {
-        const agentObj = response.data?.user || response.agent || response.user || response.profile || { email, name: response.fullName || 'Agent' };
+        const userObj = response.data?.user || response.user || {};
+        const profileObj = response.data?.profile || response.profile || {};
+        const mergedAgent = { ...userObj, ...profileObj, email: email || userObj.email };
+
         safeSetLocalStorage('kfpl_agent_auth', {
           token: response.token,
-          agent: agentObj,
-          user: agentObj,
+          agent: mergedAgent,
+          user: userObj,
+          profile: profileObj,
         });
+        safeSetLocalStorage('kfpl_agent_profile_cache', { profile: mergedAgent });
         window.location.href = '/dashboard';
       }
     } catch (err) {
