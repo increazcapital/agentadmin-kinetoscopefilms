@@ -14,6 +14,7 @@ import DonutChart from '../../components/charts/DonutChart';
 import LineChart from '../../components/charts/LineChart';
 import { apiRequest, getAgentCacheKey } from '../../config/apiHelper';
 import KycAgreementCard from '../../components/common/KycAgreementCard';
+import MissingDocsReuploadCard from '../../components/common/MissingDocsReuploadCard';
 
 // ── Activity Icons ───────────────────────
 const activityIcons = {
@@ -410,6 +411,43 @@ export default function DashboardHome() {
           <div className="kfpl-welcome-circle kfpl-welcome-circle--2" />
           <div className="kfpl-welcome-circle kfpl-welcome-circle--3" />
         </div>
+      </div>
+
+      {/* MISSING DOCUMENTS RE-UPLOAD CARD */}
+      <div style={{ marginTop: '20px' }}>
+        <MissingDocsReuploadCard
+          agent={agentProfile}
+          loading={loading || !agentProfile}
+          onDocUploaded={(docKey, newUrl) => {
+            setAgentProfile(prev => {
+              const updated = { ...prev, [docKey]: newUrl };
+              try {
+                const cacheKey = getAgentCacheKey('kfpl_dashboard_cache');
+                const stored = localStorage.getItem(cacheKey);
+                if (stored) {
+                  const parsed = JSON.parse(stored);
+                  if (parsed.agentProfile) parsed.agentProfile[docKey] = newUrl;
+                  safeSetLocalStorage(cacheKey, parsed);
+                }
+                const profCacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
+                const profStored = localStorage.getItem(profCacheKey);
+                if (profStored) {
+                  const parsed = JSON.parse(profStored);
+                  if (parsed.profile) parsed.profile[docKey] = newUrl;
+                  safeSetLocalStorage(profCacheKey, parsed);
+                }
+                const authData = localStorage.getItem('kfpl_agent_auth');
+                if (authData) {
+                  const parsed = JSON.parse(authData);
+                  if (parsed.agent) parsed.agent[docKey] = newUrl;
+                  if (parsed.profile) parsed.profile[docKey] = newUrl;
+                  safeSetLocalStorage('kfpl_agent_auth', parsed);
+                }
+              } catch (e) {}
+              return updated;
+            });
+          }}
+        />
       </div>
 
       {/* KYC AGENT AGREEMENT CARD */}

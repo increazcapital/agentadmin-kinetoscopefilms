@@ -8,6 +8,7 @@ import { formatCurrency } from '../../utils/formatters';
 import { useToast } from '../../components/ui/Toast';
 import { apiRequest, getAgentCacheKey, safeSetLocalStorage } from '../../config/apiHelper';
 import KycAgreementCard from '../../components/common/KycAgreementCard';
+import MissingDocsReuploadCard from '../../components/common/MissingDocsReuploadCard';
 
 const profileIcons = {
   user: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
@@ -382,6 +383,36 @@ export default function Profile() {
             Profile details. Nominee changes request approval ke through update honge.
           </p>
         </div>
+      </div>
+
+      {/* MISSING DOCUMENTS RE-UPLOAD CARD */}
+      <div style={{ marginTop: '20px' }}>
+        <MissingDocsReuploadCard
+          agent={profile}
+          loading={loading}
+          onDocUploaded={(docKey, newUrl) => {
+            setProfile(prev => {
+              const updated = { ...prev, [docKey]: newUrl };
+              try {
+                const cacheKey = getAgentCacheKey('kfpl_agent_profile_cache');
+                const stored = localStorage.getItem(cacheKey);
+                if (stored) {
+                  const parsed = JSON.parse(stored);
+                  if (parsed.profile) parsed.profile[docKey] = newUrl;
+                  safeSetLocalStorage(cacheKey, parsed);
+                }
+                const authData = localStorage.getItem('kfpl_agent_auth');
+                if (authData) {
+                  const parsed = JSON.parse(authData);
+                  if (parsed.agent) parsed.agent[docKey] = newUrl;
+                  if (parsed.profile) parsed.profile[docKey] = newUrl;
+                  safeSetLocalStorage('kfpl_agent_auth', parsed);
+                }
+              } catch (e) {}
+              return updated;
+            });
+          }}
+        />
       </div>
 
       {/* KYC AGENT AGREEMENT CARD */}

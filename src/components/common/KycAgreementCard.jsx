@@ -144,12 +144,13 @@ export default function KycAgreementCard({
   const handleDownloadTemplate = () => {
     const link = document.createElement('a');
     link.href = '/agreements/agent_agreement.docx';
-    link.download = 'Agent_Agreement.docx';
+    const formattedName = (agentName || 'Agent').trim().replace(/\s+/g, '_');
+    link.download = `${formattedName}_Agent_Agreement.docx`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    addToast('Official Agent Agreement (.docx) downloaded successfully!', 'success', 'Download Complete');
+    addToast(`Official Agent Agreement (${formattedName}_Agent_Agreement.docx) downloaded successfully!`, 'success', 'Download Complete');
   };
 
   /* ── File Upload Handler ────────────────── */
@@ -358,7 +359,7 @@ export default function KycAgreementCard({
                 {agentName ? `${agentName.replace(/\s+/g, '_')}_Signed_Agent_Agreement` : 'Signed_Agent_Agreement'}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted, #64748b)' }}>
-                Document uploaded for Super Admin verification • Cloud Secured
+                Document uploaded for Kinetoscope Films Team verification • Cloud Secured
               </div>
             </div>
           </div>
