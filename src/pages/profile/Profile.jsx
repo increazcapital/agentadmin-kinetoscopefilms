@@ -9,6 +9,7 @@ import { useToast } from '../../components/ui/Toast';
 import { apiRequest, getAgentCacheKey, safeSetLocalStorage } from '../../config/apiHelper';
 import KycAgreementCard from '../../components/common/KycAgreementCard';
 import MissingDocsReuploadCard from '../../components/common/MissingDocsReuploadCard';
+import SensitiveValueToggle from '../../components/common/SensitiveValueToggle';
 
 const profileIcons = {
   user: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
@@ -523,7 +524,7 @@ export default function Profile() {
       </div>
 
       <div className="kfpl-profile-grid" style={{ marginTop: 24 }}>
-        <div className="kfpl-card kfpl-profile-card kfpl-profile-card--wide">
+        <div className="kfpl-card kfpl-profile-card">
           <div className="kfpl-card-header">
             <h3><span className="kfpl-profile-card-icon">{profileIcons.user}</span>Personal Information</h3>
           </div>
@@ -582,11 +583,15 @@ export default function Profile() {
             </div>
             <div className="kfpl-profile-detail-row">
               <span className="kfpl-profile-detail-label">Account Number</span>
-              <span className="kfpl-profile-detail-value kfpl-mono">{bankAccount}</span>
+              <span className="kfpl-profile-detail-value kfpl-mono">
+                <SensitiveValueToggle value={bankAccount} maskLength={4} />
+              </span>
             </div>
             <div className="kfpl-profile-detail-row">
               <span className="kfpl-profile-detail-label">IFSC Code</span>
-              <span className="kfpl-profile-detail-value kfpl-mono">{ifsc}</span>
+              <span className="kfpl-profile-detail-value kfpl-mono">
+                <SensitiveValueToggle value={ifsc} maskLength={4} />
+              </span>
             </div>
           </div>
         </div>
@@ -606,7 +611,9 @@ export default function Profile() {
             </div>
             <div className="kfpl-profile-detail-row">
               <span className="kfpl-profile-detail-label">Contact</span>
-              <span className="kfpl-profile-detail-value">{nomineeContact}</span>
+              <span className="kfpl-profile-detail-value">
+                <SensitiveValueToggle value={nomineeContact} maskLength={4} />
+              </span>
             </div>
             <div className="kfpl-profile-detail-row">
               <span className="kfpl-profile-detail-label">Email</span>
