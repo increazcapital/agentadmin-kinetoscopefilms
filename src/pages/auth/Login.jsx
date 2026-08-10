@@ -35,6 +35,17 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  // Blocked account reason banner from URL params
+  const [blockedReason, setBlockedReason] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('blocked') === 'true' || params.get('reason')) {
+      const reason = params.get('reason') || 'Your account has been deactivated or blocked. Please contact info@kinetoscopefilms.com for assistance.';
+      setBlockedReason(reason);
+    }
+  }, []);
+
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState('');
   const [error, setError] = useState('');
@@ -81,7 +92,9 @@ export default function Login() {
     const { name, value } = e.target;
     setRegForm(prev => {
       let nextValue = value;
-      if (name === 'aadhaar' && prev.citizenship === 'National') {
+      if (name === 'phone' || name === 'nomineeContact') {
+        nextValue = value.replace(/\D/g, '').slice(0, 10);
+      } else if (name === 'aadhaar' && prev.citizenship === 'National') {
         const digits = value.replace(/\D/g, '').slice(0, 12);
         nextValue = digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
       }
@@ -228,12 +241,39 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
-    if (regForm.password !== regForm.confirmPassword) {
-      addToast('Passwords do not match!', 'danger', 'Validation Error');
+    if (!regForm.name || !regForm.name.trim()) {
+      addToast('Please enter your Full Name', 'danger', 'Validation Error');
+      setError('Full Name is required.');
       return;
     }
-    if (regForm.accountNo !== regForm.confirmAccountNo) {
+    if (!regForm.email || !regForm.email.trim() || !/\S+@\S+\.\S+/.test(regForm.email)) {
+      addToast('Please enter a valid Email Address', 'danger', 'Validation Error');
+      setError('Valid Email Address is required.');
+      return;
+    }
+    if (!regForm.phone || !regForm.phone.trim()) {
+      addToast('Please enter your Phone Number', 'danger', 'Validation Error');
+      setError('Phone Number is required.');
+      return;
+    }
+    if (!regForm.password) {
+      addToast('Please enter a Password', 'danger', 'Validation Error');
+      setError('Password is required.');
+      return;
+    }
+    if (regForm.password.length < 6) {
+      addToast('Password must be at least 6 characters', 'danger', 'Validation Error');
+      setError('Password must be at least 6 characters.');
+      return;
+    }
+    if (regForm.password !== regForm.confirmPassword) {
+      addToast('Passwords do not match!', 'danger', 'Validation Error');
+      setError('Passwords do not match!');
+      return;
+    }
+    if (regForm.accountNo && regForm.accountNo !== regForm.confirmAccountNo) {
       addToast('Account numbers do not match!', 'danger', 'Validation Error');
+      setError('Account numbers do not match!');
       return;
     }
 
@@ -406,6 +446,23 @@ export default function Login() {
           {/* STEP 1: CREDENTIALS (LOGIN) */}
           {step === 'credentials' && activeTab === 'login' && (
             <div className="animate-fade-in">
+              {blockedReason && (
+                <div className="kfpl-login-error" style={{ background: '#fffbe5', borderColor: '#fde047', color: '#854d0e', marginBottom: '16px', padding: '12px 14px', borderRadius: '10px' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ color: '#d97706', width: '20px', height: '20px', flexShrink: 0 }}>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                  <div style={{ fontSize: '0.8125rem', lineHeight: '1.45' }}>
+                    <strong>Account Status:</strong> {blockedReason.includes('info@kinetoscopefilms.com') ? blockedReason : `${blockedReason} Please contact `}
+                    {!blockedReason.includes('info@kinetoscopefilms.com') && (
+                      <a href="mailto:info@kinetoscopefilms.com" style={{ color: '#b45309', fontWeight: '700', textDecoration: 'underline', marginLeft: '4px' }}>
+                        info@kinetoscopefilms.com
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {error && (
                 <div className="kfpl-login-error">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -492,19 +549,17 @@ export default function Login() {
                     <label className="kfpl-login-label">Full Name *</label>
                     <input type="text" name="name" className="kfpl-login-input" placeholder="Enter your name" value={regForm.name} onChange={handleRegisterChange} required />
                   </div>
-                  <div className="kfpl-login-form-row">
-                    <div className="kfpl-login-input-group">
-                      <label className="kfpl-login-label">Email *</label>
-                      <input type="email" name="email" className="kfpl-login-input" placeholder="Enter your email" value={regForm.email} onChange={handleRegisterChange} required />
-                    </div>
-                    <div className="kfpl-login-input-group">
-                      <label className="kfpl-login-label">Phone *</label>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <select name="phoneCountryCode" value={regForm.phoneCountryCode} onChange={handleRegisterChange} className="kfpl-login-input" style={{ width: '110px', padding: '10px 6px', fontSize: '0.8rem' }}>
-                          {WORLD_COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
-                        </select>
-                        <input type="text" name="phone" className="kfpl-login-input" placeholder="Phone number" value={regForm.phone} onChange={handleRegisterChange} required style={{ flex: 1 }} />
-                      </div>
+                  <div className="kfpl-login-input-group">
+                    <label className="kfpl-login-label">Email Address *</label>
+                    <input type="email" name="email" className="kfpl-login-input" placeholder="Enter your email address" value={regForm.email} onChange={handleRegisterChange} required />
+                  </div>
+                  <div className="kfpl-login-input-group">
+                    <label className="kfpl-login-label">Phone Number *</label>
+                    <div className="kfpl-phone-unified-wrap">
+                      <select name="phoneCountryCode" value={regForm.phoneCountryCode} onChange={handleRegisterChange}>
+                        {WORLD_COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
+                      </select>
+                      <input type="tel" name="phone" maxLength={10} placeholder="10-digit mobile number" value={regForm.phone} onChange={handleRegisterChange} required />
                     </div>
                   </div>
                   <div className="kfpl-login-form-row">
@@ -582,20 +637,18 @@ export default function Login() {
                       </select>
                     </div>
                   </div>
-                  <div className="kfpl-login-form-row">
-                    <div className="kfpl-login-input-group">
-                      <label className="kfpl-login-label">Nominee Phone</label>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <select name="nomineePhoneCountryCode" value={regForm.nomineePhoneCountryCode} onChange={handleRegisterChange} className="kfpl-login-input" style={{ width: '110px', padding: '10px 6px', fontSize: '0.8rem' }}>
-                          {WORLD_COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
-                        </select>
-                        <input type="text" name="nomineeContact" className="kfpl-login-input" placeholder="Phone number" value={regForm.nomineeContact} onChange={handleRegisterChange} style={{ flex: 1 }} />
-                      </div>
+                  <div className="kfpl-login-input-group">
+                    <label className="kfpl-login-label">Nominee Phone</label>
+                    <div className="kfpl-phone-unified-wrap">
+                      <select name="nomineePhoneCountryCode" value={regForm.nomineePhoneCountryCode} onChange={handleRegisterChange}>
+                        {WORLD_COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
+                      </select>
+                      <input type="tel" name="nomineeContact" maxLength={10} placeholder="10-digit phone number" value={regForm.nomineeContact} onChange={handleRegisterChange} />
                     </div>
-                    <div className="kfpl-login-input-group">
-                      <label className="kfpl-login-label">Nominee Email</label>
-                      <input type="email" name="nomineeEmail" className="kfpl-login-input" placeholder="Enter nominee email" value={regForm.nomineeEmail} onChange={handleRegisterChange} />
-                    </div>
+                  </div>
+                  <div className="kfpl-login-input-group">
+                    <label className="kfpl-login-label">Nominee Email</label>
+                    <input type="email" name="nomineeEmail" className="kfpl-login-input" placeholder="Enter nominee email" value={regForm.nomineeEmail} onChange={handleRegisterChange} />
                   </div>
 
                   {/* Documents Upload */}
@@ -684,40 +737,40 @@ export default function Login() {
                   </div>
 
                   {/* Agreement Checkboxes */}
-                  <div style={{ marginTop: '22px', borderTop: '1px solid rgba(0, 0, 0, 0.08)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.825rem', color: '#334155', cursor: 'pointer', fontWeight: 600 }}>
+                  <div style={{ marginTop: '22px', borderTop: '1px solid rgba(255, 255, 255, 0.12)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <label className="kfpl-login-checkbox-label" style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.825rem', cursor: 'pointer', fontWeight: 600 }}>
                       <input 
                         type="checkbox" 
                         checked={checkedAgreement} 
                         onChange={(e) => setCheckedAgreement(e.target.checked)}
-                        style={{ marginTop: '3px', width: '16px', height: '16px', accentColor: 'var(--color-emerald)' }} 
+                        style={{ marginTop: '3px', width: '16px', height: '16px', accentColor: 'var(--color-gold)' }} 
                       />
                       <span>
-                        I agree to the <span style={{ color: 'var(--color-emerald)', textDecoration: 'underline', fontWeight: 700 }} onClick={(e) => { e.preventDefault(); openSingleDoc('agreement'); }}>Marketing Services Agreement</span> *
+                        I agree to the <span style={{ color: 'var(--color-gold)', textDecoration: 'underline', fontWeight: 700 }} onClick={(e) => { e.preventDefault(); openSingleDoc('agreement'); }}>Marketing Services Agreement</span> *
                       </span>
                     </label>
 
-                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.825rem', color: '#334155', cursor: 'pointer', fontWeight: 600 }}>
+                    <label className="kfpl-login-checkbox-label" style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.825rem', cursor: 'pointer', fontWeight: 600 }}>
                       <input 
                         type="checkbox" 
                         checked={checkedPrivacy} 
                         onChange={(e) => setCheckedPrivacy(e.target.checked)}
-                        style={{ marginTop: '3px', width: '16px', height: '16px', accentColor: 'var(--color-emerald)' }} 
+                        style={{ marginTop: '3px', width: '16px', height: '16px', accentColor: 'var(--color-gold)' }} 
                       />
                       <span>
-                        I agree to the <span style={{ color: 'var(--color-emerald)', textDecoration: 'underline', fontWeight: 700 }} onClick={(e) => { e.preventDefault(); openSingleDoc('privacy'); }}>Privacy Policy</span> *
+                        I agree to the <span style={{ color: 'var(--color-gold)', textDecoration: 'underline', fontWeight: 700 }} onClick={(e) => { e.preventDefault(); openSingleDoc('privacy'); }}>Privacy Policy</span> *
                       </span>
                     </label>
 
-                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.825rem', color: '#334155', cursor: 'pointer', fontWeight: 600 }}>
+                    <label className="kfpl-login-checkbox-label" style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.825rem', cursor: 'pointer', fontWeight: 600 }}>
                       <input 
                         type="checkbox" 
                         checked={checkedTnc} 
                         onChange={(e) => setCheckedTnc(e.target.checked)}
-                        style={{ marginTop: '3px', width: '16px', height: '16px', accentColor: 'var(--color-emerald)' }} 
+                        style={{ marginTop: '3px', width: '16px', height: '16px', accentColor: 'var(--color-gold)' }} 
                       />
                       <span>
-                        I agree to the <span style={{ color: 'var(--color-emerald)', textDecoration: 'underline', fontWeight: 700 }} onClick={(e) => { e.preventDefault(); openSingleDoc('tnc'); }}>Terms & Conditions</span> *
+                        I agree to the <span style={{ color: 'var(--color-gold)', textDecoration: 'underline', fontWeight: 700 }} onClick={(e) => { e.preventDefault(); openSingleDoc('tnc'); }}>Terms & Conditions</span> *
                       </span>
                     </label>
                   </div>
