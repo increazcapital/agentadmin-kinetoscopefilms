@@ -8,7 +8,7 @@ export default function MissingDocsReuploadCard({ agent, loading = false, onDocU
 
   if (loading || !agent) return null;
 
-  // Determine missing documents
+  // Determine missing documents (agreement is handled exclusively by KycAgreementCard)
   const missingList = [];
   if (!agent.panDocument) {
     missingList.push({ key: 'panDocument', label: 'PAN Card Document' });
@@ -18,9 +18,6 @@ export default function MissingDocsReuploadCard({ agent, loading = false, onDocU
   }
   if (!agent.bankProofDocument) {
     missingList.push({ key: 'bankProofDocument', label: 'Bank Details Document' });
-  }
-  if (!agent.agreementDocument && !agent.signedAgreementUrl) {
-    missingList.push({ key: 'agreementDocument', label: 'Signed Agent Service Agreement' });
   }
 
   if (missingList.length === 0) return null;
