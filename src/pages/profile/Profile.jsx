@@ -117,7 +117,12 @@ export default function Profile() {
           };
 
           const statusVal = getStatus();
-          const kycStatusVal = getKycStatus();
+          const panNumber = profileObj.panNumber || profileObj.pan || '—';
+          const aadhaarNumber = profileObj.aadhaarNumber || profileObj.aadhaar || '—';
+          const commissionSlab = profileObj.commissionSlab || 'Slab 2';
+          const commissionOneTime = profileObj.commissionOneTime ? `${profileObj.commissionOneTime}%` : '1.5%';
+          const commissionMonthly = profileObj.commissionMonthly ? `${profileObj.commissionMonthly}%` : '0.75%';
+          const tier = (profileObj.tier || profileObj.category || 'SILVER').toUpperCase();
 
           return {
             ...profileObj,
@@ -128,9 +133,15 @@ export default function Profile() {
             address: profileObj.address || 'India',
             agentId: formattedId,
             code: formattedId,
+            tier,
             status: statusVal,
             kycStatus: kycStatusVal,
             kyc: kycStatusVal,
+            commissionSlab,
+            commissionOneTime,
+            commissionMonthly,
+            panNumber,
+            aadhaarNumber,
             joiningDate: profileObj.joinDate || profileObj.joiningDate || user.createdAt || profileObj.createdAt,
             bankName: profileObj.bankName || '—',
             bankAccount: profileObj.accountNumber || profileObj.accountNo || profileObj.bankAccount || '—',
@@ -222,10 +233,18 @@ export default function Profile() {
   const agentId = profile.agentId || '—';
   const status = profile.status || 'active';
   const kycStatus = (profile.kycStatus || profile.kyc || 'PENDING').toUpperCase();
+  const formatDateDMY = (dStr) => {
+    if (!dStr) return '—';
+    const d = new Date(dStr);
+    if (isNaN(d.getTime())) return '—';
+    const day = String(d.getDate()).padStart(2, '0');
+    const mon = String(d.getMonth() + 1).padStart(2, '0');
+    const yr = d.getFullYear();
+    return `${day}/${mon}/${yr}`;
+  };
+
   const joinDate = profile.joiningDate || profile.joinDate || profile.createdAt;
-  const memberSince = joinDate
-    ? new Date(joinDate).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })
-    : '—';
+  const memberSince = joinDate ? formatDateDMY(joinDate) : '—';
 
   const bankName = profile.bankName || '—';
   const bankAccount = profile.bankAccount || profile.accountNumber || '—';
@@ -550,12 +569,16 @@ export default function Profile() {
 
         <div className="kfpl-card kfpl-profile-card">
           <div className="kfpl-card-header">
-            <h3><span className="kfpl-profile-card-icon">{profileIcons.shield}</span>Account Details</h3>
+            <h3><span className="kfpl-profile-card-icon">{profileIcons.shield}</span>Account & Commission Details</h3>
           </div>
           <div className="kfpl-card-body">
             <div className="kfpl-profile-detail-row">
               <span className="kfpl-profile-detail-label">Agent ID</span>
               <span className="kfpl-profile-detail-value kfpl-mono">{agentId}</span>
+            </div>
+            <div className="kfpl-profile-detail-row">
+              <span className="kfpl-profile-detail-label">Category / Tier</span>
+              <span className="kfpl-profile-detail-value">{profile.tier || 'SILVER'}</span>
             </div>
             <div className="kfpl-profile-detail-row">
               <span className="kfpl-profile-detail-label">Account Status</span>
@@ -566,7 +589,19 @@ export default function Profile() {
               <span className={`kfpl-badge kfpl-badge--${kycStatus === 'VERIFIED' ? 'success' : kycStatus === 'REJECTED' ? 'rejected' : 'warning'}`}>{kycStatus}</span>
             </div>
             <div className="kfpl-profile-detail-row">
-              <span className="kfpl-profile-detail-label">Member Since</span>
+              <span className="kfpl-profile-detail-label">Commission Slab</span>
+              <span className="kfpl-profile-detail-value">{profile.commissionSlab || 'Slab 2'}</span>
+            </div>
+            <div className="kfpl-profile-detail-row">
+              <span className="kfpl-profile-detail-label">One-Time Commission</span>
+              <span className="kfpl-profile-detail-value">{profile.commissionOneTime || '1.5%'}</span>
+            </div>
+            <div className="kfpl-profile-detail-row">
+              <span className="kfpl-profile-detail-label">Monthly Commission</span>
+              <span className="kfpl-profile-detail-value">{profile.commissionMonthly || '0.75%'}</span>
+            </div>
+            <div className="kfpl-profile-detail-row">
+              <span className="kfpl-profile-detail-label">Member Since (DD/MM/YYYY)</span>
               <span className="kfpl-profile-detail-value">{memberSince}</span>
             </div>
           </div>
@@ -574,7 +609,7 @@ export default function Profile() {
 
         <div className="kfpl-card kfpl-profile-card">
           <div className="kfpl-card-header">
-            <h3><span className="kfpl-profile-card-icon">{profileIcons.bank}</span>Bank Details</h3>
+            <h3><span className="kfpl-profile-card-icon">{profileIcons.bank}</span>Bank & Identity Details</h3>
           </div>
           <div className="kfpl-card-body">
             <div className="kfpl-profile-detail-row">
@@ -591,6 +626,18 @@ export default function Profile() {
               <span className="kfpl-profile-detail-label">IFSC Code</span>
               <span className="kfpl-profile-detail-value kfpl-mono">
                 <SensitiveValueToggle value={ifsc} maskLength={4} />
+              </span>
+            </div>
+            <div className="kfpl-profile-detail-row">
+              <span className="kfpl-profile-detail-label">PAN Card Number</span>
+              <span className="kfpl-profile-detail-value kfpl-mono">
+                <SensitiveValueToggle value={profile.panNumber || profile.pan || '—'} maskLength={4} />
+              </span>
+            </div>
+            <div className="kfpl-profile-detail-row">
+              <span className="kfpl-profile-detail-label">Aadhaar Number</span>
+              <span className="kfpl-profile-detail-value kfpl-mono">
+                <SensitiveValueToggle value={profile.aadhaarNumber || profile.aadhaar || '—'} maskLength={4} />
               </span>
             </div>
           </div>

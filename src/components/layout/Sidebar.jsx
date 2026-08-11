@@ -132,6 +132,10 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onMobileC
       if (key.startsWith('kfpl_') && key !== 'kfpl_agent_auth') {
         localStorage.removeItem(key);
       }
+      // Nuclear wipe all SWR cached data (user-scoped)
+      if (key.startsWith('swr_')) {
+        localStorage.removeItem(key);
+      }
     });
     localStorage.removeItem('kfpl_agent_auth');
     window.location.href = '/login';

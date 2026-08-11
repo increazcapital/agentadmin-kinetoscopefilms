@@ -22,38 +22,43 @@ function downloadStatementCSV(com, agentName) {
   const rows = [
     ['Commission Statement'],
     ['Agent', agentName],
-    ['Period', com.month],
-    ['Date', formatDateDMY(com.date)],
-    ['Total Amount', com.amount],
+    ['Agent Name', agentName],
+    ['Statement Period', statementPeriod],
+    ['Payment Date', formatDateDMY(com.date)],
     ['Status', com.status],
-    [''],
-    ['Type', (String(com.type || '').toLowerCase().trim() === 'one-time' || String(com.type || '').toLowerCase().trim() === 'one-time onboarding' || String(com.type || '').toLowerCase().trim() === 'onetime' || String(com.type || '').toLowerCase().trim() === 'one time') ? 'One Time' : (String(com.type || '').toLowerCase().trim() === 'special' || String(com.type || '').toLowerCase().trim() === 'override' || String(com.type || '').toLowerCase().trim() === 'special override' ? 'Special' : 'Monthly')],
-    [''],
-    ['Client Name', 'Client ID', 'Investment', 'Rate %', 'Commission'],
+    [],
+    ['Client Name', 'Client ID', 'Investment Date', 'Type', 'Investment Amount', 'Rate %', 'Commission Amount']
   ];
-  if (com.breakdown) {
-    com.breakdown.forEach(b => {
-      rows.push([b.clientName, b.clientId, b.investment, b.rate, b.amount]);
-    });
-  }
-  const csvContent = rows.map(r => r.join(',')).join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv' });
+  filteredBreakdown.forEach(b => {
+    rows.push([
+      b.clientName,
+      b.clientId,
+      b.investmentDate,
+      com.type || 'Monthly',
+      b.investment,
+      b.rate,
+      b.amount
+    ]);
+  });
+  const csvContent = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `commission_${com.month ? com.month.replace(/\s/g, '_') : 'Statement'}_${agentName.replace(/\s/g, '_')}.csv`;
+  link.download = `commission_${statementPeriod.replace(/\s/g, '_')}_${agentName.replace(/\s/g, '_')}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
 
-function downloadStatementPDF(com, agentName, agentClients = []) {
+function downloadStatementPDF(com, agentName, agentClients = [], breakdownList = []) {
   const dateStr = formatDateDMY(com.date);
-  const filteredBreakdown = com.breakdown || [];
-  const filteredTotal = filteredBreakdown.reduce((sum, b) => sum + b.amount, 0);
+  const filteredBreakdown = breakdownList.length > 0 ? breakdownList : (com.breakdown || []);
+  const filteredTotal = filteredBreakdown.length > 0 ? filteredBreakdown.reduce((sum, b) => sum + (b.amount || 0), 0) : (com.amount || 0);
+  const statementPeriod = com.month || com.period || (com.date ? new Date(com.date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'Statement Period');
 
   const rowsHtml = filteredBreakdown.map(b => {
     const invDateStr = b.investmentDate || '';
-    const comType = String(com.type || '').toLowerCase().trim();
+    const comType = String(com.type || com.commissionType || '').toLowerCase().trim();
     const isOneTime = comType === 'one-time' || comType === 'onetime' || comType === 'one time' || comType === 'one-time onboarding';
     const isSpecial = comType === 'special' || comType === 'override' || comType === 'special override';
     return `
@@ -79,7 +84,7 @@ function downloadStatementPDF(com, agentName, agentClients = []) {
   printWindow.document.write(`
     <html>
     <head>
-      <title>Commission Statement - ${com.month || 'Statement'} - ${agentName}</title>
+      <title>Commission Statement - ${statementPeriod} - ${agentName}</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #11221A; background-color: #FFFFFF; padding: 40px; margin: 0; }
@@ -112,7 +117,7 @@ function downloadStatementPDF(com, agentName, agentClients = []) {
           </div>
           <div class="meta-item">
             <span class="meta-label">Statement Period</span>
-            <span class="meta-value">${com.month}</span>
+            <span class="meta-value">${statementPeriod}</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Payment Date</span>
@@ -138,7 +143,7 @@ function downloadStatementPDF(com, agentName, agentClients = []) {
           </tr>
         </thead>
         <tbody>
-          ${rowsHtml}
+          ${rowsHtml || `<tr><td colSpan="7" style="text-align:center;">No breakdown details available.</td></tr>`}
           <tr style="background-color: #F3F7F5; font-weight: bold;">
             <td colSpan="6" style="text-align: right; border-top: 2px solid #CFDDD5;">Total payout</td>
             <td style="text-align: right; color: #059669; border-top: 2px solid #CFDDD5; font-size: 15px;">${formatCurrency(filteredTotal)}</td>
@@ -564,62 +569,93 @@ export default function CommissionOverview() {
 
   const getCommissionBreakdown = (com) => {
     if (com.breakdown && com.breakdown.length > 0) return com.breakdown;
+
+    const typeNormalized = String(com.type || com.commissionType || '').toLowerCase().trim();
+    const comMonth = com.month || com.period;
+    const comDateStr = com.date ? new Date(com.date).toISOString().split('T')[0] : null;
+
+    // Search enrichedCommissions for ALL matching records by period/date and type for this agent
+    const matchingComms = enrichedCommissions.filter(c => {
+      const cTypeNorm = String(c.type || c.commissionType || '').toLowerCase().trim();
+      if (cTypeNorm !== typeNormalized) return false;
+      if (comMonth && (c.month === comMonth || c.period === comMonth)) return true;
+      if (comDateStr && c.date && new Date(c.date).toISOString().split('T')[0] === comDateStr) return true;
+      return false;
+    });
+
+    if (matchingComms.length > 0) {
+      return matchingComms.map(c => {
+        const cid = c.clientId;
+        const clientObj = clients.find(cl => String(cl.id || cl._id) === String(cid));
+        const totalInv = c.investmentAmount || c.totalInvestment || (clientObj ? (clientObj.totalInvestment || clientObj.investmentAmount) : 0) || c.amount || 0;
+        let pct = c.slabPercentage !== undefined && c.slabPercentage !== '—' ? parseFloat(c.slabPercentage) : (c.rate || 0);
+
+        return {
+          clientName: c.clientName || (clientObj ? (clientObj.fullName || clientObj.name || clientObj.profile?.fullName) : (c.recipientName || 'Client')),
+          clientId: formatClientID(c.clientCode || c.clientId || (clientObj ? (clientObj.clientCode || clientObj.clientId) : '')),
+          investment: totalInv,
+          rate: pct,
+          amount: c.amount || 0,
+          investmentDate: formatDateDMY(c.date || c.investmentDate || (clientObj ? (clientObj.joinDate || clientObj.dateOfJoining) : '—'))
+        };
+      });
+    }
+
     const cid = com.clientId;
     const clientObj = clients.find(c => String(c.id || c._id) === String(cid));
-    if (clientObj) {
-      const typeNormalized = String(com.type || com.commissionType || '').toLowerCase().trim();
-      const totalInv = clientObj.totalInvestment || clientObj.investmentAmount || 0;
-      let pct = com.slabPercentage !== undefined && com.slabPercentage !== '—' ? parseFloat(com.slabPercentage) : 0;
-      if (!pct) {
-        if (typeNormalized === 'one-time' || typeNormalized === 'onetime' || typeNormalized === 'one time' || typeNormalized === 'one-time onboarding') {
-          const typeSlabs = apiSlabs.filter(s => s.type === 'one-time');
-          const fallbackSlabs = [
-            { minAmount: 500000, maxAmount: 2500000, percentage: 2 },
-            { minAmount: 2500000, maxAmount: 5000000, percentage: 3 },
-            { minAmount: 5000000, maxAmount: 10000000, percentage: 4 },
-            { minAmount: 10000000, maxAmount: 999999999, percentage: 5 }
-          ];
-          const activeSlabs = typeSlabs.length > 0 ? typeSlabs : fallbackSlabs;
-          const matched = activeSlabs.find(s => {
-            const max = s.maxAmount === null || s.maxAmount === undefined || s.maxAmount === 999999999 ? 999999999 : s.maxAmount;
-            const min = s.minAmount || 0;
-            return totalInv >= min && totalInv < max;
-          });
-          pct = matched ? (matched.commissionPercentage !== undefined ? matched.commissionPercentage : (matched.percentage || 0)) : 0;
-        } else if (typeNormalized === 'monthly' || typeNormalized === 'recurring' || typeNormalized === 'monthly recurring') {
-          const typeSlabs = apiSlabs.filter(s => s.type === 'monthly');
-          const fallbackSlabs = [
-            { minAmount: 0, maxAmount: 1500000, percentage: 0.5 },
-            { minAmount: 1500000, maxAmount: 2500000, percentage: 0.75 },
-            { minAmount: 2500000, maxAmount: 5000000, percentage: 1 },
-            { minAmount: 5000000, maxAmount: 10000000, percentage: 1.5 },
-            { minAmount: 10000000, maxAmount: 999999999, percentage: 2 }
-          ];
-          const activeSlabs = typeSlabs.length > 0 ? typeSlabs : fallbackSlabs;
-          const matched = activeSlabs.find(s => {
-            const max = s.maxAmount === null || s.maxAmount === undefined || s.maxAmount === 999999999 ? 999999999 : s.maxAmount;
-            const min = s.minAmount || 0;
-            return totalInv >= min && totalInv < max;
-          });
-          pct = matched ? (matched.commissionPercentage !== undefined ? matched.commissionPercentage : (matched.percentage || 0)) : 0;
-        } else if (typeNormalized === 'special' || typeNormalized === 'override' || typeNormalized === 'special override') {
-          pct = agentProfile?.commissionSpecial || agentProfile?.profile?.specialCommission || 0;
-        }
-      }
+    const totalInv = com.investmentAmount || com.totalInvestment || (clientObj ? (clientObj.totalInvestment || clientObj.investmentAmount) : 0) || com.amount || 0;
+    let pct = com.slabPercentage !== undefined && com.slabPercentage !== '—' ? parseFloat(com.slabPercentage) : (com.rate || 0);
 
-      return [{
-        clientName: clientObj.fullName || clientObj.name || clientObj.profile?.fullName || clientObj.user?.name || '—',
-        clientId: formatClientID(clientObj.clientCode || clientObj.clientId || clientObj.profile?.clientCode || clientObj.user?.clientCode || clientObj._id || clientObj.id || ''),
-        investment: totalInv,
-        rate: pct,
-        amount: com.amount,
-        investmentDate: formatDateDMY(clientObj.joinDate || clientObj.dateOfJoining || '—')
-      }];
-    }
-    return [];
+    return [{
+      clientName: com.clientName || (clientObj ? (clientObj.fullName || clientObj.name || clientObj.profile?.fullName) : (com.recipientName || 'Client')),
+      clientId: formatClientID(com.clientCode || com.clientId || (clientObj ? (clientObj.clientCode || clientObj.clientId) : '')),
+      investment: totalInv,
+      rate: pct,
+      amount: com.amount || 0,
+      investmentDate: formatDateDMY(com.date || com.investmentDate || (clientObj ? (clientObj.joinDate || clientObj.dateOfJoining) : '—'))
+    }];
   };
 
-  const filteredCommission = enrichedCommissions.filter(com => {
+  // Group enrichedCommissions by Period + Type to eliminate repetitive rows
+  const groupedCommissionsMap = new Map();
+
+  enrichedCommissions.forEach(com => {
+    const periodKey = com.month || com.period || (com.date ? new Date(com.date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'Statement');
+    const comTypeNorm = String(com.type || com.commissionType || '').toLowerCase().trim();
+    const typeLabel = (comTypeNorm === 'one-time' || comTypeNorm === 'onetime' || comTypeNorm === 'one time' || comTypeNorm === 'one-time onboarding')
+      ? 'one-time'
+      : (comTypeNorm === 'special' || comTypeNorm === 'override' || comTypeNorm === 'special override')
+        ? 'special'
+        : 'monthly';
+
+    const groupKey = `${periodKey}_${typeLabel}`;
+    const itemStatus = String(com.status || 'PENDING').toUpperCase();
+
+    if (groupedCommissionsMap.has(groupKey)) {
+      const existing = groupedCommissionsMap.get(groupKey);
+      existing.amount += Number(com.amount || 0);
+      existing.items.push(com);
+      if (itemStatus !== 'PAID' && itemStatus !== 'CREDITED') {
+        existing.status = 'PENDING';
+      }
+    } else {
+      groupedCommissionsMap.set(groupKey, {
+        id: `group_${groupKey}`,
+        period: periodKey,
+        month: periodKey,
+        date: com.date || com.createdAt || new Date(),
+        type: typeLabel === 'one-time' ? 'ONE TIME' : typeLabel === 'special' ? 'SPECIAL' : 'MONTHLY',
+        commissionType: com.commissionType || com.type,
+        amount: Number(com.amount || 0),
+        status: (itemStatus === 'PAID' || itemStatus === 'CREDITED') ? 'PAID' : 'PENDING',
+        items: [com]
+      });
+    }
+  });
+
+  const groupedCommissionsList = Array.from(groupedCommissionsMap.values());
+
+  const filteredCommission = groupedCommissionsList.filter(com => {
     if (!com) return false;
     const term = commissionSearch.toLowerCase().trim();
     if (!term) return true;
@@ -975,7 +1011,33 @@ export default function CommissionOverview() {
                 )}
               </div>
 
-              <div className="kfpl-modal-footer">
+              <div className="kfpl-modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    className="kfpl-btn kfpl-btn--ghost kfpl-btn--sm"
+                    onClick={() => downloadStatementCSV(selectedCommission, agentProfile?.name || agentProfile?.fullName || 'Agent')}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '15px', height: '15px', marginRight: '6px' }}>
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Export CSV
+                  </button>
+                  <button
+                    className="kfpl-btn kfpl-btn--secondary kfpl-btn--sm"
+                    onClick={() => downloadStatementPDF(selectedCommission, agentProfile?.name || agentProfile?.fullName || 'Agent', clients, filteredBreakdown)}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '15px', height: '15px', marginRight: '6px' }}>
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" />
+                      <line x1="16" y1="17" x2="8" y2="17" />
+                      <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                    Download PDF
+                  </button>
+                </div>
                 <button
                   className="kfpl-btn kfpl-btn--ghost kfpl-btn--sm"
                   onClick={() => setSelectedCommission(null)}

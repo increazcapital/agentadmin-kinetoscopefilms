@@ -216,7 +216,9 @@ export default function DashboardHome() {
         }
 
         const realPaid = rawComms.filter(c => String(c.status || '').toUpperCase() === 'PAID').reduce((sum, c) => sum + Number(c.amount || 0), 0);
-        const realPending = rawComms.filter(c => String(c.status || '').toUpperCase() === 'PENDING').reduce((sum, c) => sum + Number(c.amount || 0), 0);
+        const rawPendingSum = rawComms.filter(c => String(c.status || '').toUpperCase() === 'PENDING').reduce((sum, c) => sum + Number(c.amount || 0), 0);
+        const totalCommsSum = rawComms.reduce((sum, c) => sum + Number(c.amount || 0), 0);
+        const realPending = realPaid > 0 ? rawPendingSum : (rawPendingSum || totalCommsSum);
 
         const now = new Date();
         const realThisMonth = rawComms.filter(c => {
@@ -229,21 +231,40 @@ export default function DashboardHome() {
           const data = dashRes.data || dashRes;
           const statsSource = data.stats || data.data?.stats || data.data || data;
 
-          newStats = {
-            totalClients: statsSource.totalClients ?? statsSource.clientsCount ?? statsSource.totalInvestors ?? data.totalClients ?? data.clientsCount ?? resolvedClients.length,
-            activeInvestments: statsSource.activeInvestments ?? statsSource.investmentsCount ?? statsSource.activeCount ?? data.activeInvestments ?? data.investmentsCount ?? resolvedClients.length,
-            thisMonthCommission: realThisMonth || (statsSource.thisMonthCommission ?? data.thisMonthCommission ?? 0),
-            commissionPaid: realPaid || (statsSource.commissionPaid ?? data.commissionPaid ?? 0),
-            commissionPending: realPending || (statsSource.commissionPending ?? data.commissionPending ?? 0),
-            rewardsEarned: statsSource.rewardsEarned ?? statsSource.totalRewards ?? data.rewardsEarned ?? data.totalRewards ?? 0,
-          };
-          setStats(newStats);
+          const sourcePaid = Number(statsSource.commissionPaid || data.commissionPaid || 0);
+          const sourcePending = Number(statsSource.commissionPending || data.commissionPending || 0);
+          const sourceThisMonth = Number(statsSource.thisMonthCommission || data.thisMonthCommission || 0);
 
           const rawActivities = data.activities || data.recentActivities || statsSource.activities || statsSource.recentActivities || [];
           setActivities(Array.isArray(rawActivities) ? rawActivities : []);
 
           const rawWithdrawals = data.withdrawals || data.withdrawalHistory || statsSource.withdrawals || statsSource.withdrawalHistory || [];
-          setWithdrawals(Array.isArray(rawWithdrawals) ? rawWithdrawals : []);
+          const withdrawalList = Array.isArray(rawWithdrawals) ? rawWithdrawals : [];
+          setWithdrawals(withdrawalList);
+
+          const paidWithdrawalSum = withdrawalList
+            .filter(w => ['paid', 'approved', 'credited', 'completed'].includes(String(w.status || '').toLowerCase()))
+            .reduce((sum, w) => sum + Number(w.amount || 0), 0);
+
+          const dynamicClientCommission = resolvedClients.reduce((sum, c) => {
+            const invAmt = Number(c.totalInvestment || c.investmentAmount || 0);
+            const rate = Number(c.commissionRate || fetchedProfile?.oneTimeCommission || 5);
+            return sum + Math.round((invAmt * rate) / 100);
+          }, 0);
+
+          const totalCommissionBase = totalCommsSum || realThisMonth || sourceThisMonth || sourcePending || sourcePaid || dynamicClientCommission;
+          const displayPaid = paidWithdrawalSum;
+          const displayPending = Math.max(0, totalCommissionBase - displayPaid);
+
+          newStats = {
+            totalClients: statsSource.totalClients ?? statsSource.clientsCount ?? statsSource.totalInvestors ?? data.totalClients ?? data.clientsCount ?? resolvedClients.length,
+            activeInvestments: statsSource.activeInvestments ?? statsSource.investmentsCount ?? statsSource.activeCount ?? data.activeInvestments ?? data.investmentsCount ?? resolvedClients.length,
+            thisMonthCommission: realThisMonth || sourceThisMonth || totalCommissionBase,
+            commissionPaid: displayPaid,
+            commissionPending: displayPending,
+            rewardsEarned: statsSource.rewardsEarned ?? statsSource.totalRewards ?? data.rewardsEarned ?? data.totalRewards ?? 0,
+          };
+          setStats(newStats);
         } else {
           newStats = {
             totalClients: resolvedClients.length,
