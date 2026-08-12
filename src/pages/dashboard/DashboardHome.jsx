@@ -55,6 +55,8 @@ export default function DashboardHome() {
     commissionPaid: 0,
     commissionPending: 0,
     rewardsEarned: 0,
+    totalWithdrawn: 0,
+    pendingWithdrawals: 0,
   });
   const [clients, setClients] = useState([]);
   const [commissions, setCommissions] = useState([]);
@@ -252,17 +254,24 @@ export default function DashboardHome() {
             return sum + Math.round((invAmt * rate) / 100);
           }, 0);
 
-          const totalCommissionBase = totalCommsSum || realThisMonth || sourceThisMonth || sourcePending || sourcePaid || dynamicClientCommission;
-          const displayPaid = paidWithdrawalSum;
-          const displayPending = Math.max(0, totalCommissionBase - displayPaid);
+          const totalActiveInvSum = resolvedClients.reduce((sum, c) => sum + Number(c.totalInvestment || c.investmentAmount || 0), 0);
+          const displayThisMonth = totalActiveInvSum > 0 ? (realThisMonth || sourceThisMonth) : 0;
+
+          const totalWithdrawn = withdrawalList
+            .filter(w => ['paid', 'approved', 'credited', 'completed'].includes(String(w.status || '').toLowerCase()))
+            .reduce((sum, w) => sum + Number(w.amount || 0), 0);
+
+          const displayPaid = Math.max(0, (realPaid || sourcePaid) - totalWithdrawn);
+          const displayPending = totalActiveInvSum > 0 ? rawPendingSum : 0;
 
           newStats = {
             totalClients: statsSource.totalClients ?? statsSource.clientsCount ?? statsSource.totalInvestors ?? data.totalClients ?? data.clientsCount ?? resolvedClients.length,
             activeInvestments: statsSource.activeInvestments ?? statsSource.investmentsCount ?? statsSource.activeCount ?? data.activeInvestments ?? data.investmentsCount ?? resolvedClients.length,
-            thisMonthCommission: realThisMonth || sourceThisMonth || totalCommissionBase,
+            thisMonthCommission: displayThisMonth,
             commissionPaid: displayPaid,
             commissionPending: displayPending,
             rewardsEarned: statsSource.rewardsEarned ?? statsSource.totalRewards ?? data.rewardsEarned ?? data.totalRewards ?? 0,
+            totalWithdrawn,
           };
           setStats(newStats);
         } else {
@@ -531,6 +540,15 @@ export default function DashboardHome() {
           icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>}
           iconColor="warning"
           delay={320}
+        />
+        <KpiCard
+          title="Total Withdrawn"
+          value={formatCurrency(stats.totalWithdrawn)}
+          trend="Successfully withdrawn"
+          trendDirection="up"
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>}
+          iconColor="success"
+          delay={400}
         />
         <KpiCard
           title="Rewards Earned"

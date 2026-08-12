@@ -633,10 +633,12 @@ export default function CommissionOverview() {
 
     if (groupedCommissionsMap.has(groupKey)) {
       const existing = groupedCommissionsMap.get(groupKey);
-      existing.amount += Number(com.amount || 0);
-      existing.items.push(com);
-      if (itemStatus !== 'PAID' && itemStatus !== 'CREDITED') {
-        existing.status = 'PENDING';
+      const isAlreadyIn = existing.items.some(i => String(i._id || i.id) === String(com._id || com.id));
+      if (!isAlreadyIn) {
+        existing.items.push(com);
+        if (itemStatus !== 'PAID' && itemStatus !== 'CREDITED') {
+          existing.status = 'PENDING';
+        }
       }
     } else {
       groupedCommissionsMap.set(groupKey, {
@@ -646,11 +648,17 @@ export default function CommissionOverview() {
         date: com.date || com.createdAt || new Date(),
         type: typeLabel === 'one-time' ? 'ONE TIME' : typeLabel === 'special' ? 'SPECIAL' : 'MONTHLY',
         commissionType: com.commissionType || com.type,
-        amount: Number(com.amount || 0),
+        amount: 0,
         status: (itemStatus === 'PAID' || itemStatus === 'CREDITED') ? 'PAID' : 'PENDING',
         items: [com]
       });
     }
+  });
+
+  // Ensure exact amount alignment with unique breakdown items
+  groupedCommissionsMap.forEach(group => {
+    const bd = getCommissionBreakdown(group);
+    group.amount = bd.length > 0 ? bd.reduce((sum, b) => sum + (b.amount || 0), 0) : group.items.reduce((sum, i) => sum + (i.amount || 0), 0);
   });
 
   const groupedCommissionsList = Array.from(groupedCommissionsMap.values());
