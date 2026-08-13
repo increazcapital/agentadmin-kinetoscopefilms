@@ -13,7 +13,7 @@ import { getApiUrl } from './apiUrl';
  * @param {object} options - fetch options (method, body, headers, etc.)
  * @returns {Promise<object>} Parsed JSON response
  */
-export async function apiRequest(path, options = {}) {
+export async function apiRequest(path, methodOrOptions = {}, bodyData = null) {
   const authData = localStorage.getItem('kfpl_agent_auth');
   let token = '';
   if (authData) {
@@ -27,25 +27,43 @@ export async function apiRequest(path, options = {}) {
 
   const url = getApiUrl(path);
 
+  let method = 'GET';
+  let bodyPayload = null;
+  let customHeaders = {};
+
+  if (typeof methodOrOptions === 'string') {
+    method = methodOrOptions.toUpperCase();
+    bodyPayload = bodyData;
+  } else if (typeof methodOrOptions === 'object' && methodOrOptions !== null) {
+    method = (methodOrOptions.method || 'GET').toUpperCase();
+    bodyPayload = methodOrOptions.body || null;
+    customHeaders = methodOrOptions.headers || {};
+  }
+
   const headers = {
     'Authorization': `Bearer ${token}`,
-    ...options.headers,
+    ...customHeaders,
   };
 
   // Automatically stringify object body payloads and set JSON content type
-  if (options.body && !(options.body instanceof FormData)) {
+  if (bodyPayload && !(bodyPayload instanceof FormData)) {
     if (!headers['Content-Type']) {
       headers['Content-Type'] = 'application/json';
     }
-    if (typeof options.body === 'object') {
-      options.body = JSON.stringify(options.body);
+    if (typeof bodyPayload === 'object') {
+      bodyPayload = JSON.stringify(bodyPayload);
     }
   }
 
-  const response = await fetch(url, {
-    ...options,
+  const fetchOpts = {
+    method,
     headers,
-  });
+  };
+  if (bodyPayload) {
+    fetchOpts.body = bodyPayload;
+  }
+
+  const response = await fetch(url, fetchOpts);
 
   const text = await response.text();
   let data = {};

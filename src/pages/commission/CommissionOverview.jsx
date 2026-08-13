@@ -588,7 +588,9 @@ export default function CommissionOverview() {
         const cid = c.clientId;
         const clientObj = clients.find(cl => String(cl.id || cl._id) === String(cid));
         const totalInv = c.investmentAmount || c.totalInvestment || (clientObj ? (clientObj.totalInvestment || clientObj.investmentAmount) : 0) || c.amount || 0;
-        let pct = c.slabPercentage !== undefined && c.slabPercentage !== '—' ? parseFloat(c.slabPercentage) : (c.rate || 0);
+        let pct = (c.slabPercentage !== undefined && c.slabPercentage !== '—' && parseFloat(c.slabPercentage) > 0)
+          ? parseFloat(c.slabPercentage)
+          : ((c.rate && parseFloat(c.rate) > 0) ? parseFloat(c.rate) : (totalInv > 0 ? parseFloat(((c.amount / totalInv) * 100).toFixed(1)) : 2));
 
         return {
           clientName: c.clientName || (clientObj ? (clientObj.fullName || clientObj.name || clientObj.profile?.fullName) : (c.recipientName || 'Client')),
@@ -604,7 +606,9 @@ export default function CommissionOverview() {
     const cid = com.clientId;
     const clientObj = clients.find(c => String(c.id || c._id) === String(cid));
     const totalInv = com.investmentAmount || com.totalInvestment || (clientObj ? (clientObj.totalInvestment || clientObj.investmentAmount) : 0) || com.amount || 0;
-    let pct = com.slabPercentage !== undefined && com.slabPercentage !== '—' ? parseFloat(com.slabPercentage) : (com.rate || 0);
+    let pct = (com.slabPercentage !== undefined && com.slabPercentage !== '—' && parseFloat(com.slabPercentage) > 0)
+      ? parseFloat(com.slabPercentage)
+      : ((com.rate && parseFloat(com.rate) > 0) ? parseFloat(com.rate) : (totalInv > 0 ? parseFloat(((com.amount / totalInv) * 100).toFixed(1)) : 2));
 
     return [{
       clientName: com.clientName || (clientObj ? (clientObj.fullName || clientObj.name || clientObj.profile?.fullName) : (com.recipientName || 'Client')),

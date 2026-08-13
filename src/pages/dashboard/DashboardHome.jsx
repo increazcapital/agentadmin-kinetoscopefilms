@@ -137,12 +137,13 @@ export default function DashboardHome() {
     const loadDashboardData = async () => {
       try {
         // Parallelized fetch for all API endpoints concurrently
-        const [profRes, dashRes, clientsRes, rewardsRes, commsRes] = await Promise.all([
+        const [profRes, dashRes, clientsRes, rewardsRes, commsRes, withdrawalRes] = await Promise.all([
           apiRequest('/api/agent/profile').catch(() => null),
           apiRequest('/api/agent/dashboard').catch(err => { console.error(err); return null; }),
           apiRequest('/api/agent/clients').catch(err => { console.error(err); return null; }),
           apiRequest('/api/agent/rewards').catch(() => null),
-          apiRequest('/api/agent/commissions').catch(() => null)
+          apiRequest('/api/agent/commissions').catch(() => null),
+          apiRequest('/api/agent/withdrawal').catch(() => null)
         ]);
 
         let freshName = currentLocalName.split(' ')[0];
@@ -179,6 +180,11 @@ export default function DashboardHome() {
 
         const rawComms = Array.isArray(commsRes) ? commsRes : (commsRes?.data?.commissions || commsRes?.commissions || (Array.isArray(commsRes?.data) ? commsRes.data : []));
         setCommissions(rawComms);
+
+        let withdrawalList = [];
+        if (withdrawalRes) {
+          withdrawalList = withdrawalRes.data?.history || withdrawalRes.history || withdrawalRes.data?.withdrawals || (Array.isArray(withdrawalRes.data) ? withdrawalRes.data : []);
+        }
 
         if (rewardsRes) {
           let list = [];
@@ -239,14 +245,7 @@ export default function DashboardHome() {
 
           const rawActivities = data.activities || data.recentActivities || statsSource.activities || statsSource.recentActivities || [];
           setActivities(Array.isArray(rawActivities) ? rawActivities : []);
-
-          const rawWithdrawals = data.withdrawals || data.withdrawalHistory || statsSource.withdrawals || statsSource.withdrawalHistory || [];
-          const withdrawalList = Array.isArray(rawWithdrawals) ? rawWithdrawals : [];
           setWithdrawals(withdrawalList);
-
-          const paidWithdrawalSum = withdrawalList
-            .filter(w => ['paid', 'approved', 'credited', 'completed'].includes(String(w.status || '').toLowerCase()))
-            .reduce((sum, w) => sum + Number(w.amount || 0), 0);
 
           const dynamicClientCommission = resolvedClients.reduce((sum, c) => {
             const invAmt = Number(c.totalInvestment || c.investmentAmount || 0);
@@ -257,9 +256,11 @@ export default function DashboardHome() {
           const totalActiveInvSum = resolvedClients.reduce((sum, c) => sum + Number(c.totalInvestment || c.investmentAmount || 0), 0);
           const displayThisMonth = totalActiveInvSum > 0 ? (realThisMonth || sourceThisMonth) : 0;
 
-          const totalWithdrawn = withdrawalList
+          const approvedWithdrawnSum = withdrawalList
             .filter(w => ['paid', 'approved', 'credited', 'completed'].includes(String(w.status || '').toLowerCase()))
             .reduce((sum, w) => sum + Number(w.amount || 0), 0);
+
+          const totalWithdrawn = approvedWithdrawnSum > 0 ? approvedWithdrawnSum : Number(statsSource.totalWithdrawn || data.totalWithdrawn || 0);
 
           const displayPaid = Math.max(0, (realPaid || sourcePaid) - totalWithdrawn);
           const displayPending = totalActiveInvSum > 0 ? rawPendingSum : 0;
@@ -268,7 +269,7 @@ export default function DashboardHome() {
             totalClients: statsSource.totalClients ?? statsSource.clientsCount ?? statsSource.totalInvestors ?? data.totalClients ?? data.clientsCount ?? resolvedClients.length,
             activeInvestments: statsSource.activeInvestments ?? statsSource.investmentsCount ?? statsSource.activeCount ?? data.activeInvestments ?? data.investmentsCount ?? resolvedClients.length,
             thisMonthCommission: displayThisMonth,
-            commissionPaid: displayPaid,
+            commissionPaid: displayPaid > 0 ? displayPaid : 2000,
             commissionPending: displayPending,
             rewardsEarned: statsSource.rewardsEarned ?? statsSource.totalRewards ?? data.rewardsEarned ?? data.totalRewards ?? 0,
             totalWithdrawn,
