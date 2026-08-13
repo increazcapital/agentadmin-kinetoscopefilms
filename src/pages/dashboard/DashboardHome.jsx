@@ -262,14 +262,14 @@ export default function DashboardHome() {
 
           const totalWithdrawn = approvedWithdrawnSum > 0 ? approvedWithdrawnSum : Number(statsSource.totalWithdrawn || data.totalWithdrawn || 0);
 
-          const displayPaid = Math.max(0, (realPaid || sourcePaid) - totalWithdrawn);
+          const displayPaid = totalActiveInvSum > 0 ? Math.max(0, (realPaid || sourcePaid) - totalWithdrawn) : 0;
           const displayPending = totalActiveInvSum > 0 ? rawPendingSum : 0;
 
           newStats = {
             totalClients: statsSource.totalClients ?? statsSource.clientsCount ?? statsSource.totalInvestors ?? data.totalClients ?? data.clientsCount ?? resolvedClients.length,
             activeInvestments: statsSource.activeInvestments ?? statsSource.investmentsCount ?? statsSource.activeCount ?? data.activeInvestments ?? data.investmentsCount ?? resolvedClients.length,
             thisMonthCommission: displayThisMonth,
-            commissionPaid: displayPaid > 0 ? displayPaid : 2000,
+            commissionPaid: displayPaid,
             commissionPending: displayPending,
             rewardsEarned: statsSource.rewardsEarned ?? statsSource.totalRewards ?? data.rewardsEarned ?? data.totalRewards ?? 0,
             totalWithdrawn,
