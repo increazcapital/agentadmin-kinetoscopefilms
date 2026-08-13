@@ -63,9 +63,6 @@ export default function Withdrawal() {
         const withdrawnVal = dash.totalWithdrawn ?? dash.stats?.totalWithdrawn ?? 0;
         currentAvailable = Math.max(0, paidVal - withdrawnVal);
       }
-      if (currentAvailable <= 0) {
-        currentAvailable = 2000;
-      }
       setPendingBalance(currentAvailable);
 
       if (dashRes) {
