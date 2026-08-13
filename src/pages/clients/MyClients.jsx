@@ -182,8 +182,13 @@ export default function MyClients() {
     },
     {
       header: 'Commission Earned',
-      accessor: 'commissionPaid',
-      render: (row) => <span className="font-semibold" style={{ color: 'var(--color-success)' }}>{formatCurrency((row.totalInvestment || row.investmentAmount || 0) * 0.02)}</span>
+      accessor: 'commissionEarned',
+      render: (row) => {
+        const val = row.commissionEarned !== undefined && row.commissionEarned !== null 
+          ? row.commissionEarned 
+          : (row.commissionPaid !== undefined && row.commissionPaid !== null ? row.commissionPaid : 0);
+        return <span className="font-semibold" style={{ color: 'var(--color-success)' }}>{formatCurrency(val)}</span>;
+      }
     },
     {
       header: 'Status',
