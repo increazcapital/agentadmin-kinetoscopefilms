@@ -208,7 +208,7 @@ export default function MyClients() {
     <div className="kfpl-page" id="my-clients-page">
       
       {/* ── Page Header matching Super Admin style ── */}
-      <div className="kfpl-page-header">
+      <div className="kfpl-page-header kfpl-card-header-responsive">
         <div className="kfpl-page-header-left">
           <h2 className="kfpl-page-title">My Clients</h2>
           <p className="kfpl-page-subtitle">Overview of your registered clients, active contracts, and commission slab stats.</p>

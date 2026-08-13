@@ -569,7 +569,7 @@ export default function Profile() {
 
         <div className="kfpl-card kfpl-profile-card">
           <div className="kfpl-card-header">
-            <h3><span className="kfpl-profile-card-icon">{profileIcons.shield}</span>Account & Commission Details</h3>
+            <h3><span className="kfpl-profile-card-icon">{profileIcons.shield}</span>Account Details</h3>
           </div>
           <div className="kfpl-card-body">
             <div className="kfpl-profile-detail-row">
@@ -587,18 +587,6 @@ export default function Profile() {
             <div className="kfpl-profile-detail-row">
               <span className="kfpl-profile-detail-label">KYC Status</span>
               <span className={`kfpl-badge kfpl-badge--${kycStatus === 'VERIFIED' ? 'success' : kycStatus === 'REJECTED' ? 'rejected' : 'warning'}`}>{kycStatus}</span>
-            </div>
-            <div className="kfpl-profile-detail-row">
-              <span className="kfpl-profile-detail-label">Commission Slab</span>
-              <span className="kfpl-profile-detail-value">{profile.commissionSlab || 'Slab 2'}</span>
-            </div>
-            <div className="kfpl-profile-detail-row">
-              <span className="kfpl-profile-detail-label">One-Time Commission</span>
-              <span className="kfpl-profile-detail-value">{profile.commissionOneTime || '1.5%'}</span>
-            </div>
-            <div className="kfpl-profile-detail-row">
-              <span className="kfpl-profile-detail-label">Monthly Commission</span>
-              <span className="kfpl-profile-detail-value">{profile.commissionMonthly || '0.75%'}</span>
             </div>
             <div className="kfpl-profile-detail-row">
               <span className="kfpl-profile-detail-label">Member Since (DD/MM/YYYY)</span>

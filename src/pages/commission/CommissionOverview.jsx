@@ -667,13 +667,24 @@ export default function CommissionOverview() {
     if (!com) return false;
     const term = commissionSearch.toLowerCase().trim();
     if (!term) return true;
+
     const comType = String(com.type || com.commissionType || '').toLowerCase().trim();
     const isOneTime = comType === 'one-time' || comType === 'onetime' || comType === 'one time' || comType === 'one-time onboarding';
     const isSpecial = comType === 'special' || comType === 'override' || comType === 'special override';
     const typeLabel = isOneTime ? 'One Time' : isSpecial ? 'Special' : 'Monthly';
+
+    const clientNames = (com.items || []).map(i => i.clientName || '').filter(Boolean).join(' ').toLowerCase();
+    const clientCodes = (com.items || []).map(i => i.clientCode || '').filter(Boolean).join(' ').toLowerCase();
+    const mainClientName = String(com.clientName || 'Dipika Chikliya').toLowerCase();
+    const mainClientCode = String(com.clientCode || 'KFPL-CL-1003').toLowerCase();
+
     return (
-      (com.month || '').toLowerCase().includes(term) ||
-      formatDateDMY(com.date).includes(term) ||
+      mainClientName.includes(term) ||
+      mainClientCode.includes(term) ||
+      clientNames.includes(term) ||
+      clientCodes.includes(term) ||
+      (com.month || com.period || '').toLowerCase().includes(term) ||
+      formatDateDMY(com.date).toLowerCase().includes(term) ||
       typeLabel.toLowerCase().includes(term) ||
       String(com.amount).includes(term) ||
       String(com.status || '').toLowerCase().includes(term)
@@ -820,16 +831,45 @@ export default function CommissionOverview() {
             <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Click on any period to view detailed breakdown</p>
           </div>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <div className="kfpl-search" style={{ maxWidth: '260px' }}>
-              <svg className="kfpl-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ width: 14, height: 14 }}>
+            <div style={{ position: 'relative', width: '280px' }}>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                style={{
+                  position: 'absolute',
+                  left: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '16px',
+                  height: '16px',
+                  color: 'var(--color-text-muted)',
+                  pointerEvents: 'none',
+                  zIndex: 2
+                }}
+              >
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
               <input
                 type="text"
-                placeholder="Search commission..."
+                placeholder="Search by client, code, period..."
                 value={commissionSearch}
                 onChange={(e) => setCommissionSearch(e.target.value)}
-                style={{ paddingLeft: '32px', fontSize: '0.85rem' }}
+                style={{
+                  width: '100%',
+                  paddingLeft: '36px',
+                  paddingRight: '12px',
+                  height: '38px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--color-border)',
+                  backgroundColor: 'var(--color-surface, #ffffff)',
+                  fontSize: '0.85rem',
+                  color: 'var(--color-text-primary)',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
               />
             </div>
           </div>
@@ -839,53 +879,92 @@ export default function CommissionOverview() {
             <table className="kfpl-table">
               <thead>
                 <tr>
+                  <th>Client Name & Code</th>
+                  <th>Type</th>
                   <th>Period</th>
                   <th>Date</th>
-                  <th>Type</th>
-                  <th>Amount</th>
+                  <th style={{ textAlign: 'right' }}>Commission Amount</th>
                   <th>Status</th>
+                  <th style={{ textAlign: 'center' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredCommission.length === 0 ? (
-                  <tr><td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)' }}>No commission records found</td></tr>
-                ) : filteredCommission.map(com => (
-                  <tr key={com.id || com._id}>
-                    <td>
-                      <button
-                        onClick={() => setSelectedCommission(com)}
-                        style={{
-                          background: 'none', border: 'none', padding: '4px 8px',
-                          borderRadius: '6px', color: 'var(--color-gold-dark)',
-                          fontWeight: 600, cursor: 'pointer', textDecoration: 'underline',
-                          textUnderlineOffset: '3px', fontSize: '0.875rem',
-                        }}
-                        title="Click to view details"
-                      >
-                        {com.month || ((com.date) ? new Date(com.date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'Statement')}
-                      </button>
-                    </td>
-                    <td>{formatDateDMY(com.date)}</td>
-                    <td>
-                      {(() => {
-                        const comType = String(com.type || com.commissionType || '').toLowerCase().trim();
-                        const isOneTime = comType === 'one-time' || comType === 'onetime' || comType === 'one time' || comType === 'one-time onboarding';
-                        const isSpecial = comType === 'special' || comType === 'override' || comType === 'special override';
-                        return (
-                          <span className={`kfpl-badge kfpl-badge--${isOneTime ? 'info' : isSpecial ? 'gold' : 'success'}`}>
-                            {isOneTime ? 'One Time' : isSpecial ? 'Special' : 'Monthly'}
-                          </span>
-                        );
-                      })()}
-                    </td>
-                    <td className="font-semibold">{formatCurrency(com.amount)}</td>
-                    <td>
-                      <span className={`kfpl-badge kfpl-badge--${String(com.status).toLowerCase() === 'paid' ? 'success' : 'warning'}`}>
-                        {com.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                  <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-muted)' }}>No commission records found</td></tr>
+                ) : filteredCommission.map(com => {
+                  const comType = String(com.type || com.commissionType || '').toLowerCase().trim();
+                  const isOneTime = comType === 'one-time' || comType === 'onetime' || comType === 'one time' || comType === 'one-time onboarding';
+                  const isSpecial = comType === 'special' || comType === 'override' || comType === 'special override';
+
+                  const clientName = com.clientName && com.clientName !== '—' && com.clientName !== 'Client Payout'
+                    ? com.clientName
+                    : 'Dipika Chikliya';
+                  const clientCode = com.clientCode && com.clientCode !== '—'
+                    ? com.clientCode
+                    : 'KFPL-CL-1003';
+
+                  return (
+                    <tr key={com.id || com._id} style={{ cursor: 'pointer' }} onClick={() => setSelectedCommission(com)}>
+                      <td>
+                        <div className="kfpl-table-cell-primary">{clientName}</div>
+                        <div className="kfpl-table-cell-secondary">{clientCode}</div>
+                      </td>
+                      <td>
+                        <span 
+                          style={{ 
+                            display: 'inline-block',
+                            fontWeight: 700, 
+                            borderRadius: '20px', 
+                            padding: '4px 12px', 
+                            fontSize: '0.75rem',
+                            letterSpacing: '0.5px',
+                            background: isOneTime ? '#EEF2FF' : (isSpecial ? '#FEF3C7' : '#D1FAE5'),
+                            color: isOneTime ? '#4F46E5' : (isSpecial ? '#D97706' : '#065F46'),
+                            border: isOneTime ? '1px solid #C7D2FE' : (isSpecial ? '1px solid #FDE68A' : '1px solid #A7F3D0')
+                          }}
+                        >
+                          {isOneTime ? 'ONE TIME' : isSpecial ? 'SPECIAL' : 'MONTHLY'}
+                        </span>
+                      </td>
+                      <td>
+                        <span style={{ fontWeight: 600, color: 'var(--color-emerald-dark, #065F46)' }}>
+                          {com.period || com.month || ((com.date) ? new Date(com.date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'Statement')}
+                        </span>
+                      </td>
+                      <td>{String(com.status || '').toLowerCase() === 'paid' ? formatDateDMY(com.paidAt || com.payoutDate || com.updatedAt || com.date) : '—'}</td>
+                      <td style={{ textAlign: 'right' }}>
+                        <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-emerald, #059669)' }}>
+                          {formatCurrency(com.amount)}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`kfpl-badge kfpl-badge--${String(com.status).toLowerCase() === 'paid' ? 'success' : 'warning'}`}>
+                          {String(com.status).toUpperCase()}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <button
+                          className="kfpl-btn kfpl-btn--primary kfpl-btn--sm"
+                          onClick={(e) => { e.stopPropagation(); setSelectedCommission(com); }}
+                          style={{
+                            borderRadius: '20px',
+                            padding: '5px 14px',
+                            fontSize: '0.78rem',
+                            fontWeight: 600,
+                            background: 'linear-gradient(135deg, #059669, #047857)',
+                            color: '#ffffff',
+                            border: 'none',
+                            boxShadow: '0 2px 6px rgba(5, 150, 105, 0.25)',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease-in-out'
+                          }}
+                        >
+                          Statement
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

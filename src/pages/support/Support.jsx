@@ -117,7 +117,7 @@ export default function Support() {
       </div>
 
       {/* Hero Overview Banner */}
-      <div className="kfpl-support-overview" style={{
+      <div className="kfpl-support-overview kfpl-support-hero" style={{
         background: 'linear-gradient(135deg, #052e16 0%, #0f5132 100%)',
         borderRadius: '16px',
         padding: '28px 32px',
@@ -195,7 +195,7 @@ export default function Support() {
       </div>
 
       {/* Support Cards Grid */}
-      <div style={{
+      <div className="kfpl-support-cards-grid" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
         gap: '24px'

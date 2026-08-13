@@ -278,7 +278,7 @@ export default function Header({ isCollapsed, onMenuClick }) {
         }
       `}</style>
 
-      <div className="kfpl-header-left">
+      <div className="kfpl-header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
         <button className="kfpl-header-menu-btn" onClick={onMenuClick}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="3" y1="6" x2="21" y2="6"/>
@@ -286,7 +286,7 @@ export default function Header({ isCollapsed, onMenuClick }) {
             <line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
         </button>
-        <h1 className="kfpl-header-page-title">{pageTitle}</h1>
+        <h1 className="kfpl-header-page-title" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px', margin: 0 }}>{pageTitle}</h1>
       </div>
 
       <div className="kfpl-header-right">

@@ -309,7 +309,7 @@ export default function ServiceRequests() {
                   return (
                     <div 
                       key={sr._id || sr.id} 
-                      className="kfpl-table-row-hover"
+                      className="kfpl-table-row-hover kfpl-sr-ticket-row"
                       onClick={() => setSelectedRequest(sr)}
                       style={{ 
                         background: '#fff',

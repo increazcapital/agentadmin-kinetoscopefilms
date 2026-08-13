@@ -617,8 +617,8 @@ export default function ClientDetail() {
         // Concurrently run ALL client detail requests in PARALLEL
         const [singleRes, payoutsRes, superAdminClientRes, investmentsRes, perksRes, docsRes] = await Promise.all([
           apiRequest(`/api/agent/clients/${id}`).catch(() => null),
-          apiRequest(`/api/agent/clients/${id}/payouts`)
-            .catch(() => apiRequest(`/api/agent/roi/payouts`))
+          apiRequest(`/api/agent/clients/${id}/roi/payouts`)
+            .catch(() => apiRequest(`/api/agent/clients/${id}/payouts`))
             .catch(() => null),
           apiRequest(`/api/super-admin/clients/${id}`).catch(() => null),
           apiRequest(`/api/agent/clients/${id}/investments`)
