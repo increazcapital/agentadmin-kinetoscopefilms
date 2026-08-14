@@ -412,20 +412,20 @@ export default function CommissionOverview() {
 
     const getSlabRate = (typeNorm, amount) => {
       const typeSlabs = slabs.filter(s => s.type === typeNorm);
-      const fallbackSlabs = typeNorm === 'one-time' 
+      const fallbackSlabs = typeNorm === 'one-time'
         ? [
-            { minAmount: 500000, maxAmount: 2500000, percentage: 2 },
-            { minAmount: 2500000, maxAmount: 5000000, percentage: 3 },
-            { minAmount: 5000000, maxAmount: 10000000, percentage: 4 },
-            { minAmount: 10000000, maxAmount: 999999999, percentage: 5 }
-          ]
+          { minAmount: 500000, maxAmount: 2500000, percentage: 2 },
+          { minAmount: 2500000, maxAmount: 5000000, percentage: 3 },
+          { minAmount: 5000000, maxAmount: 10000000, percentage: 4 },
+          { minAmount: 10000000, maxAmount: 999999999, percentage: 5 }
+        ]
         : [
-            { minAmount: 0, maxAmount: 1500000, percentage: 0.5 },
-            { minAmount: 1500000, maxAmount: 2500000, percentage: 0.75 },
-            { minAmount: 2500000, maxAmount: 5000000, percentage: 1 },
-            { minAmount: 5000000, maxAmount: 10000000, percentage: 1.5 },
-            { minAmount: 10000000, maxAmount: 999999999, percentage: 2 }
-          ];
+          { minAmount: 0, maxAmount: 1500000, percentage: 0.5 },
+          { minAmount: 1500000, maxAmount: 2500000, percentage: 0.75 },
+          { minAmount: 2500000, maxAmount: 5000000, percentage: 1 },
+          { minAmount: 5000000, maxAmount: 10000000, percentage: 1.5 },
+          { minAmount: 10000000, maxAmount: 999999999, percentage: 2 }
+        ];
       const activeSlabs = typeSlabs.length > 0 ? typeSlabs : fallbackSlabs;
       const matched = activeSlabs.find(s => {
         const max = s.maxAmount === null || s.maxAmount === undefined || s.maxAmount === 999999999 ? 999999999 : s.maxAmount;
@@ -550,16 +550,16 @@ export default function CommissionOverview() {
     }
   });
 
-  const oneTimeCommission = isDemo 
-    ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'one-time') 
+  const oneTimeCommission = isDemo
+    ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'one-time')
     : enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'one-time' && c.clientName && c.clientName !== '—' && c.clientName !== '-' && c.clientName !== 'Various');
 
-  const monthlyCommission = isDemo 
-    ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'monthly') 
+  const monthlyCommission = isDemo
+    ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'monthly')
     : enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'monthly' && c.clientName && c.clientName !== '—' && c.clientName !== '-' && c.clientName !== 'Various');
 
-  const specialCommission = isDemo 
-    ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'special') 
+  const specialCommission = isDemo
+    ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'special')
     : enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'special' && c.reason && c.reason !== '—' && c.reason !== '-');
 
   const totalOneTime = oneTimeCommission.reduce((s, c) => s + (c.amount || c.commissionEarned || 0), 0);
@@ -654,15 +654,31 @@ export default function CommissionOverview() {
         commissionType: com.commissionType || com.type,
         amount: 0,
         status: (itemStatus === 'PAID' || itemStatus === 'CREDITED') ? 'PAID' : 'PENDING',
+        clientName: com.clientName,
+        clientCode: com.clientCode,
+        clientId: com.clientId,
         items: [com]
       });
     }
   });
 
-  // Ensure exact amount alignment with unique breakdown items
+  // Ensure exact amount alignment with unique breakdown items and resolve top-level client name/code
   groupedCommissionsMap.forEach(group => {
     const bd = getCommissionBreakdown(group);
     group.amount = bd.length > 0 ? bd.reduce((sum, b) => sum + (b.amount || 0), 0) : group.items.reduce((sum, i) => sum + (i.amount || 0), 0);
+
+    const firstBd = bd[0] || {};
+    const firstItem = group.items[0] || {};
+
+    if (!group.clientName || group.clientName === 'Client' || group.clientName === '—') {
+      group.clientName = firstBd.clientName || firstItem.clientName || (group.items.length > 1 ? `${group.items.length} Clients` : '');
+    }
+    if (!group.clientCode || group.clientCode === '—') {
+      group.clientCode = firstBd.clientId || firstItem.clientCode || '';
+    }
+    if (!group.clientId) {
+      group.clientId = firstItem.clientId;
+    }
   });
 
   const groupedCommissionsList = Array.from(groupedCommissionsMap.values());
@@ -679,8 +695,12 @@ export default function CommissionOverview() {
 
     const clientNames = (com.items || []).map(i => i.clientName || '').filter(Boolean).join(' ').toLowerCase();
     const clientCodes = (com.items || []).map(i => i.clientCode || '').filter(Boolean).join(' ').toLowerCase();
-    const mainClientName = String(com.clientName || 'Dipika Chikliya').toLowerCase();
-    const mainClientCode = String(com.clientCode || 'KFPL-CL-1003').toLowerCase();
+    const matchedClient = clients.find(c =>
+      String(c._id || c.id) === String(com.clientId) ||
+      (c.clientCode && com.clientCode && String(c.clientCode).toLowerCase() === String(com.clientCode).toLowerCase())
+    );
+    const mainClientName = String(com.clientName || matchedClient?.name || com.client?.name || 'Client').toLowerCase();
+    const mainClientCode = String(com.clientCode || matchedClient?.clientCode || com.client?.clientCode || '—').toLowerCase();
 
     return (
       mainClientName.includes(term) ||
@@ -854,7 +874,7 @@ export default function CommissionOverview() {
                   zIndex: 2
                 }}
               >
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
               <input
                 type="text"
@@ -900,12 +920,21 @@ export default function CommissionOverview() {
                   const isOneTime = comType === 'one-time' || comType === 'onetime' || comType === 'one time' || comType === 'one-time onboarding';
                   const isSpecial = comType === 'special' || comType === 'override' || comType === 'special override';
 
-                  const clientName = com.clientName && com.clientName !== '—' && com.clientName !== 'Client Payout'
+                  const matchedClient = clients.find(c =>
+                    String(c._id || c.id) === String(com.clientId) ||
+                    (c.clientCode && com.clientCode && String(c.clientCode).toLowerCase() === String(com.clientCode).toLowerCase())
+                  );
+
+                  const rawName = com.clientName && com.clientName !== '—' && com.clientName !== 'Client' && com.clientName !== 'Client Payout'
                     ? com.clientName
-                    : 'Dipika Chikliya';
-                  const clientCode = com.clientCode && com.clientCode !== '—'
+                    : (matchedClient?.name || com.client?.name || com.user?.name || 'Client');
+
+                  const rawCode = com.clientCode && com.clientCode !== '—'
                     ? com.clientCode
-                    : 'KFPL-CL-1003';
+                    : (matchedClient?.clientCode || com.client?.clientCode || com.user?.clientCode || '');
+
+                  const clientName = rawName;
+                  const clientCode = rawCode ? formatClientID(rawCode) : '—';
 
                   return (
                     <tr key={com.id || com._id} style={{ cursor: 'pointer' }} onClick={() => setSelectedCommission(com)}>
@@ -914,12 +943,12 @@ export default function CommissionOverview() {
                         <div className="kfpl-table-cell-secondary">{clientCode}</div>
                       </td>
                       <td>
-                        <span 
-                          style={{ 
+                        <span
+                          style={{
                             display: 'inline-block',
-                            fontWeight: 700, 
-                            borderRadius: '20px', 
-                            padding: '4px 12px', 
+                            fontWeight: 700,
+                            borderRadius: '20px',
+                            padding: '4px 12px',
                             fontSize: '0.75rem',
                             letterSpacing: '0.5px',
                             background: isOneTime ? '#EEF2FF' : (isSpecial ? '#FEF3C7' : '#D1FAE5'),
@@ -994,7 +1023,7 @@ export default function CommissionOverview() {
               <div className="kfpl-modal-header">
                 <h3 className="kfpl-modal-title">Commission Statement</h3>
                 <button className="kfpl-modal-close" onClick={() => setSelectedCommission(null)} aria-label="Close modal">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>
               </div>
 
