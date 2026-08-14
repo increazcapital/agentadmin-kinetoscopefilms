@@ -491,7 +491,7 @@ const normalizeUrl = (url) => {
       window.location.hostname === '127.0.0.1' ||
       window.location.hostname.startsWith('192.168.');
     const localBackend = import.meta.env.VITE_API_URL_LOCAL || 'http://localhost:5000';
-    const base = isLocal ? localBackend : (import.meta.env.VITE_API_URL_CLOUD || 'https://kinetoscope-backend-tau.vercel.app');
+    const base = isLocal ? localBackend : (import.meta.env.VITE_API_URL_CLOUD || 'https://server.kinetoscopefilms.com');
     const cleanPath = normalized.startsWith('/') ? normalized : '/' + normalized;
     normalized = base + cleanPath;
   }
