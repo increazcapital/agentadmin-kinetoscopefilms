@@ -525,12 +525,28 @@ export default function CommissionOverview() {
       const clid = cl._id || cl.id || cl.user?._id || cl.profile?.userId;
       return clid && cid && String(clid) === String(cid);
     });
+
+    let invAmt = (c.investmentAmount !== undefined && c.investmentAmount !== null && Number(c.investmentAmount) > 0)
+      ? Number(c.investmentAmount)
+      : 0;
+
+    const rateVal = c.slabPercentage || c.slabPercent || (normalizeType(c.type || c.commissionType) === 'one-time' ? (agentProfile?.oneTimeCommission || 2) : (agentProfile?.monthlySlab || 2));
+
+    if (invAmt <= 0 && Number(c.amount) > 0) {
+      const rNum = parseFloat(rateVal) || 2;
+      invAmt = Math.round((Number(c.amount) * 100) / rNum);
+    }
+
+    if (invAmt <= 0 && foundClient && Number(foundClient.totalInvestment) > 0) {
+      invAmt = Number(foundClient.totalInvestment);
+    }
+
     return {
       ...c,
       clientName: c.clientName || (foundClient ? (foundClient.fullName || foundClient.name || foundClient.profile?.fullName) : '—'),
       clientCode: c.clientCode || (foundClient ? formatClientID(foundClient.clientCode || foundClient.clientId || foundClient.profile?.clientCode || '') : '—'),
-      investmentAmount: c.investmentAmount || (foundClient ? (foundClient.totalInvestment || foundClient.investmentAmount || foundClient.profile?.totalPortfolioValue || 0) : 0),
-      slabPercentage: c.slabPercentage || c.slabPercent || (normalizeType(c.type || c.commissionType) === 'one-time' ? (agentProfile?.oneTimeCommission || 5) : (agentProfile?.monthlySlab || 2))
+      investmentAmount: invAmt,
+      slabPercentage: rateVal
     };
   });
 
