@@ -678,7 +678,9 @@ export default function ClientDetail() {
         if (payoutsRes) {
           const data = payoutsRes.data || payoutsRes;
           let extractedPayouts = [];
-          if (Array.isArray(data)) {
+          if (data && data.roiHistory && Array.isArray(data.roiHistory)) {
+            extractedPayouts = data.roiHistory;
+          } else if (Array.isArray(data)) {
             extractedPayouts = data;
           } else if (data.payouts && Array.isArray(data.payouts)) {
             extractedPayouts = data.payouts;
@@ -686,18 +688,31 @@ export default function ClientDetail() {
             extractedPayouts = data.list;
           }
 
-          calculatedRoiHistory = extractedPayouts.filter(r => {
-            const recId = r.recipientId || r.investorId || r.clientId || '';
-            return String(recId) === String(profileId) || String(recId) === String(recipientUserId);
-          }).map(r => ({
-            _id: r.id || r._id,
-            payoutMonth: r.month || r.period || '—',
-            roiRate: r.roiPercentage ?? 0,
-            amount: Number(r.amount || 0),
-            status: r.status || 'pending',
-            processedDate: r.paidAt || r.date || '—',
-            ...r
-          }));
+          const totalClientInv = clientObj?.totalInvestment || (clientObj?.summaryCards && clientObj?.summaryCards?.totalInvestment) || 0;
+
+          calculatedRoiHistory = extractedPayouts.map(r => {
+            const rawRate = r.roiRate || r.roiPercentage || r.rate;
+            const cleanRate = rawRate ? String(rawRate).replace('%', '').replace(/ROI\s*\(?\s*/i, '').replace(/\)?\s*$/, '').trim() : '';
+            const isPaid = String(r.status || '').toUpperCase() === 'PAID' || String(r.status || '').toUpperCase() === 'APPROVED';
+            let displayRate;
+            if (cleanRate && cleanRate !== '0') {
+              displayRate = `${cleanRate}%`;
+            } else if (isPaid && Number(r.amount) > 0 && totalClientInv > 0) {
+              displayRate = `${Math.round((Number(r.amount) / totalClientInv) * 100 * 10) / 10}%`;
+            } else {
+              displayRate = `${clientObj?.roiPercent || 0}%`;
+            }
+
+            return {
+              _id: r.id || r._id,
+              payoutMonth: r.payoutMonth || r.month || r.period || 'Aug 2026',
+              roiRate: displayRate,
+              amount: Number(r.amount || 0),
+              status: (r.status || 'PENDING').toUpperCase(),
+              processedDate: r.processedDate || r.paidAt || r.date || '—',
+              ...r
+            };
+          });
         }
         setRoiHistory(calculatedRoiHistory);
 
@@ -1340,7 +1355,7 @@ export default function ClientDetail() {
                       roiHistory.map(roi => (
                         <tr key={roi._id || roi.id}>
                           <td className="kfpl-table-cell-primary">{roi.payoutMonth || roi.month}</td>
-                          <td><strong>{roi.roiRate || client.roiPercent}%</strong></td>
+                          <td><strong>{String(roi.roiRate || client.roiPercent || 0).replace('%', '')}%</strong></td>
                           <td className="font-semibold">{formatCurrency(roi.amount || 0)}</td>
                           <td>
                              {(() => {

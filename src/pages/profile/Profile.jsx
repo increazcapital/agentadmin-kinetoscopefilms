@@ -19,11 +19,8 @@ const profileIcons = {
 };
 
 const formatAgentID = (rawId) => {
-  if (!rawId || rawId === '—') return '—';
+  if (!rawId || rawId === '—' || rawId === '-') return '—';
   const str = String(rawId).trim();
-  if (/^[0-9a-fA-F]{24}$/.test(str)) {
-    return 'KFPL-AG-1002';
-  }
   if (/^KFPL-AG-\d+$/i.test(str)) {
     return str.toUpperCase();
   }
@@ -33,7 +30,7 @@ const formatAgentID = (rawId) => {
     if (val < 1000) val = 1000 + val;
     return `KFPL-AG-${val}`;
   }
-  return 'KFPL-AG-1002';
+  return str;
 };
 
 export default function Profile() {
@@ -75,14 +72,13 @@ export default function Profile() {
           const profileObj = data.profile || data.agent || data;
           const header = data.header || {};
           
-          const rawId = header.agentCode || 
-                        profileObj.agentCode || 
+          const rawId = profileObj.agentCode || 
+                        profileObj.clientCode || 
                         profileObj.agentId || 
+                        header.agentCode || 
                         user.agentCode || 
                         user.clientCode || 
                         profileObj.code || 
-                        profileObj._id || 
-                        profileObj.id || 
                         '—';
           const formattedId = formatAgentID(rawId);
 
@@ -117,6 +113,7 @@ export default function Profile() {
           };
 
           const statusVal = getStatus();
+          const kycStatusVal = getKycStatus();
           const panNumber = profileObj.panNumber || profileObj.pan || '—';
           const aadhaarNumber = profileObj.aadhaarNumber || profileObj.aadhaar || '—';
           const commissionSlab = profileObj.commissionSlab || 'Slab 2';
