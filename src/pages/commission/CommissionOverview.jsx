@@ -552,19 +552,7 @@ export default function CommissionOverview() {
 
   const calculatedComms = getCalculatedCommissions(agentProfile, clients, apiSlabs);
 
-  const enrichedCommissions = [...dbEnriched];
-  calculatedComms.forEach(calc => {
-    const hasDbEquivalent = dbEnriched.some(db => {
-      const dbCid = db.clientId?._id || db.clientId?.id || db.clientId || db.client?._id || db.client?.id || db.client;
-      const calcCid = calc.clientId;
-      const dbType = normalizeType(db.type || db.commissionType);
-      const calcType = normalizeType(calc.type);
-      return String(dbCid) === String(calcCid) && dbType === calcType;
-    });
-    if (!hasDbEquivalent) {
-      enrichedCommissions.push(calc);
-    }
-  });
+  const enrichedCommissions = (dbEnriched && dbEnriched.length > 0) ? [...dbEnriched] : [...calculatedComms];
 
   const oneTimeCommission = isDemo
     ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'one-time')
@@ -589,15 +577,16 @@ export default function CommissionOverview() {
     const items = (com.items && com.items.length > 0) ? com.items : [com];
 
     return items.map(c => {
-      const cid = c.clientId;
+      const cid = c.clientId?._id || c.clientId?.id || c.clientId;
       const clientObj = clients.find(cl => String(cl.id || cl._id) === String(cid));
-      const totalInv = (c.investmentAmount !== undefined && Number(c.investmentAmount) > 0)
-        ? Number(c.investmentAmount)
-        : (c.amount ? Math.round(Number(c.amount) * 100 / (parseFloat(c.slabPercentage) || 1)) : (clientObj ? Number(clientObj.totalInvestment || 0) : 0));
 
       let pct = (c.slabPercentage !== undefined && c.slabPercentage !== '—' && parseFloat(c.slabPercentage) > 0)
         ? parseFloat(c.slabPercentage)
-        : ((c.rate && parseFloat(c.rate) > 0) ? parseFloat(c.rate) : (totalInv > 0 ? parseFloat(((c.amount / totalInv) * 100).toFixed(1)) : 1));
+        : ((c.rate && parseFloat(c.rate) > 0) ? parseFloat(c.rate) : 1);
+
+      const totalInv = (c.investmentAmount !== undefined && c.investmentAmount !== null && Number(c.investmentAmount) > 0)
+        ? Number(c.investmentAmount)
+        : (c.amount ? Math.round((Number(c.amount) * 100) / (pct || 1)) : 0);
 
       return {
         clientName: c.clientName || (clientObj ? (clientObj.fullName || clientObj.name || clientObj.profile?.fullName) : (c.recipientName || 'Client')),
