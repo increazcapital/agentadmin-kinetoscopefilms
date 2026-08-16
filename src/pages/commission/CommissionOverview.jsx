@@ -570,54 +570,25 @@ export default function CommissionOverview() {
   const getCommissionBreakdown = (com) => {
     if (com.breakdown && com.breakdown.length > 0) return com.breakdown;
 
-    const typeNormalized = String(com.type || com.commissionType || '').toLowerCase().trim();
-    const comMonth = com.month || com.period;
-    const comDateStr = com.date ? new Date(com.date).toISOString().split('T')[0] : null;
+    const items = (com.items && com.items.length > 0) ? com.items : [com];
 
-    // Search enrichedCommissions for ALL matching records by period/date and type for this agent
-    const matchingComms = enrichedCommissions.filter(c => {
-      const cTypeNorm = String(c.type || c.commissionType || '').toLowerCase().trim();
-      if (cTypeNorm !== typeNormalized) return false;
-      if (comMonth && (c.month === comMonth || c.period === comMonth)) return true;
-      if (comDateStr && c.date && new Date(c.date).toISOString().split('T')[0] === comDateStr) return true;
-      return false;
+    return items.map(c => {
+      const cid = c.clientId;
+      const clientObj = clients.find(cl => String(cl.id || cl._id) === String(cid));
+      const totalInv = c.investmentAmount || c.totalInvestment || (clientObj ? (clientObj.totalInvestment || clientObj.investmentAmount) : 0) || c.amount || 0;
+      let pct = (c.slabPercentage !== undefined && c.slabPercentage !== '—' && parseFloat(c.slabPercentage) > 0)
+        ? parseFloat(c.slabPercentage)
+        : ((c.rate && parseFloat(c.rate) > 0) ? parseFloat(c.rate) : (totalInv > 0 ? parseFloat(((c.amount / totalInv) * 100).toFixed(1)) : 2));
+
+      return {
+        clientName: c.clientName || (clientObj ? (clientObj.fullName || clientObj.name || clientObj.profile?.fullName) : (c.recipientName || 'Client')),
+        clientId: formatClientID(c.clientCode || c.clientId || (clientObj ? (clientObj.clientCode || clientObj.clientId) : '')),
+        investment: totalInv,
+        rate: pct,
+        amount: c.amount || 0,
+        investmentDate: formatDateDMY(c.date || c.createdAt || c.investmentDate || (clientObj ? (clientObj.joinDate || clientObj.dateOfJoining) : '—'))
+      };
     });
-
-    if (matchingComms.length > 0) {
-      return matchingComms.map(c => {
-        const cid = c.clientId;
-        const clientObj = clients.find(cl => String(cl.id || cl._id) === String(cid));
-        const totalInv = c.investmentAmount || c.totalInvestment || (clientObj ? (clientObj.totalInvestment || clientObj.investmentAmount) : 0) || c.amount || 0;
-        let pct = (c.slabPercentage !== undefined && c.slabPercentage !== '—' && parseFloat(c.slabPercentage) > 0)
-          ? parseFloat(c.slabPercentage)
-          : ((c.rate && parseFloat(c.rate) > 0) ? parseFloat(c.rate) : (totalInv > 0 ? parseFloat(((c.amount / totalInv) * 100).toFixed(1)) : 2));
-
-        return {
-          clientName: c.clientName || (clientObj ? (clientObj.fullName || clientObj.name || clientObj.profile?.fullName) : (c.recipientName || 'Client')),
-          clientId: formatClientID(c.clientCode || c.clientId || (clientObj ? (clientObj.clientCode || clientObj.clientId) : '')),
-          investment: totalInv,
-          rate: pct,
-          amount: c.amount || 0,
-          investmentDate: formatDateDMY(c.date || c.investmentDate || (clientObj ? (clientObj.joinDate || clientObj.dateOfJoining) : '—'))
-        };
-      });
-    }
-
-    const cid = com.clientId;
-    const clientObj = clients.find(c => String(c.id || c._id) === String(cid));
-    const totalInv = com.investmentAmount || com.totalInvestment || (clientObj ? (clientObj.totalInvestment || clientObj.investmentAmount) : 0) || com.amount || 0;
-    let pct = (com.slabPercentage !== undefined && com.slabPercentage !== '—' && parseFloat(com.slabPercentage) > 0)
-      ? parseFloat(com.slabPercentage)
-      : ((com.rate && parseFloat(com.rate) > 0) ? parseFloat(com.rate) : (totalInv > 0 ? parseFloat(((com.amount / totalInv) * 100).toFixed(1)) : 2));
-
-    return [{
-      clientName: com.clientName || (clientObj ? (clientObj.fullName || clientObj.name || clientObj.profile?.fullName) : (com.recipientName || 'Client')),
-      clientId: formatClientID(com.clientCode || com.clientId || (clientObj ? (clientObj.clientCode || clientObj.clientId) : '')),
-      investment: totalInv,
-      rate: pct,
-      amount: com.amount || 0,
-      investmentDate: formatDateDMY(com.date || com.investmentDate || (clientObj ? (clientObj.joinDate || clientObj.dateOfJoining) : '—'))
-    }];
   };
 
   // Group enrichedCommissions by Period + Type to eliminate repetitive rows
