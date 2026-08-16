@@ -575,10 +575,13 @@ export default function CommissionOverview() {
     return items.map(c => {
       const cid = c.clientId;
       const clientObj = clients.find(cl => String(cl.id || cl._id) === String(cid));
-      const totalInv = c.investmentAmount || c.totalInvestment || (clientObj ? (clientObj.totalInvestment || clientObj.investmentAmount) : 0) || c.amount || 0;
+      const totalInv = (c.investmentAmount !== undefined && Number(c.investmentAmount) > 0)
+        ? Number(c.investmentAmount)
+        : (c.amount ? Math.round(Number(c.amount) * 100 / (parseFloat(c.slabPercentage) || 1)) : (clientObj ? Number(clientObj.totalInvestment || 0) : 0));
+
       let pct = (c.slabPercentage !== undefined && c.slabPercentage !== '—' && parseFloat(c.slabPercentage) > 0)
         ? parseFloat(c.slabPercentage)
-        : ((c.rate && parseFloat(c.rate) > 0) ? parseFloat(c.rate) : (totalInv > 0 ? parseFloat(((c.amount / totalInv) * 100).toFixed(1)) : 2));
+        : ((c.rate && parseFloat(c.rate) > 0) ? parseFloat(c.rate) : (totalInv > 0 ? parseFloat(((c.amount / totalInv) * 100).toFixed(1)) : 1));
 
       return {
         clientName: c.clientName || (clientObj ? (clientObj.fullName || clientObj.name || clientObj.profile?.fullName) : (c.recipientName || 'Client')),
