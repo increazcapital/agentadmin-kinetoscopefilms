@@ -53,7 +53,7 @@ export default function ForgotPassword() {
           </div>
           <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', margin: 0, lineHeight: 1.15 }}>Kinetoscope Films Pvt Ltd</h1>
           <p style={{ fontSize: '12px', color: 'rgba(240, 253, 244, 0.9)', letterSpacing: '1.5px', textTransform: 'uppercase', marginTop: '6px', marginBottom: '12px', fontWeight: '700' }}>A Global Media Fund</p>
-          <p>Agent Portal. Reset your credentials securely here.</p>
+          <p>Partner Dashboard. Reset your credentials securely here.</p>
         </div>
       </div>
 

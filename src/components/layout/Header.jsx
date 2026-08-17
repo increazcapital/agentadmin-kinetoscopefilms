@@ -155,7 +155,7 @@ export default function Header({ isCollapsed, onMenuClick }) {
     };
   }, []);
 
-  const pageTitle = routeTitles[location.pathname] || 'Agent Portal';
+  const pageTitle = routeTitles[location.pathname] || 'Partner Dashboard';
 
   // Close dropdowns on outside click
   useEffect(() => {

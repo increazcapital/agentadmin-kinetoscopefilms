@@ -189,7 +189,7 @@ export default function Sidebar({ isCollapsed, onToggle, isMobileOpen, onMobileC
               </div>
             </div>
             <span className="kfpl-sidebar-logo-tagline" style={{ fontSize: '9px', color: '#059669', textTransform: 'uppercase', letterSpacing: '0.8px', marginTop: '1px', display: 'block', fontWeight: '700' }}>A Global Media Fund</span>
-            <span className="kfpl-sidebar-logo-subtitle">AGENT PORTAL</span>
+            <span className="kfpl-sidebar-logo-subtitle">PARTNER DASHBOARD</span>
           </div>
         </div>
 

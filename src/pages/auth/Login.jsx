@@ -332,7 +332,7 @@ export default function Login() {
           email: regForm.email
         }
       });
-      addToast('Account created successfully! Welcome to Kinetoscope Agent Portal.', 'success', 'Account Created');
+      addToast('Account created successfully! Welcome to Kinetoscope Partner Dashboard.', 'success', 'Account Created');
       window.location.href = '/dashboard';
     } catch (err) {
       console.error(err);
@@ -419,7 +419,7 @@ export default function Login() {
             <div style={{ background: '#ffffff', padding: '6px', width: '56px', height: '56px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(16, 185, 129, 0.18)', border: '1px solid #e2e8f0', marginBottom: '12px' }}>
               <img src="/logokfpl.jpeg" alt="KFPL Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px', display: 'block' }} />
             </div>
-            <h1 className="kfpl-login-title">Agent Portal</h1>
+            <h1 className="kfpl-login-title">Partner Dashboard</h1>
             <p className="kfpl-login-subtitle">Access agent control console</p>
           </div>
 
