@@ -716,11 +716,46 @@ export default function ClientDetail() {
         }
         setRoiHistory(calculatedRoiHistory);
 
-        // Process Investments
+        // Process Investments (Expand dynamic multi-segment allocations)
         let resolvedInvestments = [];
         if (investmentsRes) {
           const data = investmentsRes.data || investmentsRes;
-          resolvedInvestments = Array.isArray(data) ? data : (data.investments || []);
+          const rawInv = Array.isArray(data) ? data : (data.investments || []);
+          const expanded = [];
+          rawInv.forEach((inv, invIdx) => {
+            const baseAmt = Number(inv.investmentAmount || inv.amount || 0);
+            const topProj = inv.projectName || (typeof inv.projectId === 'object' ? inv.projectId?.name : '') || '';
+            if (Array.isArray(inv.segmentAllocation) && inv.segmentAllocation.length > 0) {
+              inv.segmentAllocation.forEach((alloc, allocIdx) => {
+                const allocPct = Number(alloc.allocationPercentage || 0);
+                let segProj = alloc.projectName || '';
+                if (!segProj && alloc.projectId) {
+                  segProj = typeof alloc.projectId === 'object' ? alloc.projectId.name : '';
+                }
+                if (!segProj && topProj && inv.segment && inv.segment.toLowerCase().includes((alloc.segmentName || '').toLowerCase())) {
+                  segProj = topProj;
+                }
+                expanded.push({
+                  ...inv,
+                  _id: `${inv._id || inv.id || invIdx}_seg_${allocIdx}`,
+                  id: `${inv._id || inv.id || invIdx}_seg_${allocIdx}`,
+                  segment: alloc.segmentName || inv.segment || 'Unallocated',
+                  projectName: segProj || '—',
+                  amount: Math.round(baseAmt * (allocPct / 100)),
+                  investmentAmount: Math.round(baseAmt * (allocPct / 100)),
+                  allocationPercentage: allocPct,
+                });
+              });
+            } else {
+              expanded.push({
+                ...inv,
+                projectName: topProj || '—',
+                amount: baseAmt,
+                investmentAmount: baseAmt
+              });
+            }
+          });
+          resolvedInvestments = expanded;
         }
         setInvestmentsData(resolvedInvestments);
 
@@ -1285,6 +1320,7 @@ export default function ClientDetail() {
                 <thead>
                   <tr>
                     <th>Segment</th>
+                    <th>Linked Project</th>
                     <th>Amount</th>
                     <th>ROI Rate</th>
                     <th>Risk Level</th>
@@ -1295,7 +1331,7 @@ export default function ClientDetail() {
                 <tbody>
                   {resolvedInvestments.length === 0 ? (
                     <tr>
-                      <td colSpan={6} style={{ textAlign: 'center', padding: '48px', color: 'var(--color-text-muted)' }}>
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '48px', color: 'var(--color-text-muted)' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                           <span style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-secondary, #475569)' }}>No Project Allocated Yet</span>
                           <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted, #94a3b8)' }}>Super Admin has not assigned any active project/segment allocation to this client.</span>
@@ -1304,7 +1340,25 @@ export default function ClientDetail() {
                     </tr>
                   ) : resolvedInvestments.map(inv => (
                     <tr key={inv._id || inv.id}>
-                      <td className="kfpl-table-cell-primary">{inv.segment}</td>
+                      <td className="kfpl-table-cell-primary">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span>{inv.segment}</span>
+                          {inv.allocationPercentage && (
+                            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#059669', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '1px 5px', borderRadius: '4px' }}>
+                              {inv.allocationPercentage}%
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        {inv.projectName && inv.projectName !== '—' && inv.projectName !== 'Unallocated' ? (
+                          <span style={{ color: '#047857', fontWeight: 600, fontSize: '0.8125rem', background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '2px 8px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            🎬 {inv.projectName}
+                          </span>
+                        ) : (
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>—</span>
+                        )}
+                      </td>
                       <td className="font-semibold" style={{ color: '#10B981' }}>{formatCurrency(inv.investmentAmount || inv.amount || 0)}</td>
                       <td>{client.roiPercent || inv.roiPercentage || inv.roi}%</td>
                       <td>
