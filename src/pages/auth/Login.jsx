@@ -899,14 +899,14 @@ export default function Login() {
             animation: 'scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
           }}>
             {/* Elegant Header Block */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h3 style={{ fontWeight: 800, fontSize: '1.6rem', color: '#0f172a', margin: 0, letterSpacing: '-0.4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', gap: '16px' }}>
+              <h3 style={{ fontWeight: 800, fontSize: '1.5rem', color: '#0f172a', margin: 0, letterSpacing: '-0.4px' }}>
                 {agreementStep === 'agreement' && '1. Marketing Services Agreement'}
                 {agreementStep === 'privacy' && '2. Privacy Policy'}
                 {agreementStep === 'tnc' && '3. Terms & Conditions'}
               </h3>
               {!isSingleDocRead && (
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-gold, #10b981)', background: 'rgba(16, 185, 129, 0.1)', padding: '6px 12px', borderRadius: '100px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-gold, #10b981)', background: 'rgba(16, 185, 129, 0.1)', padding: '6px 14px', borderRadius: '100px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   {agreementStep === 'agreement' && 'Step 1 of 3'}
                   {agreementStep === 'privacy' && 'Step 2 of 3'}
                   {agreementStep === 'tnc' && 'Step 3 of 3'}

@@ -13,11 +13,17 @@ export default function MissingDocsReuploadCard({ agent, loading = false, onDocU
   if (!agent.panDocument) {
     missingList.push({ key: 'panDocument', label: 'PAN Card Document' });
   }
-  if (!agent.idProofDocument) {
-    missingList.push({ key: 'idProofDocument', label: 'ID Proof (Aadhaar / Passport / DL)' });
+  if (!agent.idProofDocument && !agent.aadhaarDocument) {
+    missingList.push({ key: 'idProofDocument', label: 'ID Proof (Aadhaar Front / Passport / DL)' });
   }
-  if (!agent.bankProofDocument) {
-    missingList.push({ key: 'bankProofDocument', label: 'Bank Details Document' });
+  if (!agent.idProofBackDocument && !agent.aadhaarBackDocument) {
+    missingList.push({ key: 'idProofBackDocument', label: 'Aadhaar Card Back Side (Required for Address Proof)' });
+  }
+  const isBankProofReuploadRequested = Boolean(
+    Array.isArray(agent.reuploadDocs) && agent.reuploadDocs.includes('bankProofDocument')
+  );
+  if (!agent.bankProofDocument && isBankProofReuploadRequested) {
+    missingList.push({ key: 'bankProofDocument', label: 'Cancelled Cheque (Optional)' });
   }
 
   if (missingList.length === 0) return null;
