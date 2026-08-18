@@ -9,6 +9,8 @@ export default function Withdrawal() {
 
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
+  const [payoutMode, setPayoutMode] = useState('Bank Transfer'); // 'Bank Transfer' or 'UPI'
+  const [upiId, setUpiId] = useState('');
   const [pendingBalance, setPendingBalance] = useState(0);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +19,8 @@ export default function Withdrawal() {
   const [bankInfo, setBankInfo] = useState({
     bankName: 'N/A',
     bankAccount: 'N/A',
-    ifsc: 'N/A'
+    ifsc: 'N/A',
+    upiId: ''
   });
 
   const getAgentId = () => {
@@ -42,16 +45,21 @@ export default function Withdrawal() {
         apiRequest('/api/agent/withdrawals').catch(() => null)
       ]);
 
-      // 1. Process Profile for Bank Info
+      // 1. Process Profile for Bank & UPI Info
       if (profileRes) {
         const p = profileRes.data || profileRes.profile || profileRes;
         const acct = p.accountNumber || p.bankAccount || 'N/A';
         const ifscVal = p.ifscCode || p.ifsc || 'N/A';
+        const loadedUpi = p.upiId || '';
         setBankInfo({
           bankName: p.bankName || 'N/A',
           bankAccount: acct,
-          ifsc: ifscVal
+          ifsc: ifscVal,
+          upiId: loadedUpi
         });
+        if (loadedUpi && !upiId) {
+          setUpiId(loadedUpi);
+        }
       }
 
       let currentAvailable = 0;
@@ -98,7 +106,8 @@ export default function Withdrawal() {
         bankInfo: {
           bankName: profileRes ? (profileRes.data?.bankName || profileRes.bankName || 'N/A') : 'N/A',
           bankAccount: profileRes ? (profileRes.data?.accountNumber || profileRes.data?.bankAccount || profileRes.accountNumber || 'N/A') : 'N/A',
-          ifsc: profileRes ? (profileRes.data?.ifscCode || profileRes.data?.ifsc || profileRes.ifscCode || 'N/A') : 'N/A'
+          ifsc: profileRes ? (profileRes.data?.ifscCode || profileRes.data?.ifsc || profileRes.ifscCode || 'N/A') : 'N/A',
+          upiId: profileRes ? (profileRes.data?.upiId || profileRes.upiId || '') : ''
         },
         pendingBalance: currentAvailable,
         history: (() => {
@@ -118,7 +127,6 @@ export default function Withdrawal() {
   };
 
   useEffect(() => {
-    // Purge legacy withdrawal cache to force fresh 2,000 balance load
     try {
       const cacheKey = getAgentCacheKey('kfpl_agent_withdrawal_cache');
       localStorage.removeItem(cacheKey);
@@ -138,18 +146,31 @@ export default function Withdrawal() {
       return;
     }
 
+    if (payoutMode === 'UPI') {
+      if (!upiId.trim()) {
+        addToast('Please enter your UPI ID for payout.', 'error');
+        return;
+      }
+      if (!upiId.includes('@')) {
+        addToast('Please enter a valid UPI ID (e.g. mobile@upi or username@okhdfcbank).', 'error');
+        return;
+      }
+    }
+
     try {
       setSubmitting(true);
       const res = await apiRequest('/api/agent/withdrawals', {
         method: 'POST',
         body: {
           amount: numAmt,
-          note: note.trim()
+          note: note.trim(),
+          paymentMethod: payoutMode,
+          upiId: payoutMode === 'UPI' ? upiId.trim() : ''
         }
       });
 
       if (res && (res.success || res.status === 'success')) {
-        addToast('Withdrawal request submitted successfully!', 'success');
+        addToast('Commission payout request submitted successfully!', 'success');
         setAmount('');
         setNote('');
         fetchWithdrawalData();
@@ -178,7 +199,9 @@ export default function Withdrawal() {
         <div className="kfpl-card" style={{ padding: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <span className="kfpl-card-title">Payout Request</span>
-            <span className="kfpl-badge kfpl-badge--success">Active Bank Linked</span>
+            <span className="kfpl-badge kfpl-badge--success">
+              {payoutMode === 'UPI' ? '⚡ UPI Payout' : '🏦 Active Bank Linked'}
+            </span>
           </div>
 
           <div style={{ background: 'var(--color-surface-elevated)', padding: '16px', borderRadius: '12px', marginBottom: '24px', border: '1px solid var(--color-border)' }}>
@@ -191,7 +214,7 @@ export default function Withdrawal() {
           <form onSubmit={handleRequestSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: '600', marginBottom: '6px' }}>
-                Withdrawal Amount (₹)
+                Withdrawal Amount (₹) *
               </label>
               <input
                 type="number"
@@ -204,6 +227,48 @@ export default function Withdrawal() {
                 required
               />
             </div>
+
+            {/* Payout Mode Selector Dropdown */}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: '600', marginBottom: '6px' }}>
+                Payout Destination Method *
+              </label>
+              <select
+                value={payoutMode}
+                onChange={(e) => setPayoutMode(e.target.value)}
+                className="kfpl-input"
+                style={{ fontWeight: '600', cursor: 'pointer' }}
+              >
+                <option value="Bank Transfer">🏦 Registered Bank Account ({bankInfo.bankName})</option>
+                <option value="UPI">⚡ UPI ID Transfer (Instant Direct Payout)</option>
+              </select>
+            </div>
+
+            {/* Dynamic UPI Input Field */}
+            {payoutMode === 'UPI' && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.08) 100%)',
+                padding: '14px',
+                borderRadius: '10px',
+                border: '1px solid rgba(16, 185, 129, 0.25)'
+              }}>
+                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: '700', color: '#065F46', marginBottom: '6px' }}>
+                  Enter UPI ID / VPA *
+                </label>
+                <input
+                  type="text"
+                  value={upiId}
+                  onChange={(e) => setUpiId(e.target.value)}
+                  placeholder="e.g. mobile@upi or username@okhdfcbank"
+                  className="kfpl-input"
+                  style={{ background: '#ffffff', fontFamily: 'monospace', fontWeight: '600', fontSize: '0.9rem' }}
+                  required={payoutMode === 'UPI'}
+                />
+                <div style={{ fontSize: '0.75rem', color: '#047857', marginTop: '6px' }}>
+                  ℹ️ This UPI ID will be sent directly to Super Admin for accurate instant payout approval.
+                </div>
+              </div>
+            )}
 
             <div>
               <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: '600', marginBottom: '6px' }}>
@@ -230,32 +295,60 @@ export default function Withdrawal() {
           </form>
         </div>
 
-        {/* Bank Account Details */}
+        {/* Dynamic Payout Destination Account Details */}
         <div className="kfpl-card" style={{ padding: '24px' }}>
-          <div className="kfpl-card-title" style={{ marginBottom: '16px' }}>Payout Destination Account</div>
-          <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '20px' }}>
-            Approved payouts will be credited directly to your registered bank account below.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>Bank Name</span>
-              <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--color-navy)' }}>{bankInfo.bankName}</span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>Account Number</span>
-              <span style={{ fontSize: '0.9rem', fontWeight: '700', fontFamily: 'monospace', color: 'var(--color-navy)', letterSpacing: '0.04em' }}>{bankInfo.bankAccount}</span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>IFSC Code</span>
-              <span style={{ fontSize: '0.9rem', fontWeight: '700', fontFamily: 'monospace', color: 'var(--color-navy)', letterSpacing: '0.04em' }}>{bankInfo.ifsc}</span>
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <div className="kfpl-card-title" style={{ margin: 0 }}>Payout Destination Account</div>
+            <span className="kfpl-badge" style={{
+              background: payoutMode === 'UPI' ? '#D1FAE5' : '#E0E7FF',
+              color: payoutMode === 'UPI' ? '#065F46' : '#3730A3',
+              fontWeight: 700
+            }}>
+              {payoutMode === 'UPI' ? 'UPI Destination' : 'Bank Destination'}
+            </span>
           </div>
 
+          <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '20px' }}>
+            {payoutMode === 'UPI'
+              ? 'Approved commission payouts will be sent directly to your specified UPI ID.'
+              : 'Approved commission payouts will be credited directly to your registered bank account below.'}
+          </p>
+
+          {payoutMode === 'UPI' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>Payout Method</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#059669' }}>⚡ Instant UPI Transfer</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>Destination UPI ID</span>
+                <span style={{ fontSize: '0.92rem', fontWeight: '800', fontFamily: 'monospace', color: upiId ? '#0F172A' : '#94A3B8', letterSpacing: '0.02em' }}>
+                  {upiId || 'Enter UPI ID on the left'}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>Bank Name</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--color-navy)' }}>{bankInfo.bankName}</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>Account Number</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700', fontFamily: 'monospace', color: 'var(--color-navy)', letterSpacing: '0.04em' }}>{bankInfo.bankAccount}</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>IFSC Code</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700', fontFamily: 'monospace', color: 'var(--color-navy)', letterSpacing: '0.04em' }}>{bankInfo.ifsc}</span>
+              </div>
+            </div>
+          )}
+
           <div style={{ marginTop: '20px', padding: '12px 16px', background: 'rgba(16, 185, 129, 0.08)', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.2)', fontSize: '0.8125rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>ℹ️</span> To update bank details, please contact Super Admin support desk.
+            <span>ℹ️</span> To permanently change your primary bank record, please contact Super Admin support desk.
           </div>
         </div>
       </div>
