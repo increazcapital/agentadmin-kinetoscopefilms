@@ -84,6 +84,7 @@ export default function Login() {
   // Register File upload states
   const [panDocFile, setPanDocFile] = useState(null);
   const [idProofDocFile, setIdProofDocFile] = useState(null);
+  const [idProofBackDocFile, setIdProofBackDocFile] = useState(null);
   const [bankProofDocFile, setBankProofDocFile] = useState(null);
   const [nomineeProofDocFile, setNomineeProofDocFile] = useState(null);
   const [agreementDocFile, setAgreementDocFile] = useState(null);
@@ -309,6 +310,10 @@ export default function Login() {
 
       if (panDocFile) formData.append('panDocument', panDocFile);
       if (idProofDocFile) formData.append('idProofDocument', idProofDocFile);
+      if (idProofBackDocFile) {
+        formData.append('idProofBackDocument', idProofBackDocFile);
+        formData.append('aadhaarBackDocument', idProofBackDocFile);
+      }
       if (bankProofDocFile) formData.append('bankProofDocument', bankProofDocFile);
       if (nomineeProofDocFile) formData.append('nomineeProofDocument', nomineeProofDocFile);
       if (agreementDocFile) formData.append('agreementDocument', agreementDocFile);
@@ -654,15 +659,19 @@ export default function Login() {
                   {/* Documents Upload */}
                   <div className="kfpl-login-section-label">KYC Document Uploads</div>
                   <div className="kfpl-login-input-group">
-                    <label className="kfpl-login-label">{regForm.citizenship === 'International' ? 'Tax ID Document' : 'PAN Card'}</label>
+                    <label className="kfpl-login-label">{regForm.citizenship === 'International' ? 'Tax ID Document *' : 'PAN Card *'}</label>
                     <input type="file" className="kfpl-login-input" onChange={(e) => setPanDocFile(e.target.files[0])} />
                   </div>
                   <div className="kfpl-login-input-group">
-                    <label className="kfpl-login-label">{regForm.citizenship === 'International' ? 'Passport Document' : 'ID Proof Document'}</label>
+                    <label className="kfpl-login-label">{regForm.citizenship === 'International' ? 'Passport / National ID (Front Side) *' : 'Aadhaar / ID Proof (Front Side) *'}</label>
                     <input type="file" className="kfpl-login-input" onChange={(e) => setIdProofDocFile(e.target.files[0])} />
                   </div>
                   <div className="kfpl-login-input-group">
-                    <label className="kfpl-login-label">Bank Statement Proof</label>
+                    <label className="kfpl-login-label">{regForm.citizenship === 'International' ? 'National ID / Address Proof (Back Side) *' : 'Aadhaar Card Back Side (Required for Address Proof) *'}</label>
+                    <input type="file" className="kfpl-login-input" onChange={(e) => setIdProofBackDocFile(e.target.files[0])} />
+                  </div>
+                  <div className="kfpl-login-input-group">
+                    <label className="kfpl-login-label">Cancelled Cheque (Optional)</label>
                     <input type="file" className="kfpl-login-input" onChange={(e) => setBankProofDocFile(e.target.files[0])} />
                   </div>
                   <div className="kfpl-login-input-group">
