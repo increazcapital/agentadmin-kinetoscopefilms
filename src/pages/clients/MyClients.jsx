@@ -29,6 +29,16 @@ const formatClientID = (rawId) => {
   return 'KFPL-CL-1001';
 };
 
+const slugifyName = (name) => {
+  if (!name) return '';
+  return String(name)
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
 export default function MyClients() {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState('all');
@@ -245,11 +255,23 @@ export default function MyClients() {
             <option value="diamond">Diamond</option>
           </select>
 
-          <button className="kfpl-btn kfpl-btn--ghost kfpl-btn--sm">
+          <button className="kfpl-btn kfpl-btn--ghost kfpl-btn--sm" style={{ marginRight: '8px' }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width="16" height="16">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
             Export CSV
+          </button>
+
+          <button
+            className="kfpl-btn kfpl-btn--primary kfpl-btn--sm"
+            onClick={() => navigate('/clients/add')}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            + Add Client
           </button>
         </div>
       </div>
@@ -258,9 +280,10 @@ export default function MyClients() {
         columns={columns}
         data={filteredClients}
         onRowClick={(row) => {
-          const pathId = row.id || row._id || row.clientId;
-          console.log('MyClients: Row click received. Navigating to:', `/clients/${pathId}`);
-          navigate(`/clients/${pathId}`);
+          const clientName = row.name || row.fullName || row.user?.name || '';
+          const clientSlug = (clientName ? slugifyName(clientName) : '') || row.slug || row.clientCode || row.id || row._id || row.clientId;
+          console.log('MyClients: Row click received. Navigating to:', `/clients/${clientSlug}`);
+          navigate(`/clients/${clientSlug}`);
         }}
         searchPlaceholder="Search clients by name, email, ID..."
       />

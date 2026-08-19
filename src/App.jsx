@@ -21,6 +21,7 @@ import Profile from './pages/profile/Profile';
 // ── Clients ───────────────────────
 import MyClients from './pages/clients/MyClients';
 import ClientDetail from './pages/clients/ClientDetail';
+import AddClient from './pages/clients/AddClient';
 
 // ── Commission ───────────────────────
 import CommissionOverview from './pages/commission/CommissionOverview';
@@ -76,6 +77,8 @@ export default function App() {
             <Route path="dashboard" element={<DashboardHome />} />
             <Route path="profile" element={<Profile />} />
             <Route path="clients" element={<MyClients />} />
+            <Route path="clients/add" element={<AddClient />} />
+            <Route path="clients/new" element={<AddClient />} />
             <Route path="clients/:id" element={<ClientDetail />} />
             <Route path="commission" element={<CommissionOverview />} />
             <Route path="rewards" element={<RewardsAndRedemption />} />

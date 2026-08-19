@@ -1,7 +1,126 @@
 /* ============================================================
    KFPL Agent Portal — Form Styles
-   Description: Inputs, selects, textareas, form groups
+   Description: Inputs, selects, textareas, form groups, form layout
    ============================================================ */
+
+/* ── Form Layout ─────────────────────── */
+.kfpl-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.kfpl-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kfpl-form-section-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.kfpl-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.kfpl-form-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.kfpl-form-full {
+  grid-column: 1 / -1;
+}
+
+/* ── Form Card ─────────────────────── */
+.kfpl-form-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border-light);
+  padding: 28px;
+}
+
+.kfpl-form-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--color-gold);
+}
+
+.kfpl-form-card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.kfpl-form-card-subtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.kfpl-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kfpl-input-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.kfpl-input-label .required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+.kfpl-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border-light);
+  margin-top: 12px;
+}
+
+/* ── Dropzone ─────────────────────── */
+.kfpl-dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-smooth, all 0.2s ease);
+  background: rgba(0, 0, 0, 0.01);
+}
+
+.kfpl-dropzone:hover,
+.kfpl-dropzone.active {
+  border-color: var(--color-gold);
+  background: var(--color-gold-glow, rgba(16, 185, 129, 0.06));
+}
+
+.kfpl-dropzone-icon {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 8px;
+  color: var(--color-text-muted);
+}
+
 
 .kfpl-form-group {
   margin-bottom: 20px;

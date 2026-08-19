@@ -648,10 +648,12 @@ export default function ClientDetail() {
         const primaryDataObj = superAdminData || (singleRes ? (singleRes.data || singleRes) : null);
         if (primaryDataObj) {
           const saProfile = primaryDataObj.profile || primaryDataObj;
+          const realUserId = primaryDataObj.user?._id || primaryDataObj.userId || saProfile.userId || primaryDataObj._id || saProfile._id || id;
           clientObj = {
             ...primaryDataObj,
             ...saProfile,
-            _id: saProfile._id || primaryDataObj._id || id,
+            _id: realUserId,
+            id: realUserId,
             _superAdminData: primaryDataObj,
           };
         }
@@ -703,14 +705,15 @@ export default function ClientDetail() {
               displayRate = `${clientObj?.roiPercent || 0}%`;
             }
 
+            const statusStr = String(r.status || 'PENDING').toUpperCase();
             return {
+              ...r,
               _id: r.id || r._id,
               payoutMonth: r.payoutMonth || r.month || r.period || 'Aug 2026',
               roiRate: displayRate,
               amount: Number(r.amount || 0),
-              status: (r.status || 'PENDING').toUpperCase(),
-              processedDate: r.processedDate || r.paidAt || r.date || '—',
-              ...r
+              status: statusStr,
+              processedDate: isPaid ? (r.processedDate || r.paidAt || r.date || '—') : '—',
             };
           });
         }
@@ -1426,32 +1429,31 @@ export default function ClientDetail() {
                           <td><strong>{String(roi.roiRate || client.roiPercent || 0).replace('%', '')}%</strong></td>
                           <td className="font-semibold">{formatCurrency(roi.amount || 0)}</td>
                           <td>
-                             {(() => {
-                               const isPaid = String(roi.status || '').toLowerCase() === 'paid';
-                               const statusText = isPaid ? 'Paid' : 'Approved';
-                               return <Badge status={statusText.toLowerCase()}>{statusText}</Badge>;
-                             })()}
-                           </td>
-                           <td>
-                             {(() => {
-                               const rawDate = roi.processedDate || roi.paidAt || roi.date;
-                               if (rawDate && rawDate !== '—' && rawDate !== '-') {
-                                 try {
-                                   const d = new Date(rawDate);
-                                   if (!isNaN(d.getTime())) return d.toLocaleDateString('en-IN');
-                                 } catch (e) {}
-                               }
-                               // Fallback to month-end date for display
-                               try {
-                                 const monthStr = roi.payoutMonth || roi.month;
-                                 const d = new Date(monthStr);
-                                 if (!isNaN(d.getTime())) {
-                                   return new Date(d.getFullYear(), d.getMonth() + 1, 0).toLocaleDateString('en-IN');
-                                 }
-                               } catch (e) {}
-                               return new Date().toLocaleDateString('en-IN');
-                             })()}
-                           </td>
+                            {(() => {
+                              const statusStr = String(roi.status || 'PENDING').toUpperCase();
+                              const isPaid = statusStr === 'PAID' || statusStr === 'APPROVED';
+                              return (
+                                <Badge status={isPaid ? 'approved' : 'pending'}>
+                                  {isPaid ? 'APPROVED' : 'PENDING'}
+                                </Badge>
+                              );
+                            })()}
+                          </td>
+                          <td>
+                            {(() => {
+                              const statusStr = String(roi.status || 'PENDING').toUpperCase();
+                              const isPaid = statusStr === 'PAID' || statusStr === 'APPROVED';
+                              const rawDate = roi.processedDate || roi.paidAt;
+                              if (isPaid && rawDate && rawDate !== '—' && rawDate !== '-') {
+                                try {
+                                  const d = new Date(rawDate);
+                                  if (!isNaN(d.getTime())) return d.toLocaleDateString('en-IN');
+                                } catch (e) {}
+                                return rawDate;
+                              }
+                              return '—';
+                            })()}
+                          </td>
                         </tr>
                       ))
                     )}
