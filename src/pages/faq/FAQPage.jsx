@@ -35,7 +35,7 @@ const defaultFAQs = [
   },
   {
     id: 'default-a4',
-    question: 'How can I contact Kinetoscope Support Desk?',
+    question: 'How can I contact YieldIQ Support Desk?',
     answer: 'Visit the "Support" section from your agent menu. You can connect directly with our support desk via WhatsApp, Email, or Phone helpline during advisory operating hours.',
     category: 'Support',
     target: 'both',
@@ -172,8 +172,8 @@ export default function FAQPage() {
                 style={{
                   padding: '7px 14px',
                   borderRadius: '20px',
-                  border: isActive ? '1px solid #10b981' : '1px solid var(--color-border, #e2e8f0)',
-                  background: isActive ? '#10b981' : 'var(--color-surface, #ffffff)',
+                  border: isActive ? '1px solid var(--color-gold)' : '1px solid var(--color-border, #e2e8f0)',
+                  background: isActive ? 'var(--color-gold)' : 'var(--color-surface, #ffffff)',
                   color: isActive ? '#ffffff' : 'var(--color-text-secondary, #64748b)',
                   fontWeight: isActive ? '600' : '500',
                   fontSize: '0.8125rem',
@@ -219,11 +219,11 @@ export default function FAQPage() {
                 key={faq.id}
                 style={{
                   background: 'var(--color-surface, #ffffff)',
-                  border: isExpanded ? '1.5px solid #10b981' : '1px solid var(--color-border, #e2e8f0)',
+                  border: isExpanded ? '1.5px solid var(--color-gold)' : '1px solid var(--color-border, #e2e8f0)',
                   borderRadius: '12px',
                   overflow: 'hidden',
                   transition: 'all 0.2s ease',
-                  boxShadow: isExpanded ? '0 4px 16px rgba(16, 185, 129, 0.08)' : '0 2px 6px rgba(0, 0, 0, 0.02)'
+                  boxShadow: isExpanded ? '0 4px 16px rgba(245, 168, 0, 0.08)' : '0 2px 6px rgba(0, 0, 0, 0.02)'
                 }}
               >
                 {/* Accordion Header */}
@@ -244,8 +244,8 @@ export default function FAQPage() {
                       width: '32px',
                       height: '32px',
                       borderRadius: '8px',
-                      background: isExpanded ? 'rgba(16, 185, 129, 0.15)' : 'var(--color-surface-elevated, #f1f5f9)',
-                      color: isExpanded ? '#10b981' : '#64748b',
+                      background: isExpanded ? 'rgba(245, 168, 0, 0.15)' : 'var(--color-surface-elevated, #f1f5f9)',
+                      color: isExpanded ? 'var(--color-gold)' : '#64748b',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -260,7 +260,7 @@ export default function FAQPage() {
                       <h4 style={{
                         fontSize: '0.9375rem',
                         fontWeight: '600',
-                        color: isExpanded ? '#10b981' : 'var(--color-text-primary, #0f172a)',
+                        color: isExpanded ? 'var(--color-gold)' : 'var(--color-text-primary, #0f172a)',
                         margin: 0,
                         lineHeight: 1.4
                       }}>
@@ -277,7 +277,7 @@ export default function FAQPage() {
                   <span style={{
                     transition: 'transform 0.25s ease',
                     transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)',
-                    color: isExpanded ? '#10b981' : '#94a3b8',
+                    color: isExpanded ? 'var(--color-gold)' : '#94a3b8',
                     flexShrink: 0
                   }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -322,7 +322,7 @@ export default function FAQPage() {
                             padding: '4px 10px',
                             borderRadius: '6px',
                             border: '1px solid #cbd5e1',
-                            background: helpfulFeedback[faq.id] === 'yes' ? '#10b981' : '#ffffff',
+                            background: helpfulFeedback[faq.id] === 'yes' ? 'var(--color-gold)' : '#ffffff',
                             color: helpfulFeedback[faq.id] === 'yes' ? '#ffffff' : '#475569',
                             fontSize: '0.75rem',
                             fontWeight: '600',

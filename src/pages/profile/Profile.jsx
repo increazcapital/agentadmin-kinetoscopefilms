@@ -19,18 +19,15 @@ const profileIcons = {
 };
 
 const formatAgentID = (rawId) => {
-  if (!rawId || rawId === '—' || rawId === '-') return '—';
+  if (!rawId || rawId === '—' || rawId === 'undefined' || rawId === 'null') return 'YLDIQ-AG-1001';
   const str = String(rawId).trim();
-  if (/^KFPL-AG-\d+$/i.test(str)) {
-    return str.toUpperCase();
+  const m = str.match(/(?:AG|AGT)[-_ ]*(\d+)/i) || str.match(/(\d+)/);
+  if (m && m[1]) {
+    let val = parseInt(m[1], 10);
+    if (val < 1000) val += 1000;
+    return `YLDIQ-AG-${val}`;
   }
-  const digitsMatch = str.match(/\d+/);
-  if (digitsMatch) {
-    let val = parseInt(digitsMatch[0], 10);
-    if (val < 1000) val = 1000 + val;
-    return `KFPL-AG-${val}`;
-  }
-  return str;
+  return 'YLDIQ-AG-1001';
 };
 
 export default function Profile() {
@@ -443,14 +440,29 @@ export default function Profile() {
           }}
         />
       </div>
-
       <div className="kfpl-profile-hero">
         <div style={{ position: 'relative', flexShrink: 0, zIndex: 5 }}>
-          <div className="kfpl-profile-avatar-lg" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+          <div style={{
+            width: '84px',
+            height: '84px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #F5A800 0%, #D48F00 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '2rem',
+            fontWeight: '800',
+            color: '#FFFFFF',
+            boxShadow: '0 8px 24px rgba(245, 168, 0, 0.35)',
+            border: '3px solid rgba(255, 255, 255, 0.25)',
+            overflow: 'hidden',
+            position: 'relative',
+            zIndex: 1
+          }}>
             {profile.profilePic ? (
               <img src={profile.profilePic} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              name.charAt(0)
+              (name || 'A').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
             )}
           </div>
           <label
@@ -463,14 +475,14 @@ export default function Profile() {
               width: '30px',
               height: '30px',
               borderRadius: '50%',
-              background: '#10B981',
+              background: '#F5A800',
               color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
               boxShadow: '0 4px 10px rgba(0,0,0,0.4)',
-              border: '2px solid #061D13',
+              border: '2px solid #0B1F4D',
               zIndex: 10,
               transition: 'transform 0.2s ease, background 0.2s ease'
             }}
@@ -499,7 +511,7 @@ export default function Profile() {
                 justifyContent: 'center',
                 cursor: 'pointer',
                 boxShadow: '0 4px 10px rgba(0,0,0,0.4)',
-                border: '2px solid #061D13',
+                border: '2px solid #0B1F4D',
                 zIndex: 10,
                 transition: 'transform 0.2s ease, background 0.2s ease'
               }}

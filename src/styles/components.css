@@ -116,7 +116,7 @@
 .kfpl-kpi-suffix {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #0F766E; /* Teal accent */
+  color: #123A78; /* Teal accent */
   background: rgba(15, 118, 110, 0.08); /* Soft teal tint */
   border: 1px solid rgba(15, 118, 110, 0.15);
   padding: 2px 6px;
@@ -182,7 +182,7 @@
 }
 
 .kfpl-kpi-icon.navy {
-  background: rgba(6, 29, 19, 0.08);
+  background: rgba(11, 31, 77, 0.08);
   color: var(--color-navy);
 }
 
@@ -213,12 +213,12 @@
 
 /* Gold variant KPI card */
 .kfpl-card--gold {
-  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  background: linear-gradient(135deg, #FFF8E7 0%, #FFE7A3 100%);
   border-color: var(--color-gold-light);
 }
 
 .kfpl-card--gold::before {
-  background: linear-gradient(90deg, var(--color-gold) 0%, #34D399 50%, var(--color-gold) 100%);
+  background: linear-gradient(90deg, var(--color-gold) 0%, #FFC83D 50%, var(--color-gold) 100%);
   opacity: 1;
 }
 
@@ -280,7 +280,7 @@
 
 .kfpl-commission-summary-accent {
   height: 4px;
-  background: linear-gradient(90deg, var(--color-gold) 0%, var(--color-gold-dark) 50%, #047857 100%);
+  background: linear-gradient(90deg, var(--color-gold) 0%, var(--color-gold-dark) 50%, #D48F00 100%);
 }
 
 .kfpl-commission-summary-grid {
@@ -345,8 +345,8 @@
 .kfpl-badge--active,
 .kfpl-badge--approved,
 .kfpl-badge--paid {
-  background: #D1FAE5;
-  color: #065F46;
+  background: #FFF8E7;
+  color: #B45309;
 }
 
 .kfpl-badge--warning,
@@ -399,8 +399,8 @@
 }
 
 .kfpl-badge--conservative {
-  background: rgba(16, 185, 129, 0.1);
-  color: #065F46;
+  background: rgba(245, 168, 0, 0.12);
+  color: #B45309;
 }
 
 .kfpl-badge--moderate {
@@ -438,7 +438,7 @@
 .kfpl-btn-primary {
   background: var(--color-gold);
   color: var(--color-white);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 2px 8px rgba(245, 168, 0, 0.25);
 }
 
 .kfpl-btn-primary:hover {
@@ -491,7 +491,7 @@
 .kfpl-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6, 29, 19, 0.5);
+  background: rgba(11, 31, 77, 0.5);
   backdrop-filter: blur(6px);
   z-index: var(--z-modal);
   display: flex;
@@ -727,7 +727,7 @@
 .kfpl-tab.active {
   color: var(--color-white);
   background: var(--color-navy-light);
-  box-shadow: 0 4px 12px rgba(6, 29, 19, 0.15);
+  box-shadow: 0 4px 12px rgba(11, 31, 77, 0.15);
 }
 
 .kfpl-tab svg {
@@ -948,7 +948,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 16px rgba(245, 168, 0, 0.35);
   transition: var(--transition-smooth);
 }
 
@@ -1040,7 +1040,7 @@
 .kfpl-btn--primary {
   background: var(--color-gold);
   color: var(--color-white);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 2px 8px rgba(245, 168, 0, 0.25);
 }
 
 .kfpl-btn--primary:hover {

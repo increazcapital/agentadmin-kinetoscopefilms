@@ -202,7 +202,7 @@ export default function RewardsAndRedemption() {
           padding: 30px;
           border-radius: 20px;
           color: #ffffff !important;
-          border: 1px solid rgba(16, 185, 129, 0.15);
+          border: 1px solid rgba(245, 168, 0, 0.15);
           box-shadow: 0 12px 36px rgba(10, 46, 38, 0.15);
         }
 
@@ -277,8 +277,8 @@ export default function RewardsAndRedemption() {
         }
 
         .reward-stat-card.claimed .stat-card-icon {
-          background: rgba(16, 185, 129, 0.15);
-          color: #10B981;
+          background: rgba(245, 168, 0, 0.15);
+          color: #F5A800;
         }
 
         .reward-stat-card.locked .stat-card-icon {
@@ -354,7 +354,7 @@ export default function RewardsAndRedemption() {
           left: 0;
           right: 0;
           height: 3px;
-          background: linear-gradient(90deg, #d4af37, #10b981);
+          background: linear-gradient(90deg, #F5A800, #FFC83D);
           border-radius: 3px;
         }
 
@@ -474,7 +474,7 @@ export default function RewardsAndRedemption() {
         }
 
         .metric-type-chip.volume {
-          background: rgba(16, 185, 129, 0.95);
+          background: rgba(245, 168, 0, 0.95);
           color: #fff;
           border: 1px solid rgba(255,255,255,0.2);
         }
@@ -492,7 +492,7 @@ export default function RewardsAndRedemption() {
         }
 
         .status-claimed {
-          background: rgba(16, 185, 129, 0.95);
+          background: rgba(245, 168, 0, 0.95);
           color: #fff;
           border: 1px solid rgba(255,255,255,0.2);
         }
@@ -579,7 +579,7 @@ export default function RewardsAndRedemption() {
         .reward-card-progress-bar-fill {
           height: 100%;
           border-radius: 4px;
-          background: linear-gradient(90deg, #d4af37 0%, #10b981 100%);
+          background: linear-gradient(90deg, #F5A800 0%, #FFC83D 100%);
           transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -604,14 +604,14 @@ export default function RewardsAndRedemption() {
         }
 
         .btn-claim-active {
-          background: linear-gradient(180deg, #10B981 0%, #059669 100%);
+          background: linear-gradient(180deg, #123A78 0%, #F5A800 100%);
           color: #ffffff;
-          box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+          box-shadow: 0 4px 14px rgba(245, 168, 0, 0.25);
         }
 
         .btn-claim-active:hover {
           transform: translateY(-2px);
-          box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+          box-shadow: 0 6px 18px rgba(245, 168, 0, 0.4);
         }
 
         .btn-claimed-disabled {
@@ -863,9 +863,9 @@ export default function RewardsAndRedemption() {
                             alignItems: 'center',
                             gap: '4px',
                             cursor: 'pointer',
-                            background: 'rgba(16, 185, 129, 0.1)',
-                            border: '1px solid rgba(16, 185, 129, 0.25)',
-                            color: '#10B981',
+                            background: 'rgba(245, 168, 0, 0.12)',
+                            border: '1px solid rgba(245, 168, 0, 0.25)',
+                            color: '#F5A800',
                             fontWeight: 600
                           }}
                           onClick={() => setLightboxMedia({ type: 'video', url: reward.videoUrl, title: reward.title })}
@@ -1013,7 +1013,7 @@ export default function RewardsAndRedemption() {
               </div>
               <div className="kfpl-modal-footer" style={{ padding: '16px 24px', background: 'var(--color-surface)', borderTop: '1px solid var(--color-border)' }}>
                 <button type="button" className="kfpl-btn kfpl-btn-secondary" onClick={() => setShowClaimForm(null)} style={{ borderRadius: '8px' }}>Cancel</button>
-                <button type="submit" className="kfpl-btn kfpl-btn-primary" style={{ borderRadius: '8px', background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)', color: '#ffffff', border: 'none', fontWeight: 700, cursor: 'pointer' }} disabled={submittingClaim}>{submittingClaim ? 'Submitting Request...' : 'Submit Claim Request'}</button>
+                <button type="submit" className="kfpl-btn kfpl-btn-primary" style={{ borderRadius: '8px', background: 'linear-gradient(180deg, #123A78 0%, #F5A800 100%)', color: '#ffffff', border: 'none', fontWeight: 700, cursor: 'pointer' }} disabled={submittingClaim}>{submittingClaim ? 'Submitting Request...' : 'Submit Claim Request'}</button>
               </div>
             </form>
           </div>

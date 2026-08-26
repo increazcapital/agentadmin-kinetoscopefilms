@@ -13,14 +13,14 @@
 
 .kfpl-welcome-banner {
   background:
-    radial-gradient(circle at 76% 12%, rgba(16, 185, 129, 0.18) 0%, transparent 28%),
-    linear-gradient(135deg, var(--color-navy) 0%, #092619 52%, var(--color-navy-light) 100%);
+    radial-gradient(circle at 76% 12%, rgba(245, 168, 0, 0.18) 0%, transparent 28%),
+    linear-gradient(135deg, var(--color-navy) 0%, #123A78 52%, var(--color-navy-light) 100%);
   border-radius: var(--radius-xl);
   padding: 34px 40px;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(16, 185, 129, 0.12);
-  box-shadow: 0 18px 45px rgba(6, 29, 19, 0.16);
+  border: 1px solid rgba(245, 168, 0, 0.12);
+  box-shadow: 0 18px 45px rgba(11, 31, 77, 0.16);
 }
 
 .kfpl-welcome-content {
@@ -63,7 +63,7 @@
 
 .kfpl-welcome-name {
   color: var(--color-gold);
-  background: linear-gradient(135deg, #10B981, #A7F3D0);
+  background: linear-gradient(135deg, #F5A800, #FFC83D);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -125,7 +125,7 @@
 .kfpl-welcome-circle {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(245, 168, 0, 0.08);
 }
 
 .kfpl-welcome-circle--1 {
@@ -133,7 +133,7 @@
   height: 280px;
   top: -100px;
   right: -60px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(245, 168, 0, 0.06) 0%, transparent 70%);
   animation: floatSlow 8s ease-in-out infinite;
 }
 
@@ -142,7 +142,7 @@
   height: 180px;
   bottom: -60px;
   right: 120px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.04) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(245, 168, 0, 0.04) 0%, transparent 70%);
   animation: floatSlow 6s ease-in-out infinite reverse;
 }
 
@@ -151,7 +151,7 @@
   height: 120px;
   top: -20px;
   right: 240px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(245, 168, 0, 0.03) 0%, transparent 70%);
   animation: floatSlow 10s ease-in-out infinite;
 }
 
@@ -385,7 +385,7 @@
   width: 120px;
   height: 120px;
   border-radius: var(--radius-full);
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(245, 168, 0, 0.15);
 }
 
 .kfpl-offer-card-banner-icon {
@@ -565,7 +565,7 @@
   grid-template-columns: 1fr 1fr;
   font-family: 'Inter', sans-serif;
   overflow: hidden;
-  background: linear-gradient(135deg, #f0fdf4 0%, #e8f5e9 50%, #d1e7dd 100%);
+  background: linear-gradient(135deg, #F7F8FA 0%, #FFF8E7 50%, #FFE7A3 100%);
 }
 
 .kfpl-login-wallpaper {
@@ -583,7 +583,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(6,29,19,0.6) 0%, rgba(6,29,19,0.3) 40%, rgba(6,29,19,0.9) 100%);
+  background: linear-gradient(180deg, rgba(11, 31, 77,0.6) 0%, rgba(11, 31, 77,0.3) 40%, rgba(11, 31, 77,0.9) 100%);
   z-index: 1;
 }
 
@@ -591,7 +591,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(16,185,129,0.12) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(245, 168, 0, 0.12) 0%, transparent 60%);
   z-index: 2;
 }
 
@@ -602,7 +602,7 @@
   background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
   display: flex; align-items: center; justify-content: center;
   font-weight: 900; font-size: 1.5rem; color: #fff;
-  margin-bottom: 20px; box-shadow: 0 8px 32px rgba(16,185,129,0.3);
+  margin-bottom: 20px; box-shadow: 0 8px 32px rgba(245, 168, 0, 0.3);
 }
 
 .kfpl-login-brand h1 {
@@ -626,7 +626,7 @@
   content: '';
   position: absolute; top: -150px; right: -150px;
   width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(245, 168, 0, 0.06) 0%, transparent 70%);
   border-radius: 50%; pointer-events: none;
 }
 
@@ -639,7 +639,7 @@
   background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
   display: inline-flex; align-items: center; justify-content: center;
   font-weight: 900; font-size: 1.375rem; color: #fff;
-  margin-bottom: 14px; box-shadow: 0 6px 24px rgba(16,185,129,0.25);
+  margin-bottom: 14px; box-shadow: 0 6px 24px rgba(245, 168, 0, 0.25);
 }
 
 .kfpl-login-title {
@@ -665,7 +665,7 @@
 
 .kfpl-login-tab.active {
   background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
-  color: #fff; box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+  color: #fff; box-shadow: 0 4px 16px rgba(245, 168, 0, 0.3);
 }
 
 .kfpl-login-tab:hover:not(.active) { color: #334155; background: #e2e8f0; }
@@ -691,7 +691,7 @@
 .kfpl-login-input:focus {
   border-color: var(--color-gold);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12), 0 0 20px rgba(16, 185, 129, 0.04);
+  box-shadow: 0 0 0 3px rgba(245, 168, 0, 0.12), 0 0 20px rgba(245, 168, 0, 0.04);
 }
 
 .kfpl-login-password-wrap { position: relative; }
@@ -730,7 +730,7 @@
   background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
   color: #fff; border: none; font-family: 'Inter', sans-serif;
   position: relative; overflow: hidden;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2); letter-spacing: 0.3px;
+  box-shadow: 0 4px 20px rgba(245, 168, 0, 0.2); letter-spacing: 0.3px;
 }
 
 .kfpl-login-btn::after {
@@ -740,7 +740,7 @@
 }
 
 .kfpl-login-btn:hover:not(:disabled) {
-  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4); transform: translateY(-1.5px);
+  box-shadow: 0 8px 32px rgba(245, 168, 0, 0.4); transform: translateY(-1.5px);
 }
 
 .kfpl-login-btn:hover:not(:disabled)::after { opacity: 1; }
@@ -758,9 +758,9 @@
 
 .kfpl-login-success {
   display: flex; align-items: center; gap: 10px;
-  padding: 11px 16px; background: #f0fdf4;
-  border: 1px solid #bbf7d0; border-radius: 10px;
-  color: #16a34a; font-size: 0.8125rem; font-weight: 500; margin-bottom: 6px;
+  padding: 11px 16px; background: #FFF8E7;
+  border: 1px solid #FFE7A3; border-radius: 10px;
+  color: #D48F00; font-size: 0.8125rem; font-weight: 500; margin-bottom: 6px;
 }
 
 .kfpl-login-footer {
@@ -774,7 +774,7 @@
 
 .kfpl-login-register-scroll::-webkit-scrollbar { width: 6px; }
 .kfpl-login-register-scroll::-webkit-scrollbar-track { background: transparent; }
-.kfpl-login-register-scroll::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 4px; }
+.kfpl-login-register-scroll::-webkit-scrollbar-thumb { background: rgba(245, 168, 0, 0.3); border-radius: 4px; }
 
 .kfpl-login-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
@@ -804,15 +804,15 @@
 .kfpl-login-tfa-icon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 56px; height: 56px; border-radius: 50%;
-  background: rgba(16,185,129,0.1); color: var(--color-gold); margin-bottom: 14px;
+  background: rgba(245, 168, 0, 0.12); color: var(--color-gold); margin-bottom: 14px;
 }
 
 .kfpl-login-tfa-icon svg { width: 28px; height: 28px; }
 
 .kfpl-login-mock-otp {
   margin-top: 12px; padding: 8px 14px;
-  background: rgba(16,185,129,0.06); border-radius: 8px;
-  border: 1px solid rgba(16,185,129,0.15); display: inline-block;
+  background: rgba(245, 168, 0, 0.06); border-radius: 8px;
+  border: 1px solid rgba(245, 168, 0, 0.15); display: inline-block;
 }
 
 .kfpl-login-mock-otp span { font-size: 0.75rem; color: var(--color-gold); font-weight: 600; }
@@ -831,7 +831,7 @@
 
 .kfpl-phone-unified-wrap:focus-within {
   border-color: var(--color-gold);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 0 3px rgba(245, 168, 0, 0.15);
 }
 
 .kfpl-phone-unified-wrap select {
@@ -878,7 +878,7 @@
   .kfpl-login-wallpaper { display: none; }
   .kfpl-login-panel {
     min-height: 100vh;
-    background: linear-gradient(180deg, rgba(6,29,19,0.95) 0%, rgba(6,29,19,0.99) 100%), url('/login-bg.jpg') center / cover no-repeat;
+    background: linear-gradient(180deg, rgba(11, 31, 77,0.95) 0%, rgba(11, 31, 77,0.99) 100%), url('/login-bg.jpg') center / cover no-repeat;
     overflow-y: auto;
     height: auto;
   }
@@ -902,7 +902,7 @@
   .kfpl-login-tab.active {
     background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 16px rgba(16,185,129,0.4) !important;
+    box-shadow: 0 4px 16px rgba(245, 168, 0, 0.4) !important;
   }
   .kfpl-login-label {
     color: rgba(240, 253, 244, 0.95) !important;
@@ -931,7 +931,7 @@
 .kfpl-drawer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6, 29, 19, 0.5);
+  background: rgba(11, 31, 77, 0.5);
   backdrop-filter: blur(4px);
   z-index: var(--z-modal);
   animation: kfpl-fade-in 0.2s ease;
@@ -980,13 +980,13 @@
 
 /* ── Premium Detail Page Header ─────────────────────── */
 .kfpl-detail-card-header {
-  background: linear-gradient(135deg, #061D13 0%, #11442F 100%);
+  background: linear-gradient(135deg, #0B1F4D 0%, #1A4D8F 100%);
   border-radius: var(--radius-xl);
   padding: 28px 32px;
   margin-bottom: 24px;
   color: var(--color-white);
-  border: 1px solid rgba(16, 185, 129, 0.15);
-  box-shadow: 0 10px 30px rgba(6, 29, 19, 0.15);
+  border: 1px solid rgba(245, 168, 0, 0.15);
+  box-shadow: 0 10px 30px rgba(11, 31, 77, 0.15);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1004,8 +1004,8 @@
 
 .kfpl-detail-card-header .kfpl-detail-avatar {
   background: rgba(255, 255, 255, 0.1);
-  color: #10B981;
-  border: 2px solid rgba(16, 185, 129, 0.3);
+  color: #F5A800;
+  border: 2px solid rgba(245, 168, 0, 0.3);
 }
 
 /* Let's style the KPI summary widgets row inside detail page */
@@ -1410,7 +1410,7 @@
 
 #commission-page .kfpl-commission-total-card {
   border-radius: var(--radius-xl);
-  box-shadow: 0 12px 34px rgba(6, 29, 19, 0.16);
+  box-shadow: 0 12px 34px rgba(11, 31, 77, 0.16);
   gap: 24px;
 }
 
@@ -1459,7 +1459,7 @@
 /* Withdrawal page */
 #withdrawal-page .kfpl-withdrawal-balance-card {
   border-radius: var(--radius-xl);
-  box-shadow: 0 12px 34px rgba(6, 29, 19, 0.16);
+  box-shadow: 0 12px 34px rgba(11, 31, 77, 0.16);
   position: relative;
   overflow: hidden;
 }
@@ -1471,7 +1471,7 @@
   width: 220px;
   height: 220px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, transparent 68%);
+  background: radial-gradient(circle, rgba(245, 168, 0, 0.14) 0%, transparent 68%);
 }
 
 #withdrawal-page .kfpl-withdrawal-grid {
@@ -1502,12 +1502,12 @@
   gap: 22px;
   padding: 28px 30px;
   border-radius: var(--radius-xl);
-  border: 1px solid rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(245, 168, 0, 0.16);
   background:
-    radial-gradient(circle at 92% 12%, rgba(16, 185, 129, 0.16) 0%, transparent 30%),
-    linear-gradient(135deg, var(--color-navy) 0%, #092619 48%, var(--color-navy-light) 100%);
+    radial-gradient(circle at 92% 12%, rgba(245, 168, 0, 0.16) 0%, transparent 30%),
+    linear-gradient(135deg, var(--color-navy) 0%, #123A78 48%, var(--color-navy-light) 100%);
   color: var(--color-text-inverse);
-  box-shadow: 0 16px 38px rgba(6, 29, 19, 0.18);
+  box-shadow: 0 16px 38px rgba(11, 31, 77, 0.18);
   overflow: visible;
   position: relative;
 }
@@ -1532,7 +1532,7 @@
   height: 76px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
-  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.28);
+  box-shadow: 0 10px 24px rgba(245, 168, 0, 0.28);
   position: relative;
   z-index: 1;
 }
@@ -1684,7 +1684,7 @@
   padding: 10px 12px;
   border-radius: var(--radius-md);
   background: var(--color-gold-light);
-  border: 1px solid rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(245, 168, 0, 0.18);
   color: var(--color-gold-dark);
   font-size: 0.78rem;
   font-weight: 600;
@@ -1945,7 +1945,7 @@
 }
 
 #grow-page .kfpl-income-calculator-results {
-  background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%);
+  background: linear-gradient(180deg, #FFF8E7 0%, #FFFFFF 100%);
 }
 
 #grow-page .kfpl-slab-table {
@@ -2031,7 +2031,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   background:
-    linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, transparent 48%),
+    linear-gradient(135deg, rgba(245, 168, 0, 0.12) 0%, transparent 48%),
     linear-gradient(135deg, var(--color-navy) 0%, #0D2F22 100%);
 }
 
@@ -2132,9 +2132,9 @@
   gap: 24px;
   padding: 24px 28px;
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #061D13 0%, #0c3323 50%, #11442F 100%);
-  border: 1px solid rgba(16, 185, 129, 0.15);
-  box-shadow: 0 10px 30px rgba(6, 29, 19, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: linear-gradient(135deg, #0B1F4D 0%, #0c3323 50%, #1A4D8F 100%);
+  border: 1px solid rgba(245, 168, 0, 0.15);
+  box-shadow: 0 10px 30px rgba(11, 31, 77, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   position: relative;
   overflow: hidden;
   margin-bottom: 24px;
@@ -2173,8 +2173,8 @@
 #support-page .kfpl-support-overview .kfpl-page-eyebrow {
   display: inline-block;
   padding: 4px 10px;
-  background: rgba(16, 185, 129, 0.15);
-  color: #10B981;
+  background: rgba(245, 168, 0, 0.15);
+  color: #F5A800;
   border-radius: var(--radius-sm);
   font-size: 0.6875rem;
   font-weight: 700;
@@ -2256,7 +2256,7 @@
 }
 
 #rewards-page .kfpl-reward-card--unlocked {
-  border-color: rgba(16, 185, 129, 0.42);
+  border-color: rgba(245, 168, 0, 0.42);
 }
 
 #rewards-page .kfpl-reward-card-icon {
@@ -2312,7 +2312,7 @@
 }
 
 #grow-page .kfpl-income-calculator-results {
-  border-color: rgba(16, 185, 129, 0.22);
+  border-color: rgba(245, 168, 0, 0.22);
   background: #F8FCFA;
 }
 
@@ -2327,9 +2327,9 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-lg);
-  background: rgba(16, 185, 129, 0.12);
-  color: #10B981;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgba(245, 168, 0, 0.12);
+  color: #F5A800;
+  border: 1px solid rgba(245, 168, 0, 0.25);
   flex-shrink: 0;
 }
 
@@ -2666,7 +2666,7 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 100px;
-  box-shadow: 0 10px 30px rgba(6, 29, 19, 0.05);
+  box-shadow: 0 10px 30px rgba(11, 31, 77, 0.05);
   transition: var(--transition-smooth);
 }
 
@@ -2684,7 +2684,7 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 10px 40px rgba(6, 29, 19, 0.12);
+    box-shadow: 0 10px 40px rgba(11, 31, 77, 0.12);
     z-index: 1000;
   }
 }
@@ -2716,7 +2716,7 @@
   background: var(--color-navy);
   border-color: var(--color-navy);
   color: var(--color-white);
-  box-shadow: 0 4px 12px rgba(6, 29, 19, 0.15);
+  box-shadow: 0 4px 12px rgba(11, 31, 77, 0.15);
 }
 
 .kfpl-pub-action-btn:hover svg {
@@ -2794,7 +2794,7 @@
   letter-spacing: 1px;
   background: var(--color-gold-light);
   color: var(--color-gold-dark);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(245, 168, 0, 0.2);
 }
 
 .kfpl-pub-views-badge {
@@ -2863,7 +2863,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(16, 185, 129, 0.25);
+  border: 2px solid rgba(245, 168, 0, 0.25);
   box-shadow: var(--shadow-sm);
 }
 
@@ -2967,7 +2967,7 @@
   height: 480px;
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 20px 48px rgba(6, 29, 19, 0.08);
+  box-shadow: 0 20px 48px rgba(11, 31, 77, 0.08);
   margin-bottom: 48px;
   background: var(--color-surface-alt);
 }
@@ -2986,7 +2986,7 @@
 .kfpl-pub-premium-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 60%, rgba(6, 29, 19, 0.25) 100%);
+  background: linear-gradient(180deg, transparent 60%, rgba(11, 31, 77, 0.25) 100%);
   pointer-events: none;
 }
 
@@ -3010,7 +3010,7 @@
   border: 1px solid var(--color-border-light);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 4px 20px rgba(6, 29, 19, 0.02);
+  box-shadow: 0 4px 20px rgba(11, 31, 77, 0.02);
   transition: var(--transition-smooth);
   position: relative;
   overflow: hidden;
@@ -3029,7 +3029,7 @@
 
 .kfpl-pub-highlight-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(6, 29, 19, 0.06);
+  box-shadow: 0 12px 30px rgba(11, 31, 77, 0.06);
   border-color: var(--card-accent, var(--color-gold));
 }
 
@@ -3079,7 +3079,7 @@
 .kfpl-pub-highlight-trend {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #10B981;
+  color: #F5A800;
 }
 
 .kfpl-pub-highlight-sub {
@@ -3098,7 +3098,7 @@
   border-radius: 24px;
   padding: 48px 56px;
   margin-bottom: 56px;
-  box-shadow: 0 10px 40px rgba(6, 29, 19, 0.025);
+  box-shadow: 0 10px 40px rgba(11, 31, 77, 0.025);
 }
 
 @media (max-width: 768px) {
@@ -3345,7 +3345,7 @@
   background: var(--color-navy);
   border-color: var(--color-navy);
   color: var(--color-white);
-  box-shadow: 0 4px 12px rgba(6, 29, 19, 0.12);
+  box-shadow: 0 4px 12px rgba(11, 31, 77, 0.12);
   transform: translateY(-1px);
 }
 
@@ -3461,7 +3461,7 @@
 /* Bottom Subscription CTA */
 .kfpl-pub-bottom-subscription {
   background: linear-gradient(135deg, var(--color-navy-mid) 0%, var(--color-navy) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(245, 168, 0, 0.12);
   border-radius: 28px;
   padding: 56px 64px;
   margin-top: 64px;
@@ -3469,7 +3469,7 @@
   display: flex;
   flex-direction: column;
   gap: 28px;
-  box-shadow: 0 20px 48px rgba(6, 29, 19, 0.15);
+  box-shadow: 0 20px 48px rgba(11, 31, 77, 0.15);
 }
 
 .kfpl-pub-sub-text h3 {
@@ -3531,7 +3531,7 @@
 .kfpl-pub-sub-input-wrap input:focus {
   border-color: var(--color-gold);
   background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 4px rgba(245, 168, 0, 0.2);
   outline: none;
 }
 
@@ -3551,7 +3551,7 @@
 
 .kfpl-pub-sub-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 20px rgba(245, 168, 0, 0.4);
 }
 
 /* Floating copy success alert toast */
@@ -3570,7 +3570,7 @@
   font-weight: 700;
   padding: 14px 24px;
   border-radius: var(--radius-full);
-  box-shadow: 0 20px 40px rgba(6, 29, 19, 0.2);
+  box-shadow: 0 20px 40px rgba(11, 31, 77, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.15);
   pointer-events: none;
   opacity: 0;
@@ -3602,7 +3602,7 @@
   border: 1px solid var(--color-border-light);
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 4px 16px rgba(6, 29, 19, 0.015);
+  box-shadow: 0 4px 16px rgba(11, 31, 77, 0.015);
 }
 
 .kfpl-widget-title {
@@ -3651,7 +3651,7 @@
 
 .kfpl-widget-search-wrap input:focus {
   border-color: var(--color-navy);
-  box-shadow: 0 0 0 2px rgba(6, 29, 19, 0.05);
+  box-shadow: 0 0 0 2px rgba(11, 31, 77, 0.05);
   outline: none;
 }
 
@@ -3826,7 +3826,7 @@
 
 /* Sidebar premium subscription widget */
 .kfpl-sidebar-newsletter-card {
-  background: linear-gradient(135deg, #0B3020 0%, #061D13 100%);
+  background: linear-gradient(135deg, #123A78 0%, #0B1F4D 100%);
   color: var(--color-white);
   border: 1px solid var(--color-navy-light);
   position: relative;
@@ -3913,7 +3913,7 @@
 .kfpl-newsletter-card-btn:hover {
   background: var(--color-white);
   color: var(--color-navy);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 12px rgba(245, 168, 0, 0.2);
 }
 
 /* ── Related Insights Grid (Redesigned) ─────────────────────── */
@@ -3986,12 +3986,12 @@
   display: flex;
   flex-direction: column;
   transition: var(--transition-smooth);
-  box-shadow: 0 4px 20px rgba(6, 29, 19, 0.01);
+  box-shadow: 0 4px 20px rgba(11, 31, 77, 0.01);
 }
 
 .kfpl-pub-related-card-premium:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 36px rgba(6, 29, 19, 0.06);
+  box-shadow: 0 16px 36px rgba(11, 31, 77, 0.06);
   border-color: var(--color-border);
 }
 
@@ -4096,7 +4096,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(245, 168, 0, 0.2);
 }
 
 .kfpl-pub-related-author-name {
@@ -4184,9 +4184,9 @@
 }
 
 .kfpl-detail-meta .kfpl-badge--active {
-  background: rgba(16, 185, 129, 0.25) !important;
-  color: #34D399 !important;
-  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  background: rgba(245, 168, 0, 0.25) !important;
+  color: #FFC83D !important;
+  border: 1px solid rgba(245, 168, 0, 0.45) !important;
 }
 
 .kfpl-detail-meta .kfpl-badge--inactive,
@@ -4197,9 +4197,9 @@
 }
 
 .kfpl-detail-meta .kfpl-badge--conservative {
-  background: rgba(16, 185, 129, 0.25) !important;
-  color: #34D399 !important;
-  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  background: rgba(245, 168, 0, 0.25) !important;
+  color: #FFC83D !important;
+  border: 1px solid rgba(245, 168, 0, 0.45) !important;
 }
 
 .kfpl-detail-meta .kfpl-badge--moderate {

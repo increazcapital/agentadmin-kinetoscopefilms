@@ -319,7 +319,7 @@ export default function Header({ isCollapsed, onMenuClick }) {
                   {notifications.some((n) => !n.isRead) && (
                     <button 
                       onClick={(e) => { e.stopPropagation(); markAllAsRead(); }}
-                      style={{ background: 'none', border: 'none', color: '#10B981', fontSize: '0.725rem', cursor: 'pointer', fontWeight: 600, padding: 0 }}
+                      style={{ background: 'none', border: 'none', color: '#F5A800', fontSize: '0.725rem', cursor: 'pointer', fontWeight: 600, padding: 0 }}
                     >
                       Mark all read
                     </button>
@@ -347,7 +347,7 @@ export default function Header({ isCollapsed, onMenuClick }) {
                     <div 
                       key={n.id}
                       className="kfpl-notif-item"
-                      style={{ background: n.isRead ? 'transparent' : 'rgba(16, 185, 129, 0.04)' }}
+                      style={{ background: n.isRead ? 'transparent' : 'rgba(245, 168, 0, 0.04)' }}
                       onClick={() => {
                         markSingleAsRead(n.id);
                         if (n.link) navigate(n.link);
@@ -356,7 +356,7 @@ export default function Header({ isCollapsed, onMenuClick }) {
                     >
                       <div style={{
                         width: '32px', height: '32px', borderRadius: '50%',
-                        background: n.category === 'danger' ? '#fef2f2' : n.category === 'success' ? '#ecfdf5' : '#e0f2fe',
+                        background: n.category === 'danger' ? '#fef2f2' : n.category === 'success' ? '#FFF8E7' : '#e0f2fe',
                         color: n.category === 'danger' ? '#ef4444' : n.category === 'success' ? '#10b981' : '#0284c7',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: '0.875rem', fontWeight: 800, flexShrink: 0
@@ -369,7 +369,7 @@ export default function Header({ isCollapsed, onMenuClick }) {
                             {n.title}
                           </span>
                           {!n.isRead && (
-                            <span style={{ fontSize: '0.625rem', background: '#10b981', color: '#fff', padding: '1px 6px', borderRadius: '10px', fontWeight: 700 }}>New</span>
+                            <span style={{ fontSize: '0.625rem', background: '#F5A800', color: '#fff', padding: '1px 6px', borderRadius: '10px', fontWeight: 700 }}>New</span>
                           )}
                         </div>
                         <span style={{ fontSize: '0.725rem', color: '#64748b', marginTop: '2px', lineHeight: '1.4' }}>{n.message}</span>

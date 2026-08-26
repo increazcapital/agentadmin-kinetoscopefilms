@@ -333,13 +333,13 @@ export default function AddClient() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  color: 'var(--color-navy, #061D13)',
+                  color: 'var(--color-navy, #0B1F4D)',
                   fontWeight: 700,
                   fontSize: '0.875rem'
                 }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981' }}></span>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#F5A800' }}></span>
                   <span>{agentInfo.name} {agentInfo.code ? `(${agentInfo.code})` : ''}</span>
-                  <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: '#059669', background: '#ECFDF5', padding: '2px 8px', borderRadius: '4px', border: '1px solid #A7F3D0' }}>Auto-Assigned</span>
+                  <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: '#F5A800', background: '#FFF8E7', padding: '2px 8px', borderRadius: '4px', border: '1px solid #FFE7A3' }}>Auto-Assigned</span>
                 </div>
               </div>
             </div>
@@ -605,13 +605,13 @@ export default function AddClient() {
                 justifyContent: 'center',
                 gap: '8px',
                 minWidth: '190px',
-                background: (isSubmitting || loading) ? '#64748B' : 'var(--color-gold, #10B981)',
-                borderColor: (isSubmitting || loading) ? '#64748B' : 'var(--color-gold, #10B981)',
+                background: (isSubmitting || loading) ? '#64748B' : 'var(--color-gold)',
+                borderColor: (isSubmitting || loading) ? '#64748B' : 'var(--color-gold)',
                 color: '#FFFFFF',
                 opacity: (isSubmitting || loading) ? 0.75 : 1,
                 cursor: (isSubmitting || loading) ? 'not-allowed' : 'pointer',
                 transition: 'all 0.2s ease',
-                boxShadow: (isSubmitting || loading) ? 'none' : '0 2px 8px rgba(16, 185, 129, 0.25)'
+                boxShadow: (isSubmitting || loading) ? 'none' : '0 2px 8px rgba(245, 168, 0, 0.25)'
               }}
             >
               {(isSubmitting || loading) && (

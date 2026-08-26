@@ -111,7 +111,7 @@
 .kfpl-dropzone:hover,
 .kfpl-dropzone.active {
   border-color: var(--color-gold);
-  background: var(--color-gold-glow, rgba(16, 185, 129, 0.06));
+  background: var(--color-gold-glow, rgba(245, 168, 0, 0.06));
 }
 
 .kfpl-dropzone-icon {
@@ -329,7 +329,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 0;
-  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+  border-bottom: 1px solid rgba(245, 168, 0, 0.15);
 }
 
 .kfpl-income-result-item:last-child {

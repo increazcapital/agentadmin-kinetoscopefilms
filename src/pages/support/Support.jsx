@@ -21,11 +21,11 @@ export default function Support() {
     };
   });
 
-  const [agentCode, setAgentCode] = useState('KFPL-AG-1001');
+  const [agentCode, setAgentCode] = useState('YLDIQ-AG-1001');
 
   // Bulletproof Agent ID Formatter (guarantees KFPL-AG-100X format, never KFPL-AG-100001)
   const formatAgentID = (rawId) => {
-    if (!rawId || rawId === '—') return 'KFPL-AG-1001';
+    if (!rawId || rawId === '—') return 'YLDIQ-AG-1001';
     const str = String(rawId).trim();
     if (/^KFPL-AG-\d{4}$/i.test(str)) {
       return str.toUpperCase();
@@ -38,7 +38,7 @@ export default function Support() {
       if (num < 1000) num = 1000 + num;
       return `KFPL-AG-${num}`;
     }
-    return 'KFPL-AG-1001';
+    return 'YLDIQ-AG-1001';
   };
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function Support() {
   }, []);
 
   const cleanWaNumber = (supportData.agentSupportWhatsapp || '919999999999').replace(/[^0-9]/g, '');
-  const waText = agentCode ? `?text=Hi%20Kinetoscope%20Support%2C%20I'm%20agent%20${encodeURIComponent(agentCode)}` : '';
+  const waText = agentCode ? `?text=Hi%20YieldIQ%20Support%2C%20I'm%20agent%20${encodeURIComponent(agentCode)}` : '';
   const waLink = `https://wa.me/${cleanWaNumber}${waText}`;
   const cleanPhone = (supportData.agentSupportPhone || '+919999999999').replace(/\s/g, '');
   const displayEmail = (supportData.agentSupportEmail && supportData.agentSupportEmail.includes('@')) 
@@ -112,7 +112,7 @@ export default function Support() {
       <div className="kfpl-page-header">
         <div className="kfpl-page-header-left">
           <h1 className="kfpl-page-title">Support</h1>
-          <p className="kfpl-page-subtitle">Contact the Kinetoscope support desk for commission, client, and payout assistance.</p>
+          <p className="kfpl-page-subtitle">Contact the YieldIQ support desk for commission, client, and payout assistance.</p>
         </div>
       </div>
 
@@ -143,7 +143,7 @@ export default function Support() {
             justifyContent: 'center',
             border: '1px solid rgba(255, 255, 255, 0.2)'
           }}>
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#34d399" strokeWidth="2">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FFC83D" strokeWidth="2">
               <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
           </div>
@@ -155,14 +155,14 @@ export default function Support() {
               padding: '4px 10px',
               borderRadius: '20px',
               background: 'rgba(52, 211, 153, 0.15)',
-              color: '#34d399',
+              color: '#FFC83D',
               fontSize: '0.75rem',
               fontWeight: '700',
               textTransform: 'uppercase',
               letterSpacing: '0.6px',
               marginBottom: '8px'
             }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#34d399', display: 'inline-block' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFC83D', display: 'inline-block' }} />
               Agent Help Desk
             </div>
             <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#ffffff', margin: '0 0 4px 0', letterSpacing: '-0.3px' }}>
@@ -188,7 +188,7 @@ export default function Support() {
           <span style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', letterSpacing: '0.5px' }}>
             Agent ID: {agentCode}
           </span>
-          <small style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <small style={{ fontSize: '0.75rem', color: '#FFC83D', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             {supportData.supportHours || 'Mon - Sat, 10 AM to 6 PM IST'}
           </small>
         </div>
@@ -243,7 +243,7 @@ export default function Support() {
                 <h3 style={{ fontSize: '1.15rem', fontWeight: '700', color: 'var(--color-navy, #0f172a)', margin: 0 }}>
                   WhatsApp Support
                 </h3>
-                <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#D48F00', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   Instant Chat Response
                 </span>
               </div>
@@ -355,8 +355,8 @@ export default function Support() {
           background: 'var(--color-surface, #ffffff)',
           borderRadius: '16px',
           padding: '26px',
-          border: '1px solid rgba(16, 185, 129, 0.25)',
-          boxShadow: '0 4px 20px -2px rgba(16, 185, 129, 0.08)',
+          border: '1px solid rgba(245, 168, 0, 0.25)',
+          boxShadow: '0 4px 20px -2px rgba(245, 168, 0, 0.08)',
           display: 'flex',
           flexDirection: 'column',
           justify: 'space-between',
@@ -369,7 +369,7 @@ export default function Support() {
             left: 0,
             right: 0,
             height: '4px',
-            background: 'linear-gradient(90deg, #10b981 0%, #047857 100%)'
+            background: 'linear-gradient(90deg, #F5A800 0%, #D48F00 100%)'
           }} />
 
           <div>
@@ -378,11 +378,11 @@ export default function Support() {
                 width: '52px',
                 height: '52px',
                 borderRadius: '14px',
-                background: 'rgba(16, 185, 129, 0.12)',
+                background: 'rgba(245, 168, 0, 0.12)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#10b981'
+                color: '#F5A800'
               }}>
                 <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -392,7 +392,7 @@ export default function Support() {
                 <h3 style={{ fontSize: '1.15rem', fontWeight: '700', color: 'var(--color-navy, #0f172a)', margin: 0 }}>
                   Phone Support
                 </h3>
-                <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#059669', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#F5A800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   Priority Helpline
                 </span>
               </div>
@@ -411,12 +411,12 @@ export default function Support() {
             width: '100%',
             padding: '12px 20px',
             borderRadius: '10px',
-            background: 'linear-gradient(135deg, #10b981 0%, #047857 100%)',
+            background: 'linear-gradient(135deg, #F5A800 0%, #D48F00 100%)',
             color: '#ffffff',
             fontWeight: '600',
             fontSize: '0.9375rem',
             textDecoration: 'none',
-            boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)',
+            boxShadow: '0 4px 14px rgba(245, 168, 0, 0.3)',
             transition: 'transform 0.2s ease'
           }}>
             <span>Call Dedicated Line</span>

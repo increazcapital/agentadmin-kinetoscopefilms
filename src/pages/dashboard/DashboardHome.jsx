@@ -41,7 +41,7 @@ const rewardIcons = {
   diamond: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/></svg>,
 };
 
-const SEGMENT_COLORS = ['#10B981', '#1565C0', '#2E7D32', '#E65100', '#7B1FA2', '#00838F'];
+const SEGMENT_COLORS = ['#F5A800', '#1565C0', '#2E7D32', '#E65100', '#7B1FA2', '#00838F'];
 
 export default function DashboardHome() {
   const navigate = useNavigate();
@@ -569,7 +569,7 @@ export default function DashboardHome() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{
               width: '36px', height: '36px', borderRadius: '10px',
-              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%)',
+              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(245, 168, 0, 0.2) 100%)',
               border: '1px solid rgba(212, 175, 55, 0.35)', color: '#D97706',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 4px 12px rgba(212, 175, 55, 0.15)'
@@ -579,7 +579,7 @@ export default function DashboardHome() {
             <div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: 'var(--color-navy)', margin: 0, letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 Active Rewards
-                <span style={{ fontSize: '0.68rem', background: 'rgba(16, 185, 129, 0.12)', color: 'var(--color-primary-green)', padding: '2px 8px', borderRadius: '12px', fontWeight: '700', border: '1px solid rgba(16, 185, 129, 0.25)', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.68rem', background: 'rgba(245, 168, 0, 0.12)', color: 'var(--color-primary-green)', padding: '2px 8px', borderRadius: '12px', fontWeight: '700', border: '1px solid rgba(245, 168, 0, 0.25)', textTransform: 'uppercase' }}>
                   Milestones
                 </span>
               </h3>
@@ -647,8 +647,8 @@ export default function DashboardHome() {
                     <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
                       <span style={{
                         fontSize: '0.65rem', fontWeight: 800, padding: '4px 10px', borderRadius: '12px',
-                        background: isLocked ? 'rgba(100, 116, 139, 0.85)' : 'linear-gradient(135deg, #059669, #10B981)',
-                        color: '#ffffff', boxShadow: isLocked ? 'none' : '0 2px 8px rgba(16,185,129,0.4)',
+                        background: isLocked ? 'rgba(100, 116, 139, 0.85)' : 'linear-gradient(135deg, #0B1F4D, #F5A800)',
+                        color: '#ffffff', boxShadow: isLocked ? 'none' : '0 2px 8px rgba(245, 168, 0, 0.4)',
                         textTransform: 'uppercase'
                       }}>
                         {isLocked ? 'Locked' : 'Claim Now'}
@@ -672,7 +672,7 @@ export default function DashboardHome() {
                         <span style={{ color: 'var(--color-primary-green)' }}>{Math.round(progress)}%</span>
                       </div>
                       <div style={{ width: '100%', height: '6px', background: '#E2E8F0', borderRadius: '10px', overflow: 'hidden' }}>
-                        <div style={{ width: `${progress}%`, height: '100%', background: 'linear-gradient(90deg, #10B981, #059669)', borderRadius: '10px' }} />
+                        <div style={{ width: `${progress}%`, height: '100%', background: 'linear-gradient(90deg, #123A78, #F5A800)', borderRadius: '10px' }} />
                       </div>
                     </div>
                   </div>
@@ -720,7 +720,7 @@ export default function DashboardHome() {
             </div>
           ) : (
             <div className="kfpl-chart-body">
-              <LineChart data={lineChartData} height={200} color="#10B981" />
+              <LineChart data={lineChartData} height={200} color="#F5A800" />
             </div>
           )}
         </div>

@@ -128,7 +128,7 @@
 }
 
 .kfpl-table tbody tr:hover {
-  background: rgba(16, 185, 129, 0.04);
+  background: rgba(245, 168, 0, 0.04);
 }
 
 .kfpl-table tbody tr:last-child {
@@ -153,7 +153,7 @@
 }
 
 .kfpl-table tbody tr:nth-child(even):hover {
-  background: rgba(16, 185, 129, 0.04);
+  background: rgba(245, 168, 0, 0.04);
 }
 
 /* ── Table Cell Variants ─────────────────────── */

@@ -207,7 +207,7 @@ export default function ServiceRequests() {
     if (status === 'IN PROGRESS') {
       return { color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.1)', text: 'In Progress' };
     } else if (status === 'RESOLVED') {
-      return { color: '#10B981', bg: 'rgba(16, 185, 129, 0.1)', text: 'Resolved' };
+      return { color: '#F5A800', bg: 'rgba(245, 168, 0, 0.12)', text: 'Resolved' };
     } else if (status === 'CLOSED') {
       return { color: '#6B7280', bg: 'rgba(107, 114, 128, 0.1)', text: 'Closed' };
     }
@@ -281,7 +281,7 @@ export default function ServiceRequests() {
             </div>
 
             <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: '10px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.01)' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10B981' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(245, 168, 0, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F5A800' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
               <div>
@@ -528,7 +528,7 @@ export default function ServiceRequests() {
                   top: '8px', 
                   bottom: '8px', 
                   width: '2px', 
-                  background: 'linear-gradient(to bottom, #10B981, #F59E0B, #cbd5e1)', 
+                  background: 'linear-gradient(to bottom, #F5A800, #FFC83D, #D0D8E4)', 
                   borderRadius: '1px' 
                 }} />
                 
@@ -536,14 +536,14 @@ export default function ServiceRequests() {
                   const isProgress = item.title.toUpperCase() === 'IN PROGRESS';
                   const isResolved = item.title.toUpperCase() === 'RESOLVED' || item.title.toUpperCase() === 'CLOSED';
                   
-                  let dotColor = '#10B981';
-                  let shadowColor = 'rgba(16, 185, 129, 0.2)';
+                  let dotColor = '#F5A800';
+                  let shadowColor = 'rgba(245, 168, 0, 0.2)';
                   if (isProgress) {
                     dotColor = '#F59E0B';
                     shadowColor = 'rgba(245, 158, 11, 0.2)';
                   } else if (isResolved) {
-                    dotColor = '#10B981';
-                    shadowColor = 'rgba(16, 185, 129, 0.2)';
+                    dotColor = '#F5A800';
+                    shadowColor = 'rgba(245, 168, 0, 0.2)';
                   }
                   
                   return (

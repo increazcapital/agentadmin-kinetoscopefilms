@@ -63,15 +63,15 @@ function downloadStatementPDF(com, agentName, agentClients = [], breakdownList =
     const isSpecial = comType === 'special' || comType === 'override' || comType === 'special override';
     return `
       <tr>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; font-weight: 500;">${b.clientName}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; font-family: monospace;">${b.clientId}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: center;">${invDateStr}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: center;">
-          <span style="display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; ${isOneTime ? 'background: #DBEAFE; color: #1E40AF;' : isSpecial ? 'background: #FEF3C7; color: #92400E;' : 'background: #D1FAE5; color: #065F46;'}">${isOneTime ? 'One Time' : isSpecial ? 'Special' : 'Monthly'}</span>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; font-weight: 500;">${b.clientName}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; font-family: monospace;">${b.clientId}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: center;">${invDateStr}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: center;">
+          <span style="display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; ${isOneTime ? 'background: #DBEAFE; color: #1E40AF;' : isSpecial ? 'background: #FEF3C7; color: #92400E;' : 'background: #FFF8E7; color: #B45309;'}">${isOneTime ? 'One Time' : isSpecial ? 'Special' : 'Monthly'}</span>
         </td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: right; font-weight: 600;">${formatCurrency(b.investment)}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: right;">${b.rate}%</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: right; font-weight: bold; color: #059669;">${formatCurrency(b.amount)}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: right; font-weight: 600;">${formatCurrency(b.investment)}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: right;">${b.rate}%</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: right; font-weight: bold; color: #F5A800;">${formatCurrency(b.amount)}</td>
       </tr>
     `;
   }).join('');
@@ -87,27 +87,27 @@ function downloadStatementPDF(com, agentName, agentClients = [], breakdownList =
       <title>Commission Statement - ${statementPeriod} - ${agentName}</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #11221A; background-color: #FFFFFF; padding: 40px; margin: 0; }
-        .header { margin-bottom: 30px; border-bottom: 3px solid #10B981; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .title { font-size: 28px; font-weight: 800; color: #061D13; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; }
-        .meta-info { margin-bottom: 30px; background-color: #F3F7F5; border: 1px solid #CFDDD5; border-radius: 12px; padding: 20px; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #0B1F4D; background-color: #FFFFFF; padding: 40px; margin: 0; }
+        .header { margin-bottom: 30px; border-bottom: 3px solid #F5A800; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .title { font-size: 28px; font-weight: 800; color: #0B1F4D; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; }
+        .meta-info { margin-bottom: 30px; background-color: #F7F8FA; border: 1px solid #D0D8E4; border-radius: 12px; padding: 20px; }
         .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
         .meta-item { display: flex; flex-direction: column; }
-        .meta-label { font-size: 11px; text-transform: uppercase; color: #4B6B5B; font-weight: 600; margin-bottom: 4px; }
-        .meta-value { font-size: 15px; font-weight: 700; color: #061D13; }
+        .meta-label { font-size: 11px; text-transform: uppercase; color: #7A8BA0; font-weight: 600; margin-bottom: 4px; }
+        .meta-value { font-size: 15px; font-weight: 700; color: #0B1F4D; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background-color: #F3F7F5; color: #4B6B5B; font-weight: 700; text-transform: uppercase; font-size: 11px; padding: 12px 10px; border: 1px solid #CFDDD5; text-align: left; }
-        td { border: 1px solid #CFDDD5; padding: 12px 10px; font-size: 13px; }
-        .footer { margin-top: 50px; text-align: center; font-size: 11px; color: #4B6B5B; border-top: 1px dashed #CFDDD5; padding-top: 20px; }
+        th { background-color: #F7F8FA; color: #7A8BA0; font-weight: 700; text-transform: uppercase; font-size: 11px; padding: 12px 10px; border: 1px solid #D0D8E4; text-align: left; }
+        td { border: 1px solid #D0D8E4; padding: 12px 10px; font-size: 13px; }
+        .footer { margin-top: 50px; text-align: center; font-size: 11px; color: #7A8BA0; border-top: 1px dashed #D0D8E4; padding-top: 20px; }
       </style>
     </head>
     <body onload="window.print();">
       <div class="header">
         <div>
           <h1 class="title">Commission Statement</h1>
-          <p style="margin: 4px 0 0; font-size: 12px; color: #4B6B5B; font-weight: 500;">Kinetoscope Films Production Pvt Ltd</p>
+          <p style="margin: 4px 0 0; font-size: 12px; color: #7A8BA0; font-weight: 500;">YieldIQ</p>
         </div>
-        <div style="font-size: 12px; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.5px;">Official Statement</div>
+        <div style="font-size: 12px; font-weight: 700; color: #F5A800; text-transform: uppercase; letter-spacing: 0.5px;">Official Statement</div>
       </div>
       <div class="meta-info">
         <div class="meta-grid">
@@ -125,7 +125,7 @@ function downloadStatementPDF(com, agentName, agentClients = [], breakdownList =
           </div>
           <div class="meta-item">
             <span class="meta-label">Total Commission</span>
-            <span class="meta-value" style="color: #059669; font-size: 18px;">${formatCurrency(filteredTotal)}</span>
+            <span class="meta-value" style="color: #F5A800; font-size: 18px;">${formatCurrency(filteredTotal)}</span>
           </div>
         </div>
       </div>
@@ -144,9 +144,9 @@ function downloadStatementPDF(com, agentName, agentClients = [], breakdownList =
         </thead>
         <tbody>
           ${rowsHtml || `<tr><td colSpan="7" style="text-align:center;">No breakdown details available.</td></tr>`}
-          <tr style="background-color: #F3F7F5; font-weight: bold;">
-            <td colSpan="6" style="text-align: right; border-top: 2px solid #CFDDD5;">Total payout</td>
-            <td style="text-align: right; color: #059669; border-top: 2px solid #CFDDD5; font-size: 15px;">${formatCurrency(filteredTotal)}</td>
+          <tr style="background-color: #F7F8FA; font-weight: bold;">
+            <td colSpan="6" style="text-align: right; border-top: 2px solid #D0D8E4;">Total payout</td>
+            <td style="text-align: right; color: #F5A800; border-top: 2px solid #D0D8E4; font-size: 15px;">${formatCurrency(filteredTotal)}</td>
           </tr>
         </tbody>
       </table>
@@ -163,45 +163,27 @@ import { useToast } from '../../components/ui/Toast';
 import { apiRequest, getAgentCacheKey } from '../../config/apiHelper';
 
 const formatClientID = (rawId) => {
-  if (!rawId || rawId === '—') return '—';
+  if (!rawId || rawId === '—' || rawId === 'undefined' || rawId === 'null') return 'YLDIQ-CL-1001';
   const str = String(rawId).trim();
-  if (/^[0-9a-fA-F]{24}$/.test(str)) {
-    const lastFourHex = str.slice(-4);
-    const decimalVal = parseInt(lastFourHex, 16);
-    const num = 1000 + (decimalVal % 9000);
-    return `KFPL-CL-${num}`;
+  const m = str.match(/(?:CL[-_ ]*)+(\d+)/i) || str.match(/(\d+)/);
+  if (m && m[1]) {
+    let val = parseInt(m[1], 10);
+    if (val < 1000) val += 1000;
+    return `YLDIQ-CL-${val}`;
   }
-  if (/^KFPL-CL-\d+$/i.test(str)) {
-    return str.toUpperCase();
-  }
-  const digitsMatch = str.match(/\d+/);
-  if (digitsMatch) {
-    let val = parseInt(digitsMatch[0], 10);
-    if (val < 1000) val = 1000 + val;
-    return `KFPL-CL-${val}`;
-  }
-  return 'KFPL-CL-1001';
+  return 'YLDIQ-CL-1001';
 };
 
 const formatAgentID = (rawId) => {
-  if (!rawId || rawId === '—') return '—';
+  if (!rawId || rawId === '—' || rawId === 'undefined' || rawId === 'null') return 'YLDIQ-AG-1001';
   const str = String(rawId).trim();
-  if (/^[0-9a-fA-F]{24}$/.test(str)) {
-    const lastFourHex = str.slice(-4);
-    const decimalVal = parseInt(lastFourHex, 16);
-    const num = 1000 + (decimalVal % 9000);
-    return `KFPL-AG-${num}`;
+  const m = str.match(/(?:AG|AGT)[-_ ]*(\d+)/i) || str.match(/(\d+)/);
+  if (m && m[1]) {
+    let val = parseInt(m[1], 10);
+    if (val < 1000) val += 1000;
+    return `YLDIQ-AG-${val}`;
   }
-  if (/^KFPL-AG-\d+$/i.test(str)) {
-    return str.toUpperCase();
-  }
-  const digitsMatch = str.match(/\d+/);
-  if (digitsMatch) {
-    let val = parseInt(digitsMatch[0], 10);
-    if (val < 1000) val = 1000 + val;
-    return `KFPL-AG-${val}`;
-  }
-  return 'KFPL-AG-1002';
+  return 'YLDIQ-AG-1001';
 };
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -724,10 +706,10 @@ export default function CommissionOverview() {
       const printWindow = window.open('', '_blank', 'width=900,height=700');
       const rowsHtml = monthlyCommission.map(m => `
         <tr>
-          <td style="border: 1px solid #CFDDD5; padding: 10px; font-weight: 500;">${m.month}</td>
-          <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: right;">₹${m.investmentBase.toLocaleString('en-IN')}</td>
-          <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: center;"><span style="background: #E6F4EA; color: #137333; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">${m.slabPercent}%</span></td>
-          <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: right; font-weight: bold; color: #0F766E;">₹${m.amount.toLocaleString('en-IN')}</td>
+          <td style="border: 1px solid #D0D8E4; padding: 10px; font-weight: 500;">${m.month}</td>
+          <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: right;">₹${m.investmentBase.toLocaleString('en-IN')}</td>
+          <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: center;"><span style="background: #E6F4EA; color: #137333; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">${m.slabPercent}%</span></td>
+          <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: right; font-weight: bold; color: #123A78;">₹${m.amount.toLocaleString('en-IN')}</td>
         </tr>
       `).join('');
       const totalAmount = monthlyCommission.reduce((sum, m) => sum + m.amount, 0);
@@ -738,13 +720,13 @@ export default function CommissionOverview() {
           <title>Monthly Commission Ledger</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-            body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #11221A; background-color: #FFFFFF; padding: 40px; margin: 0; }
-            .header { margin-bottom: 30px; border-bottom: 3px solid #0F766E; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
-            .title { font-size: 28px; font-weight: 800; color: #061D13; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; }
+            body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #0B1F4D; background-color: #FFFFFF; padding: 40px; margin: 0; }
+            .header { margin-bottom: 30px; border-bottom: 3px solid #123A78; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
+            .title { font-size: 28px; font-weight: 800; color: #0B1F4D; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; }
             .table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-            .table th { background-color: #E5ECE8; border: 1px solid #CFDDD5; padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #2E3E36; letter-spacing: 0.5px; }
-            .table td { border: 1px solid #CFDDD5; padding: 10px 12px; color: #11221A; }
-            .total-row { background-color: #F3F7F5; font-weight: bold; }
+            .table th { background-color: #EEF0F4; border: 1px solid #D0D8E4; padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #1E3A5F; letter-spacing: 0.5px; }
+            .table td { border: 1px solid #D0D8E4; padding: 10px 12px; color: #0B1F4D; }
+            .total-row { background-color: #F7F8FA; font-weight: bold; }
             @media print {
               body { padding: 0; }
               .print-btn-bar { display: none !important; }
@@ -753,17 +735,17 @@ export default function CommissionOverview() {
         </head>
         <body>
           <div class="print-btn-bar" style="display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px;">
-            <button onclick="window.print();" style="background: #0F766E; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;">Print / Save PDF</button>
-            <button onclick="window.close();" style="background: #e2ece7; color: #2e3e36; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;">Close Window</button>
+            <button onclick="window.print();" style="background: #123A78; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;">Print / Save PDF</button>
+            <button onclick="window.close();" style="background: #E4E9F1; color: #1E3A5F; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;">Close Window</button>
           </div>
           <div class="header">
             <div>
               <div class="title">Monthly Commission Ledger</div>
-              <div style="font-size: 12px; color: #6D7E75; margin-top: 4px; font-weight: 500;">KFPL Agent Commission Statement</div>
+              <div style="font-size: 12px; color: #7A8BA0; margin-top: 4px; font-weight: 500;">KFPL Agent Commission Statement</div>
             </div>
             <div style="text-align: right;">
-              <div style="font-size: 13px; font-weight: 600; color: #2E3E36;">Date Generated:</div>
-              <div style="font-size: 14px; font-weight: 700; color: #11221A;">${new Date().toLocaleDateString('en-GB')}</div>
+              <div style="font-size: 13px; font-weight: 600; color: #1E3A5F;">Date Generated:</div>
+              <div style="font-size: 14px; font-weight: 700; color: #0B1F4D;">${new Date().toLocaleDateString('en-GB')}</div>
             </div>
           </div>
           <table class="table">
@@ -780,7 +762,7 @@ export default function CommissionOverview() {
               <tr class="total-row">
                 <td style="text-align: left; font-weight: 800; font-size: 14px; padding: 12px;">Total Summary</td>
                 <td colspan="2"></td>
-                <td style="text-align: right; font-weight: 800; color: #0F766E; font-size: 14px; padding: 12px;">₹${totalAmount.toLocaleString('en-IN')}</td>
+                <td style="text-align: right; font-weight: 800; color: #123A78; font-size: 14px; padding: 12px;">₹${totalAmount.toLocaleString('en-IN')}</td>
               </tr>
             </tbody>
           </table>
@@ -930,22 +912,22 @@ export default function CommissionOverview() {
                             padding: '4px 12px',
                             fontSize: '0.75rem',
                             letterSpacing: '0.5px',
-                            background: isOneTime ? '#EEF2FF' : (isSpecial ? '#FEF3C7' : '#D1FAE5'),
-                            color: isOneTime ? '#4F46E5' : (isSpecial ? '#D97706' : '#065F46'),
-                            border: isOneTime ? '1px solid #C7D2FE' : (isSpecial ? '1px solid #FDE68A' : '1px solid #A7F3D0')
+                            background: isOneTime ? '#EEF2FF' : (isSpecial ? '#FEF3C7' : '#FFF8E7'),
+                            color: isOneTime ? '#4F46E5' : (isSpecial ? '#D97706' : '#B45309'),
+                            border: isOneTime ? '1px solid #C7D2FE' : (isSpecial ? '1px solid #FDE68A' : '1px solid #FFE7A3')
                           }}
                         >
                           {isOneTime ? 'ONE TIME' : isSpecial ? 'SPECIAL' : 'MONTHLY'}
                         </span>
                       </td>
                       <td>
-                        <span style={{ fontWeight: 600, color: 'var(--color-emerald-dark, #065F46)' }}>
+                        <span style={{ fontWeight: 600, color: 'var(--color-emerald-dark, #B45309)' }}>
                           {com.period || com.month || ((com.date) ? new Date(com.date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'Statement')}
                         </span>
                       </td>
                       <td>{String(com.status || '').toLowerCase() === 'paid' ? formatDateDMY(com.paidAt || com.payoutDate || com.updatedAt || com.date) : '—'}</td>
                       <td style={{ textAlign: 'right' }}>
-                        <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-emerald, #059669)' }}>
+                        <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-emerald, #F5A800)' }}>
                           {formatCurrency(com.amount)}
                         </span>
                       </td>
@@ -963,10 +945,10 @@ export default function CommissionOverview() {
                             padding: '5px 14px',
                             fontSize: '0.78rem',
                             fontWeight: 600,
-                            background: 'linear-gradient(135deg, #059669, #047857)',
+                            background: 'linear-gradient(135deg, #F5A800, #D48F00)',
                             color: '#ffffff',
                             border: 'none',
-                            boxShadow: '0 2px 6px rgba(5, 150, 105, 0.25)',
+                            boxShadow: '0 2px 6px rgba(245, 168, 0, 0.25)',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease-in-out'
                           }}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const SEGMENT_COLORS = ['#10B981', '#1565C0', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
+const SEGMENT_COLORS = ['#F5A800', '#1565C0', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
 
 export default function DonutChart({ data, size = 200 }) {
   if (!data || data.length === 0) {
@@ -138,7 +138,7 @@ export default function DonutChart({ data, size = 200 }) {
               Investment Share: <strong style={{ color: '#ffffff' }}>{slices[hoveredIndex].value}%</strong>
             </div>
             {slices[hoveredIndex].amount !== undefined && (
-              <div style={{ fontWeight: 800, color: '#10B981', fontSize: '0.88rem', marginTop: '2px' }}>
+              <div style={{ fontWeight: 800, color: '#F5A800', fontSize: '0.88rem', marginTop: '2px' }}>
                 ₹{Number(slices[hoveredIndex].amount).toLocaleString('en-IN')}
               </div>
             )}

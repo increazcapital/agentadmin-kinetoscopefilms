@@ -14,21 +14,15 @@ import { apiRequest, getAgentCacheKey } from '../../config/apiHelper';
 import { getApiUrl } from '../../config/apiUrl';
 
 const formatClientID = (rawId) => {
-  if (!rawId || rawId === '—') return '—';
+  if (!rawId || rawId === '—' || rawId === 'undefined' || rawId === 'null') return 'YLDIQ-CL-1001';
   const str = String(rawId).trim();
-  if (/^[0-9a-fA-F]{24}$/.test(str)) {
-    return 'KFPL-CL-1001';
+  const m = str.match(/(?:CL[-_ ]*)+(\d+)/i) || str.match(/(\d+)/);
+  if (m && m[1]) {
+    let val = parseInt(m[1], 10);
+    if (val < 1000) val += 1000;
+    return `YLDIQ-CL-${val}`;
   }
-  if (/^KFPL-CL-\d+$/i.test(str)) {
-    return str.toUpperCase();
-  }
-  const digitsMatch = str.match(/\d+/);
-  if (digitsMatch) {
-    let val = parseInt(digitsMatch[0], 10);
-    if (val < 1000) val = 1000 + val;
-    return `KFPL-CL-${val}`;
-  }
-  return 'KFPL-CL-1001';
+  return 'YLDIQ-CL-1001';
 };
 
 class ErrorBoundary extends Component {
@@ -104,7 +98,7 @@ const renderFormattedDescription = (desc) => {
         const cleanText = line.replace(/^[•\-\*\d+\.]+\s*/, '');
         return (
           <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginTop: '3px', paddingLeft: '4px' }}>
-            <span style={{ color: '#10B981', fontWeight: 'bold', fontSize: '0.8rem', lineHeight: '1.3' }}>✓</span>
+            <span style={{ color: '#F5A800', fontWeight: 'bold', fontSize: '0.8rem', lineHeight: '1.3' }}>✓</span>
             <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.8rem', lineHeight: 1.35 }}>{cleanText}</span>
           </div>
         );
@@ -141,12 +135,12 @@ function downloadClientROISinglePDF(roi, client) {
     const monthlyROI = Math.round((inv.amount * (inv.roi || client.roiPercent || 1)) / 100);
     return `
       <tr>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; font-weight: 500;">${inv.segment}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: center;">${inv.date || '—'}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: center;">—</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: right; font-weight: 600;">₹${inv.amount.toLocaleString('en-IN')}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: right;">${inv.roi || client.roiPercent || 1}%</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: right; font-weight: bold; color: #0F766E;">₹${monthlyROI.toLocaleString('en-IN')}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; font-weight: 500;">${inv.segment}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: center;">${inv.date || '—'}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: center;">—</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: right; font-weight: 600;">₹${inv.amount.toLocaleString('en-IN')}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: right;">${inv.roi || client.roiPercent || 1}%</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: right; font-weight: bold; color: #123A78;">₹${monthlyROI.toLocaleString('en-IN')}</td>
       </tr>
     `;
   }).join('');
@@ -158,19 +152,19 @@ function downloadClientROISinglePDF(roi, client) {
       <title>ROI Payout Statement - ${roi.month} - ${client.name}</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #11221A; background-color: #FFFFFF; padding: 40px; margin: 0; }
-        .header { margin-bottom: 30px; border-bottom: 3px solid #0F766E; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .title { font-size: 28px; font-weight: 800; color: #061D13; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; }
-        .meta-info { margin-bottom: 30px; background-color: #F3F7F5; border: 1px solid #CFDDD5; border-radius: 12px; padding: 20px; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #0B1F4D; background-color: #FFFFFF; padding: 40px; margin: 0; }
+        .header { margin-bottom: 30px; border-bottom: 3px solid #123A78; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .title { font-size: 28px; font-weight: 800; color: #0B1F4D; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; }
+        .meta-info { margin-bottom: 30px; background-color: #F7F8FA; border: 1px solid #D0D8E4; border-radius: 12px; padding: 20px; }
         .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .meta-item { display: flex; justify-content: space-between; border-bottom: 1px solid #E2ECE7; padding-bottom: 6px; font-size: 14px; }
-        .meta-label { font-weight: 600; color: #6D7E75; }
-        .meta-val { font-weight: 700; color: #11221A; }
-        .section-title { font-size: 18px; font-weight: 700; color: #061D13; margin-top: 40px; margin-bottom: 14px; border-bottom: 1.5px solid #CFDDD5; padding-bottom: 6px; }
+        .meta-item { display: flex; justify-content: space-between; border-bottom: 1px solid #E4E9F1; padding-bottom: 6px; font-size: 14px; }
+        .meta-label { font-weight: 600; color: #7A8BA0; }
+        .meta-val { font-weight: 700; color: #0B1F4D; }
+        .section-title { font-size: 18px; font-weight: 700; color: #0B1F4D; margin-top: 40px; margin-bottom: 14px; border-bottom: 1.5px solid #D0D8E4; padding-bottom: 6px; }
         .table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        .table th { background-color: #E5ECE8; border: 1px solid #CFDDD5; padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #2E3E36; letter-spacing: 0.5px; }
-        .table td { border: 1px solid #CFDDD5; padding: 10px 12px; color: #11221A; }
-        .total-row { background-color: #F3F7F5; font-weight: bold; }
+        .table th { background-color: #EEF0F4; border: 1px solid #D0D8E4; padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #1E3A5F; letter-spacing: 0.5px; }
+        .table td { border: 1px solid #D0D8E4; padding: 10px 12px; color: #0B1F4D; }
+        .total-row { background-color: #F7F8FA; font-weight: bold; }
         @media print {
           body { padding: 0; }
           .print-btn-bar { display: none !important; }
@@ -179,18 +173,18 @@ function downloadClientROISinglePDF(roi, client) {
     </head>
     <body>
       <div class="print-btn-bar" style="display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px;">
-        <button onclick="window.print();" style="background: #0F766E; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);">Print / Save PDF</button>
-        <button onclick="window.close();" style="background: #e2ece7; color: #2e3e36; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;">Close Window</button>
+        <button onclick="window.print();" style="background: #123A78; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; box-shadow: 0 4px 12px rgba(18, 58, 120, 0.2);">Print / Save PDF</button>
+        <button onclick="window.close();" style="background: #E4E9F1; color: #1E3A5F; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;">Close Window</button>
       </div>
 
       <div class="header">
         <div>
           <div class="title">ROI Payout Statement</div>
-          <div style="font-size: 12px; color: #6D7E75; margin-top: 4px; font-weight: 500;">KINETOSCOPE CAPITAL PARTNERS LTD</div>
+          <div style="font-size: 12px; color: #7A8BA0; margin-top: 4px; font-weight: 500;">YIELDIQ</div>
         </div>
         <div style="text-align: right;">
-          <div style="font-size: 13px; font-weight: 600; color: #2E3E36;">Date Generated:</div>
-          <div style="font-size: 14px; font-weight: 700; color: #11221A;">${new Date().toLocaleDateString('en-GB')}</div>
+          <div style="font-size: 13px; font-weight: 600; color: #1E3A5F;">Date Generated:</div>
+          <div style="font-size: 14px; font-weight: 700; color: #0B1F4D;">${new Date().toLocaleDateString('en-GB')}</div>
         </div>
       </div>
       
@@ -212,9 +206,9 @@ function downloadClientROISinglePDF(roi, client) {
             <span class="meta-label">Payout Date:</span>
             <span class="meta-val">${dateStr}</span>
           </div>
-          <div class="meta-item" style="grid-column: span 2; border-bottom: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #CFDDD5;">
-            <span class="meta-label" style="font-size: 16px; color: #061D13;">Total ROI Received:</span>
-            <span class="meta-val" style="font-size: 20px; color: #059669;">₹${roi.amount.toLocaleString('en-IN')}</span>
+          <div class="meta-item" style="grid-column: span 2; border-bottom: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #D0D8E4;">
+            <span class="meta-label" style="font-size: 16px; color: #0B1F4D;">Total ROI Received:</span>
+            <span class="meta-val" style="font-size: 20px; color: #F5A800;">₹${roi.amount.toLocaleString('en-IN')}</span>
           </div>
         </div>
       </div>
@@ -281,10 +275,10 @@ function downloadAllClientROIPDF(roiList, client) {
   const rowsHtml = roiList.map(roi => {
     return `
       <tr>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; font-weight: 500;">${roi.month}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: right; font-weight: bold; color: ${roi.amount > 0 ? '#059669' : '#11221A'};">₹${roi.amount.toLocaleString('en-IN')}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: center;">${roi.paidAt || roi.date || '—'}</td>
-        <td style="border: 1px solid #CFDDD5; padding: 10px; text-align: center; color: ${roi.status === 'paid' ? '#059669' : '#D97706'}; font-weight: 600;">${roi.status.toUpperCase()}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; font-weight: 500;">${roi.month}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: right; font-weight: bold; color: ${roi.amount > 0 ? '#F5A800' : '#0B1F4D'};">₹${roi.amount.toLocaleString('en-IN')}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: center;">${roi.paidAt || roi.date || '—'}</td>
+        <td style="border: 1px solid #D0D8E4; padding: 10px; text-align: center; color: ${roi.status === 'paid' ? '#F5A800' : '#D97706'}; font-weight: 600;">${roi.status.toUpperCase()}</td>
       </tr>
     `;
   }).join('');
@@ -295,19 +289,19 @@ function downloadAllClientROIPDF(roiList, client) {
       <title>ROI Statement History - ${client.name}</title>
       <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #11221A; background-color: #FFFFFF; padding: 40px; margin: 0; }
-        .header { margin-bottom: 30px; border-bottom: 3px solid #0F766E; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .title { font-size: 28px; font-weight: 800; color: #061D13; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; }
-        .meta-info { margin-bottom: 30px; background-color: #F3F7F5; border: 1px solid #CFDDD5; border-radius: 12px; padding: 20px; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #0B1F4D; background-color: #FFFFFF; padding: 40px; margin: 0; }
+        .header { margin-bottom: 30px; border-bottom: 3px solid #123A78; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .title { font-size: 28px; font-weight: 800; color: #0B1F4D; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; }
+        .meta-info { margin-bottom: 30px; background-color: #F7F8FA; border: 1px solid #D0D8E4; border-radius: 12px; padding: 20px; }
         .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .meta-item { display: flex; justify-content: space-between; border-bottom: 1px solid #E2ECE7; padding-bottom: 6px; font-size: 14px; }
-        .meta-label { font-weight: 600; color: #6D7E75; }
-        .meta-val { font-weight: 700; color: #11221A; }
-        .section-title { font-size: 18px; font-weight: 700; color: #061D13; margin-top: 40px; margin-bottom: 14px; border-bottom: 1.5px solid #CFDDD5; padding-bottom: 6px; }
+        .meta-item { display: flex; justify-content: space-between; border-bottom: 1px solid #E4E9F1; padding-bottom: 6px; font-size: 14px; }
+        .meta-label { font-weight: 600; color: #7A8BA0; }
+        .meta-val { font-weight: 700; color: #0B1F4D; }
+        .section-title { font-size: 18px; font-weight: 700; color: #0B1F4D; margin-top: 40px; margin-bottom: 14px; border-bottom: 1.5px solid #D0D8E4; padding-bottom: 6px; }
         .table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        .table th { background-color: #E5ECE8; border: 1px solid #CFDDD5; padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #2E3E36; letter-spacing: 0.5px; }
-        .table td { border: 1px solid #CFDDD5; padding: 10px 12px; color: #11221A; }
-        .total-row { background-color: #F3F7F5; font-weight: bold; }
+        .table th { background-color: #EEF0F4; border: 1px solid #D0D8E4; padding: 10px 12px; text-align: left; font-size: 11px; text-transform: uppercase; font-weight: 800; color: #1E3A5F; letter-spacing: 0.5px; }
+        .table td { border: 1px solid #D0D8E4; padding: 10px 12px; color: #0B1F4D; }
+        .total-row { background-color: #F7F8FA; font-weight: bold; }
         @media print {
           body { padding: 0; }
           .print-btn-bar { display: none !important; }
@@ -316,18 +310,18 @@ function downloadAllClientROIPDF(roiList, client) {
     </head>
     <body>
       <div class="print-btn-bar" style="display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px;">
-        <button onclick="window.print();" style="background: #0F766E; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);">Print / Save PDF</button>
-        <button onclick="window.close();" style="background: #e2ece7; color: #2e3e36; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;">Close Window</button>
+        <button onclick="window.print();" style="background: #123A78; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px; box-shadow: 0 4px 12px rgba(18, 58, 120, 0.2);">Print / Save PDF</button>
+        <button onclick="window.close();" style="background: #E4E9F1; color: #1E3A5F; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 13px;">Close Window</button>
       </div>
 
       <div class="header">
         <div>
           <div class="title">ROI Statement History</div>
-          <div style="font-size: 12px; color: #6D7E75; margin-top: 4px; font-weight: 500;">KINETOSCOPE CAPITAL PARTNERS LTD</div>
+          <div style="font-size: 12px; color: #7A8BA0; margin-top: 4px; font-weight: 500;">YIELDIQ</div>
         </div>
         <div style="text-align: right;">
-          <div style="font-size: 13px; font-weight: 600; color: #2E3E36;">Date Generated:</div>
-          <div style="font-size: 14px; font-weight: 700; color: #11221A;">${new Date().toLocaleDateString('en-GB')}</div>
+          <div style="font-size: 13px; font-weight: 600; color: #1E3A5F;">Date Generated:</div>
+          <div style="font-size: 14px; font-weight: 700; color: #0B1F4D;">${new Date().toLocaleDateString('en-GB')}</div>
         </div>
       </div>
       
@@ -341,9 +335,9 @@ function downloadAllClientROIPDF(roiList, client) {
             <span class="meta-label">Client ID:</span>
             <span class="meta-val">${client.clientId}</span>
           </div>
-          <div class="meta-item" style="grid-column: span 2; border-bottom: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #CFDDD5;">
-            <span class="meta-label" style="font-size: 16px; color: #061D13;">Total ROI Received:</span>
-            <span class="meta-val" style="font-size: 20px; color: #059669;">₹${totalReceived.toLocaleString('en-IN')}</span>
+          <div class="meta-item" style="grid-column: span 2; border-bottom: none; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #D0D8E4;">
+            <span class="meta-label" style="font-size: 16px; color: #0B1F4D;">Total ROI Received:</span>
+            <span class="meta-val" style="font-size: 20px; color: #F5A800;">₹${totalReceived.toLocaleString('en-IN')}</span>
           </div>
         </div>
       </div>
@@ -362,7 +356,7 @@ function downloadAllClientROIPDF(roiList, client) {
           ${rowsHtml}
           <tr class="total-row">
             <td style="text-align: left; font-weight: 800; font-size: 14px; padding: 12px;">Total Summary</td>
-            <td style="text-align: right; font-weight: 800; color: #059669; font-size: 14px; padding: 12px;">₹${totalReceived.toLocaleString('en-IN')}</td>
+            <td style="text-align: right; font-weight: 800; color: #F5A800; font-size: 14px; padding: 12px;">₹${totalReceived.toLocaleString('en-IN')}</td>
             <td colspan="2"></td>
           </tr>
         </tbody>
@@ -1114,7 +1108,7 @@ export default function ClientDetail() {
         <div className="kfpl-detail-kpis-summary">
           <div className="kfpl-detail-kpi-summary-card">
             <span className="kfpl-detail-kpi-summary-label">Total Investment</span>
-            <span className="kfpl-detail-kpi-summary-value" style={{ color: '#10B981' }}>{formatCurrency(client.totalInvestment)}</span>
+            <span className="kfpl-detail-kpi-summary-value" style={{ color: '#F5A800' }}>{formatCurrency(client.totalInvestment)}</span>
           </div>
           <div className="kfpl-detail-kpi-summary-card">
             <span className="kfpl-detail-kpi-summary-label">Active Segments</span>
@@ -1250,14 +1244,14 @@ export default function ClientDetail() {
                 </div>
               </div>
               <div className="kfpl-detail-info-row-item">
-                <div className="kfpl-detail-info-item-icon" style={{ background: '#ECFDF5', color: '#10B981' }}>
+                <div className="kfpl-detail-info-item-icon" style={{ background: '#FFF8E7', color: '#F5A800' }}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
                     <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                   </svg>
                 </div>
                 <div className="kfpl-detail-info-item-content">
                   <span className="kfpl-detail-info-item-label">Monthly ROI Rate</span>
-                  <span className="kfpl-detail-info-item-value" style={{ color: '#10B981', fontWeight: 800 }}>{client.roiPercent}% Monthly</span>
+                  <span className="kfpl-detail-info-item-value" style={{ color: '#F5A800', fontWeight: 800 }}>{client.roiPercent}% Monthly</span>
                 </div>
               </div>
               <div className="kfpl-detail-info-row-item">
@@ -1303,10 +1297,10 @@ export default function ClientDetail() {
                 </div>
               </div>
               <div className="kfpl-detail-info-row-item">
-                <div className="kfpl-detail-info-item-icon" style={{ background: '#ECFDF5', color: '#10B981' }}>{infoIcons.wallet}</div>
+                <div className="kfpl-detail-info-item-icon" style={{ background: '#FFF8E7', color: '#F5A800' }}>{infoIcons.wallet}</div>
                 <div className="kfpl-detail-info-item-content">
                   <span className="kfpl-detail-info-item-label">Total Portfolio Value</span>
-                  <span className="kfpl-detail-info-item-value" style={{ color: '#10B981', fontWeight: 800 }}>{formatCurrency(client.totalInvestment)}</span>
+                  <span className="kfpl-detail-info-item-value" style={{ color: '#F5A800', fontWeight: 800 }}>{formatCurrency(client.totalInvestment)}</span>
                 </div>
               </div>
             </div>
@@ -1321,7 +1315,7 @@ export default function ClientDetail() {
                 <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Portfolio allocation breakdown and linked media projects for this client</p>
               </div>
               {resolvedInvestments.length > 0 && (
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#047857', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#D48F00', background: '#FFF8E7', border: '1px solid #FFE7A3', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>
                   {resolvedInvestments.length} Active Allocation{resolvedInvestments.length > 1 ? 's' : ''}
                 </span>
               )}
@@ -1355,7 +1349,7 @@ export default function ClientDetail() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>{inv.segment}</span>
                           {inv.allocationPercentage && (
-                            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#059669', background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '1px 6px', borderRadius: '4px' }}>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#F5A800', background: '#FFF8E7', border: '1px solid #FFE7A3', padding: '1px 6px', borderRadius: '4px' }}>
                               {inv.allocationPercentage}%
                             </span>
                           )}
@@ -1363,14 +1357,14 @@ export default function ClientDetail() {
                       </td>
                       <td style={{ padding: '14px 16px' }}>
                         {inv.projectName && inv.projectName !== '—' && inv.projectName !== 'Unallocated' ? (
-                          <span style={{ color: '#047857', fontWeight: 700, fontSize: '0.8125rem', background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '3px 9px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+                          <span style={{ color: '#D48F00', fontWeight: 700, fontSize: '0.8125rem', background: '#FFF8E7', border: '1px solid #FFE7A3', padding: '3px 9px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
                             🎬 {inv.projectName}
                           </span>
                         ) : (
                           <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem', fontStyle: 'italic' }}>Unallocated</span>
                         )}
                       </td>
-                      <td className="font-semibold" style={{ padding: '14px 16px', color: '#10B981', fontSize: '0.92rem' }}>
+                      <td className="font-semibold" style={{ padding: '14px 16px', color: '#F5A800', fontSize: '0.92rem' }}>
                         {formatCurrency(inv.investmentAmount || inv.amount || 0)}
                       </td>
                       <td style={{ padding: '14px 16px', fontWeight: 600 }}>{client.roiPercent || inv.roiPercentage || inv.roi}% /mo</td>
@@ -1620,7 +1614,7 @@ export default function ClientDetail() {
                 {/* File Preview Area */}
                 {previewLoading ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px', color: '#64748b', minHeight: '260px' }}>
-                    <div style={{ width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#0f766e', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                    <div style={{ width: '32px', height: '32px', border: '3px solid #e2e8f0', borderTopColor: '#123A78', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                     <span style={{ fontSize: '0.8rem', marginTop: '12px', fontWeight: 500 }}>Loading secure document preview...</span>
                   </div>
                 ) : previewUrl ? (
@@ -1672,11 +1666,11 @@ export default function ClientDetail() {
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '3px 10px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 700,
-                      background: verifiedDocs[viewingDoc.label] ? '#dcfce7' : '#fef3c7',
-                      color: verifiedDocs[viewingDoc.label] ? '#16a34a' : '#d97706',
-                      border: `1px solid ${verifiedDocs[viewingDoc.label] ? '#bbf7d0' : '#fde68a'}`
+                      background: verifiedDocs[viewingDoc.label] ? '#FFF8E7' : '#fef3c7',
+                      color: verifiedDocs[viewingDoc.label] ? '#D48F00' : '#d97706',
+                      border: `1px solid ${verifiedDocs[viewingDoc.label] ? '#FFE7A3' : '#fde68a'}`
                     }}>
-                      <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: verifiedDocs[viewingDoc.label] ? '#16a34a' : '#d97706' }} />
+                      <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: verifiedDocs[viewingDoc.label] ? '#D48F00' : '#d97706' }} />
                       {verifiedDocs[viewingDoc.label] ? 'Verified' : 'Pending Verification'}
                     </span>
                   </div>

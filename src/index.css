@@ -1,7 +1,7 @@
 /* ============================================================
-   KFPL Agent Portal — Global Styles & Design Tokens
+   YieldIQ Agent Portal — Global Styles & Design Tokens
    Description: CSS reset, custom properties, typography, base styles
-   Theme: Deep Forest Green (#061D13) + Vibrant Emerald (#10B981)
+   Theme: Cinematic Navy (#0B1F4D) + Cinematic Gold (#F5A800)
    ============================================================ */
 
 /* ── Google Font Import ─────────────────────── */
@@ -9,32 +9,38 @@
 
 /* ── CSS Custom Properties (Design Tokens) ─────────────────────── */
 :root {
-  /* Primary Palette — Forest/Dark Green */
-  --color-navy: #061D13;
-  --color-navy-mid: #0B3020;
-  --color-navy-light: #11442F;
-  --color-navy-hover: #165A3E;
+  /* Primary Palette — Cinematic Navy */
+  --color-navy: #0B1F4D;
+  --color-navy-mid: #123A78;
+  --color-navy-light: #1A4D8F;
+  --color-navy-hover: #2060A5;
 
-  /* Accent Palette — Vibrant Emerald */
-  --color-gold: #10B981;
-  --color-gold-dark: #059669;
-  --color-gold-light: #ECFDF5;
-  --color-gold-glow: rgba(16, 185, 129, 0.12);
+  /* Accent Palette — Cinematic Gold */
+  --color-gold: #F5A800;
+  --color-gold-dark: #D48F00;
+  --color-gold-light: #FFF8E7;
+  --color-gold-glow: rgba(245, 168, 0, 0.12);
+
+  /* Brand Aliases */
+  --color-emerald: var(--color-gold);
+  --color-emerald-dark: var(--color-gold-dark);
+  --color-emerald-light: var(--color-gold-light);
+  --shadow-emerald: 0 4px 16px rgba(245, 168, 0, 0.3);
 
   /* Surface & Background */
-  --color-surface: #F3F7F5;
-  --color-surface-alt: #E5ECE8;
+  --color-surface: #F7F8FA;
+  --color-surface-alt: #EEF0F4;
   --color-white: #FFFFFF;
 
-  /* Text — Dark Sage/Grey Neutral */
-  --color-text-primary: #11221A;
-  --color-text-secondary: #2E3E36;
-  --color-text-muted: #6D7E75;
-  --color-text-inverse: #F3F7F5;
+  /* Text — Navy Neutral */
+  --color-text-primary: #0B1F4D;
+  --color-text-secondary: #1E3A5F;
+  --color-text-muted: #7A8BA0;
+  --color-text-inverse: #F7F8FA;
 
   /* Status */
   --color-success: #10B981;
-  --color-success-bg: rgba(16, 185, 129, 0.1);
+  --color-success-bg: rgba(245, 168, 0, 0.12);
   --color-warning: #F59E0B;
   --color-warning-bg: rgba(245, 158, 11, 0.1);
   --color-danger: #EF4444;
@@ -43,8 +49,8 @@
   --color-info-bg: rgba(59, 130, 246, 0.1);
 
   /* Borders */
-  --color-border: #C8D8CF;
-  --color-border-light: #E2ECE7;
+  --color-border: #D0D8E4;
+  --color-border-light: #E4E9F1;
 
   /* Radii */
   --radius-sm: 6px;
@@ -54,14 +60,14 @@
   --radius-2xl: 20px;
   --radius-full: 9999px;
 
-  /* Shadows — Forest Green Tint */
-  --shadow-sm: 0 1px 3px rgba(6, 29, 19, 0.04);
-  --shadow-card: 0 4px 20px rgba(6, 29, 19, 0.05);
-  --shadow-card-hover: 0 8px 32px rgba(6, 29, 19, 0.09);
-  --shadow-sidebar: 4px 0 24px rgba(6, 29, 19, 0.08);
-  --shadow-modal: 0 20px 60px rgba(6, 29, 19, 0.15);
-  --shadow-dropdown: 0 8px 24px rgba(6, 29, 19, 0.08);
-  --shadow-glow-emerald: 0 0 24px rgba(16, 185, 129, 0.25);
+  /* Shadows — Navy Tint */
+  --shadow-sm: 0 1px 3px rgba(11, 31, 77, 0.04);
+  --shadow-card: 0 4px 20px rgba(11, 31, 77, 0.05);
+  --shadow-card-hover: 0 8px 32px rgba(11, 31, 77, 0.09);
+  --shadow-sidebar: 4px 0 24px rgba(11, 31, 77, 0.08);
+  --shadow-modal: 0 20px 60px rgba(11, 31, 77, 0.15);
+  --shadow-dropdown: 0 8px 24px rgba(11, 31, 77, 0.08);
+  --shadow-glow-emerald: 0 0 24px rgba(245, 168, 0, 0.25);
 
   /* Transitions */
   --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -291,10 +297,10 @@ h4 { font-size: 1rem; font-weight: 600; }
 
 @keyframes pulseGold {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 0 0 rgba(245, 168, 0, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 8px rgba(245, 168, 0, 0);
   }
 }
 
@@ -423,8 +429,8 @@ h4 { font-size: 1rem; font-weight: 600; }
 }
 
 .kfpl-input:focus, .kfpl-form-input:focus {
-  border-color: #10B981 !important;
-  box-shadow: 0 0 0 3.5px rgba(16, 185, 129, 0.15) !important;
+  border-color: #F5A800 !important;
+  box-shadow: 0 0 0 3.5px rgba(245, 168, 0, 0.15) !important;
 }
 
 /* ── Collapsed Sidebar Tooltip Popover ── */
@@ -536,8 +542,8 @@ h4 { font-size: 1rem; font-weight: 600; }
 
 /* Active item in collapsed mode — soft light background pill, NO left border */
 .kfpl-sidebar.collapsed .kfpl-sidebar-item.active {
-  background: #ECFDF5 !important;
-  color: #10B981 !important;
+  background: #FFF8E7 !important;
+  color: #F5A800 !important;
   border-left: none !important;
   border: none !important;
 }

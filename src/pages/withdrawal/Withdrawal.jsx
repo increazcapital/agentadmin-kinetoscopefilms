@@ -247,12 +247,12 @@ export default function Withdrawal() {
             {/* Dynamic UPI Input Field */}
             {payoutMode === 'UPI' && (
               <div style={{
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.08) 100%)',
+                background: 'linear-gradient(135deg, rgba(245, 168, 0, 0.05) 0%, rgba(245, 168, 0, 0.08) 100%)',
                 padding: '14px',
                 borderRadius: '10px',
-                border: '1px solid rgba(16, 185, 129, 0.25)'
+                border: '1px solid rgba(245, 168, 0, 0.25)'
               }}>
-                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: '700', color: '#065F46', marginBottom: '6px' }}>
+                <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: '700', color: '#B45309', marginBottom: '6px' }}>
                   Enter UPI ID / VPA *
                 </label>
                 <input
@@ -264,7 +264,7 @@ export default function Withdrawal() {
                   style={{ background: '#ffffff', fontFamily: 'monospace', fontWeight: '600', fontSize: '0.9rem' }}
                   required={payoutMode === 'UPI'}
                 />
-                <div style={{ fontSize: '0.75rem', color: '#047857', marginTop: '6px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#D48F00', marginTop: '6px' }}>
                   ℹ️ This UPI ID will be sent directly to Super Admin for accurate instant payout approval.
                 </div>
               </div>
@@ -300,8 +300,8 @@ export default function Withdrawal() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <div className="kfpl-card-title" style={{ margin: 0 }}>Payout Destination Account</div>
             <span className="kfpl-badge" style={{
-              background: payoutMode === 'UPI' ? '#D1FAE5' : '#E0E7FF',
-              color: payoutMode === 'UPI' ? '#065F46' : '#3730A3',
+              background: payoutMode === 'UPI' ? '#FFF8E7' : '#E0E7FF',
+              color: payoutMode === 'UPI' ? '#B45309' : '#3730A3',
               fontWeight: 700
             }}>
               {payoutMode === 'UPI' ? 'UPI Destination' : 'Bank Destination'}
@@ -318,7 +318,7 @@ export default function Withdrawal() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
                 <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', fontWeight: '600' }}>Payout Method</span>
-                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#059669' }}>⚡ Instant UPI Transfer</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: '#F5A800' }}>⚡ Instant UPI Transfer</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--color-surface-elevated, #F8FAFC)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
@@ -347,7 +347,7 @@ export default function Withdrawal() {
             </div>
           )}
 
-          <div style={{ marginTop: '20px', padding: '12px 16px', background: 'rgba(16, 185, 129, 0.08)', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.2)', fontSize: '0.8125rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ marginTop: '20px', padding: '12px 16px', background: 'rgba(245, 168, 0, 0.08)', borderRadius: '10px', border: '1px solid rgba(245, 168, 0, 0.2)', fontSize: '0.8125rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span>ℹ️</span> To permanently change your primary bank record, please contact Super Admin support desk.
           </div>
         </div>
@@ -368,7 +368,7 @@ export default function Withdrawal() {
             <span className="kfpl-badge" style={{ background: '#E0E7FF', color: '#3730A3', fontWeight: '700', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem' }}>
               Total Requests: {Array.isArray(history) ? history.length : 0}
             </span>
-            <span className="kfpl-badge" style={{ background: '#D1FAE5', color: '#065F46', fontWeight: '700', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem' }}>
+            <span className="kfpl-badge" style={{ background: '#FFF8E7', color: '#B45309', fontWeight: '700', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem' }}>
               Total Approved: {formatCurrency(Array.isArray(history) ? history.filter(h => ['paid', 'approved', 'credited'].includes(String(h.status).toLowerCase())).reduce((sum, h) => sum + Number(h.amount || 0), 0) : 0)}
             </span>
           </div>
@@ -401,8 +401,8 @@ export default function Withdrawal() {
                   const isApproved = statusNorm === 'approved' || statusNorm === 'paid' || statusNorm === 'credited';
                   const isPending = statusNorm === 'pending';
 
-                  const badgeBg = isApproved ? '#D1FAE5' : isPending ? '#FEF3C7' : '#FEE2E2';
-                  const badgeColor = isApproved ? '#065F46' : isPending ? '#92400E' : '#991B1B';
+                  const badgeBg = isApproved ? '#FFF8E7' : isPending ? '#FEF3C7' : '#FEE2E2';
+                  const badgeColor = isApproved ? '#B45309' : isPending ? '#92400E' : '#991B1B';
                   const statusLabel = isApproved ? '✓ APPROVED' : isPending ? '⏳ PENDING' : '✕ REJECTED';
 
                   const dateFormatted = item.createdAt
@@ -422,7 +422,7 @@ export default function Withdrawal() {
                           {reqIdStr}
                         </span>
                       </td>
-                      <td style={{ padding: '14px 20px', textAlign: 'right', fontWeight: '800', fontSize: '0.95rem', color: 'var(--color-primary-green, #059669)' }}>
+                      <td style={{ padding: '14px 20px', textAlign: 'right', fontWeight: '800', fontSize: '0.95rem', color: 'var(--color-primary-green, #F5A800)' }}>
                         {formatCurrency(item.amount)}
                       </td>
                       <td style={{ padding: '14px 20px', textAlign: 'center' }}>

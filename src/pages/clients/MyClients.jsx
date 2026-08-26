@@ -12,21 +12,15 @@ import Badge from '../../components/ui/Badge';
 import { apiRequest, getAgentCacheKey } from '../../config/apiHelper';
 
 const formatClientID = (rawId) => {
-  if (!rawId || rawId === '—') return '—';
+  if (!rawId || rawId === '—' || rawId === 'undefined' || rawId === 'null') return 'YLDIQ-CL-1001';
   const str = String(rawId).trim();
-  if (/^[0-9a-fA-F]{24}$/.test(str)) {
-    return 'KFPL-CL-1001';
+  const m = str.match(/(?:CL[-_ ]*)+(\d+)/i) || str.match(/(\d+)/);
+  if (m && m[1]) {
+    let val = parseInt(m[1], 10);
+    if (val < 1000) val += 1000;
+    return `YLDIQ-CL-${val}`;
   }
-  if (/^KFPL-CL-\d+$/i.test(str)) {
-    return str.toUpperCase();
-  }
-  const digitsMatch = str.match(/\d+/);
-  if (digitsMatch) {
-    let val = parseInt(digitsMatch[0], 10);
-    if (val < 1000) val = 1000 + val;
-    return `KFPL-CL-${val}`;
-  }
-  return 'KFPL-CL-1001';
+  return 'YLDIQ-CL-1001';
 };
 
 const slugifyName = (name) => {
@@ -152,9 +146,9 @@ export default function MyClients() {
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
-              width: 40, height: 40, borderRadius: '50%', background: 'var(--color-navy-light, #11442F)',
+              width: 40, height: 40, borderRadius: '50%', background: 'var(--color-navy-light, #1A4D8F)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'var(--color-gold, #10B981)', fontWeight: 800, fontSize: 14, flexShrink: 0, overflow: 'hidden'
+              color: 'var(--color-gold)', fontWeight: 800, fontSize: 14, flexShrink: 0, overflow: 'hidden'
             }}>
               {pic ? (
                 <img src={pic} alt={displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
