@@ -95,6 +95,28 @@ export default function DashboardHome() {
     return null;
   });
   const [rewardsList, setRewardsList] = useState([]);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
+
+  const handleCopyLink = (urlToCopy) => {
+    try {
+      navigator.clipboard.writeText(urlToCopy);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    } catch (err) {
+      console.warn('Clipboard write failed:', err);
+    }
+  };
+
+  const handleCopyCode = (codeToCopy) => {
+    try {
+      navigator.clipboard.writeText(codeToCopy);
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2500);
+    } catch (err) {
+      console.warn('Clipboard write failed:', err);
+    }
+  };
 
   useEffect(() => {
     const authData = localStorage.getItem('kfpl_agent_auth');
@@ -328,12 +350,14 @@ export default function DashboardHome() {
 
     window.addEventListener('storage', handleApprovalEvent);
     window.addEventListener('kfpl_approval_event', handleApprovalEvent);
+    window.addEventListener('yieldiq_data_updated', handleApprovalEvent);
 
     const pollInterval = setInterval(loadDashboardData, 8000);
     return () => {
       clearInterval(pollInterval);
       window.removeEventListener('storage', handleApprovalEvent);
       window.removeEventListener('kfpl_approval_event', handleApprovalEvent);
+      window.removeEventListener('yieldiq_data_updated', handleApprovalEvent);
     };
   }, []);
 
@@ -494,6 +518,234 @@ export default function DashboardHome() {
           }}
         />
       </div>
+
+      {/* ═══════════════ PARTNER REFERRAL HUB CARD ═══════════════ */}
+      {(() => {
+        const rawAgentCode = agentProfile?.agentCode || agentProfile?.clientCode || agentProfile?.agentId || '';
+        const formatAgentID = (rawId) => {
+          if (!rawId || rawId === '—' || rawId === 'undefined' || rawId === 'null') {
+            try {
+              const authData = localStorage.getItem('kfpl_agent_auth');
+              if (authData) {
+                const parsed = JSON.parse(authData);
+                const ag = parsed.agent || parsed.user || {};
+                if (ag.clientCode) return ag.clientCode;
+              }
+            } catch (e) {}
+            return 'YLDIQ-AG-1001';
+          }
+          const str = String(rawId).trim();
+          const m = str.match(/(?:AG|AGT)[-_ ]*(\d+)/i) || str.match(/(\d+)/);
+          if (m && m[1]) {
+            let val = parseInt(m[1], 10);
+            if (val < 1000) val += 1000;
+            return `YLDIQ-AG-${val}`;
+          }
+          return str.startsWith('YLDIQ-AG-') ? str : 'YLDIQ-AG-1001';
+        };
+        const activeAgentCode = formatAgentID(rawAgentCode);
+        const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        const referralBaseUrl = isLocalhost ? `${window.location.protocol}//${window.location.hostname}:5174` : 'https://investor.yieldiq.online';
+        const activeReferralLink = `${referralBaseUrl}/register?ref=${activeAgentCode}`;
+        const prodReferralLink = `https://investor.yieldiq.online/register?ref=${activeAgentCode}`;
+        const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(`Join YieldIQ to explore verified high-yield media financing projects. Register using my official partner referral link: ${prodReferralLink}`)}`;
+
+        return (
+          <div style={{
+            marginTop: '20px',
+            marginBottom: '24px',
+            background: 'linear-gradient(135deg, rgba(11, 31, 77, 0.03) 0%, rgba(245, 168, 0, 0.07) 100%)',
+            border: '1px solid rgba(245, 168, 0, 0.35)',
+            borderRadius: '16px',
+            padding: '22px 26px',
+            boxShadow: '0 6px 20px rgba(11, 31, 77, 0.05)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Subtle decorative glow */}
+            <div style={{
+              position: 'absolute',
+              top: '-30px',
+              right: '-30px',
+              width: '120px',
+              height: '120px',
+              background: 'radial-gradient(circle, rgba(245, 168, 0, 0.25) 0%, transparent 70%)',
+              borderRadius: '50%',
+              pointerEvents: 'none'
+            }} />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #0B1F4D 0%, #123A78 100%)',
+                  color: '#F5A800',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 14px rgba(11, 31, 77, 0.25)',
+                  flexShrink: 0
+                }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                  </svg>
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#0B1F4D' }}>
+                      Investor Referral Link
+                    </h3>
+                    <span style={{
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      background: '#E8F5E9',
+                      color: '#2E7D32',
+                      border: '1px solid rgba(46, 125, 50, 0.25)',
+                      textTransform: 'uppercase'
+                    }}>
+                      Auto-Mapping Active
+                    </span>
+                  </div>
+                  <p style={{ margin: '4px 0 0', fontSize: '0.86rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                    Share your dedicated onboarding link with clients. Any investor who registers through this link will be <strong>automatically mapped to your account</strong> with full commission tracking—no manual action required by Super Admin.
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>Partner Code:</span>
+                <button
+                  type="button"
+                  onClick={() => handleCopyCode(activeAgentCode)}
+                  title="Click to copy partner code"
+                  style={{
+                    background: 'rgba(11, 31, 77, 0.06)',
+                    border: '1px solid rgba(11, 31, 77, 0.15)',
+                    borderRadius: '8px',
+                    padding: '6px 12px',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    color: '#0B1F4D',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <span>{activeAgentCode}</span>
+                  {copiedCode ? (
+                    <span style={{ color: '#2E7D32', fontSize: '0.75rem', fontWeight: 700 }}>✓ Copied</span>
+                  ) : (
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Link Input & Action Bar */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '10px',
+              padding: '6px 8px 6px 14px',
+              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.03)',
+              flexWrap: 'wrap'
+            }}>
+              <span style={{ color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </span>
+              <input
+                type="text"
+                readOnly
+                value={activeReferralLink}
+                onClick={(e) => e.target.select()}
+                style={{
+                  flex: 1,
+                  minWidth: '240px',
+                  border: 'none',
+                  outline: 'none',
+                  background: 'transparent',
+                  fontSize: '0.88rem',
+                  fontWeight: 600,
+                  color: '#123A78',
+                  fontFamily: 'monospace'
+                }}
+              />
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => handleCopyLink(activeReferralLink)}
+                  style={{
+                    background: copiedLink ? '#2E7D32' : 'linear-gradient(135deg, #F5A800 0%, #FFC83D 100%)',
+                    color: copiedLink ? '#FFFFFF' : '#0B1F4D',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 16px',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    boxShadow: copiedLink ? '0 2px 8px rgba(46, 125, 50, 0.3)' : '0 2px 8px rgba(245, 168, 0, 0.3)',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {copiedLink ? (
+                    <>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span>Copy Link</span>
+                    </>
+                  )}
+                </button>
+
+                <a
+                  href={whatsappShareUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    background: '#25D366',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 14px',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    boxShadow: '0 2px 8px rgba(37, 211, 102, 0.3)',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ═══════════════ 6 KPI CARDS (2x3 Grid) ═══════════════ */}
       <div className="kfpl-dashboard-kpis">

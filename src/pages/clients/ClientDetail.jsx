@@ -805,6 +805,20 @@ export default function ClientDetail() {
       }
     };
     fetchClient();
+
+    const handleUpdate = (e) => {
+      const payload = e?.detail;
+      if (!payload || !payload.clientId || payload.clientId === id) {
+        fetchClient();
+      }
+    };
+    window.addEventListener('yieldiq_data_updated', handleUpdate);
+    window.addEventListener('kfpl_approval_event', handleUpdate);
+
+    return () => {
+      window.removeEventListener('yieldiq_data_updated', handleUpdate);
+      window.removeEventListener('kfpl_approval_event', handleUpdate);
+    };
   }, [id]);
 
   if (loading) {

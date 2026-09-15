@@ -4,9 +4,11 @@
    PRD Section 21: Route Structure
    ============================================================ */
 
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastProvider } from './components/ui/Toast';
 import MainLayout from './components/layout/MainLayout';
+import { initRealtimeSync } from './utils/realtimeSync';
 
 // ── Auth Pages ───────────────────────
 import Login from './pages/auth/Login';
@@ -56,6 +58,10 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
+  useEffect(() => {
+    initRealtimeSync();
+  }, []);
+
   return (
     <BrowserRouter>
       <ToastProvider>
