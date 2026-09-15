@@ -598,22 +598,9 @@ export default function DashboardHome() {
                     <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#0B1F4D' }}>
                       Investor Referral Link
                     </h3>
-                    <span style={{
-                      padding: '3px 10px',
-                      borderRadius: '12px',
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      letterSpacing: '0.04em',
-                      background: '#E8F5E9',
-                      color: '#2E7D32',
-                      border: '1px solid rgba(46, 125, 50, 0.25)',
-                      textTransform: 'uppercase'
-                    }}>
-                      Auto-Mapping Active
-                    </span>
                   </div>
                   <p style={{ margin: '4px 0 0', fontSize: '0.86rem', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
-                    Share your dedicated onboarding link with clients. Any investor who registers through this link will be <strong>automatically mapped to your account</strong> with full commission tracking—no manual action required by Super Admin.
+                    Share your dedicated onboarding link with clients. Any investor who registers through this link will be <strong>automatically mapped to your account</strong> with full commission tracking.
                   </p>
                 </div>
               </div>
