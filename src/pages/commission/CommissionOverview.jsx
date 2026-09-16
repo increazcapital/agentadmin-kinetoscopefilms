@@ -457,7 +457,7 @@ export default function CommissionOverview() {
           type: 'one-time',
           commissionType: 'One-Time',
           amount: otAmt,
-          status: 'Pending',
+          status: 'PAID',
           clientId: cl.id || cl._id,
           clientName: cl.fullName || cl.name || cl.profile?.fullName || cl.user?.name || '—',
           clientCode: formatClientID(cl.clientCode || cl.clientId || cl.profile?.clientCode || cl.user?.clientCode || ''),
@@ -466,11 +466,11 @@ export default function CommissionOverview() {
         });
       }
 
-      // 2. Monthly Recurring Commission
+      // 2. Monthly Recurring Commission (Only generated when anniversary date arrives)
       if (mRate > 0) {
-        const mAmt = Math.round((totalInv * mRate) / 100);
-        const nextMonthDate = new Date(dateVal.getFullYear(), dateVal.getMonth() + 1, 1);
-        if (nextMonthDate <= new Date()) {
+        const nextMonthDate = new Date(dateVal.getFullYear(), dateVal.getMonth() + 1, dateVal.getDate());
+        if (new Date() >= nextMonthDate) {
+          const mAmt = Math.round((totalInv * mRate) / 100);
           const nextMonthYearStr = nextMonthDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
           list.push({
             id: `calc-m-${cl.id || cl._id}-${index}`,
@@ -479,7 +479,7 @@ export default function CommissionOverview() {
             type: 'monthly',
             commissionType: 'Monthly',
             amount: mAmt,
-            status: 'Pending',
+            status: 'PAID',
             clientId: cl.id || cl._id,
             clientName: cl.fullName || cl.name || cl.profile?.fullName || cl.user?.name || '—',
             clientCode: formatClientID(cl.clientCode || cl.clientId || cl.profile?.clientCode || cl.user?.clientCode || ''),
@@ -499,7 +499,7 @@ export default function CommissionOverview() {
           type: 'special',
           commissionType: 'Special',
           amount: spAmt,
-          status: 'Pending',
+          status: 'PAID',
           clientId: cl.id || cl._id,
           clientName: cl.fullName || cl.name || cl.profile?.fullName || cl.user?.name || '—',
           clientCode: formatClientID(cl.clientCode || cl.clientId || cl.profile?.clientCode || cl.user?.clientCode || ''),
@@ -534,10 +534,18 @@ export default function CommissionOverview() {
       invAmt = Number(foundClient.totalInvestment);
     }
 
+    const populatedClient = (c.clientId && typeof c.clientId === 'object') ? c.clientId : null;
+    const clientNameVal = c.clientName && c.clientName !== '—'
+      ? c.clientName
+      : (populatedClient?.name || populatedClient?.fullName || (foundClient ? (foundClient.fullName || foundClient.name || foundClient.profile?.fullName) : 'Client'));
+    const clientCodeVal = c.clientCode && c.clientCode !== '—'
+      ? c.clientCode
+      : (populatedClient?.clientCode || (foundClient ? (foundClient.clientCode || foundClient.clientId || foundClient.profile?.clientCode) : ''));
+
     return {
       ...c,
-      clientName: c.clientName || (foundClient ? (foundClient.fullName || foundClient.name || foundClient.profile?.fullName) : '—'),
-      clientCode: c.clientCode || (foundClient ? formatClientID(foundClient.clientCode || foundClient.clientId || foundClient.profile?.clientCode || '') : '—'),
+      clientName: clientNameVal,
+      clientCode: clientCodeVal ? formatClientID(clientCodeVal) : '—',
       investmentAmount: invAmt,
       slabPercentage: rateVal
     };
@@ -545,19 +553,29 @@ export default function CommissionOverview() {
 
   const calculatedComms = getCalculatedCommissions(agentProfile, clients, apiSlabs);
 
-  const enrichedCommissions = (dbEnriched && dbEnriched.length > 0) ? [...dbEnriched] : [...calculatedComms];
+  const hasDbMonthly = (dbEnriched || []).some(c => normalizeType(c.type || c.commissionType) === 'monthly');
+  const calculatedMonthly = calculatedComms.filter(c => normalizeType(c.type || c.commissionType) === 'monthly');
+
+  const rawEnriched = (dbEnriched && dbEnriched.length > 0)
+    ? [...dbEnriched, ...(!hasDbMonthly ? calculatedMonthly : [])]
+    : [...calculatedComms];
+
+  const enrichedCommissions = rawEnriched.filter(c => {
+    const s = String(c.status || '').toUpperCase();
+    return s === 'PAID' || s === 'CREDITED';
+  });
 
   const oneTimeCommission = isDemo
     ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'one-time')
-    : enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'one-time' && c.clientName && c.clientName !== '—' && c.clientName !== '-' && c.clientName !== 'Various');
+    : enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'one-time' && c.clientName !== 'Various');
 
   const monthlyCommission = isDemo
     ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'monthly')
-    : enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'monthly' && c.clientName && c.clientName !== '—' && c.clientName !== '-' && c.clientName !== 'Various');
+    : enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'monthly' && c.clientName !== 'Various');
 
   const specialCommission = isDemo
     ? enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'special')
-    : enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'special' && c.reason && c.reason !== '—' && c.reason !== '-');
+    : enrichedCommissions.filter(c => normalizeType(c.type || c.commissionType) === 'special' && c.clientName !== 'Various');
 
   const totalOneTime = oneTimeCommission.reduce((s, c) => s + (c.amount || c.commissionEarned || 0), 0);
   const totalMonthly = monthlyCommission.reduce((s, c) => s + (c.amount || 0), 0);

@@ -276,7 +276,18 @@ export default function DashboardHome() {
           }, 0);
 
           const totalActiveInvSum = resolvedClients.reduce((sum, c) => sum + Number(c.totalInvestment || c.investmentAmount || 0), 0);
-          const displayThisMonth = totalActiveInvSum > 0 ? (realThisMonth || sourceThisMonth) : 0;
+          const calculatedMonthlyRate = resolvedClients.reduce((sum, c) => {
+            const inv = Number(c.totalInvestment || c.investmentAmount || 0);
+            if (inv <= 0) return sum;
+            let rate = 0.5;
+            if (inv > 10000000) rate = 2;
+            else if (inv > 5000000) rate = 1.5;
+            else if (inv > 2500000) rate = 1;
+            else if (inv > 1500000) rate = 0.75;
+            return sum + Math.round((inv * rate) / 100);
+          }, 0);
+
+          const displayThisMonth = totalActiveInvSum > 0 ? (realThisMonth || sourceThisMonth || calculatedMonthlyRate) : 0;
 
           const approvedWithdrawnSum = withdrawalList
             .filter(w => ['paid', 'approved', 'credited', 'completed'].includes(String(w.status || '').toLowerCase()))
@@ -284,8 +295,8 @@ export default function DashboardHome() {
 
           const totalWithdrawn = approvedWithdrawnSum > 0 ? approvedWithdrawnSum : Number(statsSource.totalWithdrawn || data.totalWithdrawn || 0);
 
-          const displayPaid = totalActiveInvSum > 0 ? Math.max(0, (realPaid || sourcePaid) - totalWithdrawn) : 0;
-          const displayPending = totalActiveInvSum > 0 ? rawPendingSum : 0;
+          const displayPaid = totalActiveInvSum > 0 ? Math.max(0, (realPaid > 0 ? realPaid : sourcePaid) - totalWithdrawn) : 0;
+          const displayPending = totalActiveInvSum > 0 ? (rawPendingSum > 0 ? rawPendingSum : sourcePending) : 0;
 
           newStats = {
             totalClients: statsSource.totalClients ?? statsSource.clientsCount ?? statsSource.totalInvestors ?? data.totalClients ?? data.clientsCount ?? resolvedClients.length,
