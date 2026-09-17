@@ -289,11 +289,7 @@ export default function DashboardHome() {
 
           const displayThisMonth = totalActiveInvSum > 0 ? (realThisMonth || sourceThisMonth || calculatedMonthlyRate) : 0;
 
-          const approvedWithdrawnSum = withdrawalList
-            .filter(w => ['paid', 'approved', 'credited', 'completed'].includes(String(w.status || '').toLowerCase()))
-            .reduce((sum, w) => sum + Number(w.amount || 0), 0);
-
-          const totalWithdrawn = approvedWithdrawnSum > 0 ? approvedWithdrawnSum : Number(statsSource.totalWithdrawn || data.totalWithdrawn || 0);
+          const totalWithdrawn = Number(statsSource.totalWithdrawn !== undefined ? statsSource.totalWithdrawn : (data.totalWithdrawn !== undefined ? data.totalWithdrawn : 0));
 
           const displayPaid = totalActiveInvSum > 0 ? Math.max(0, (realPaid > 0 ? realPaid : sourcePaid) - totalWithdrawn) : 0;
           const displayPending = totalActiveInvSum > 0 ? (rawPendingSum > 0 ? rawPendingSum : sourcePending) : 0;
