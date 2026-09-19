@@ -141,8 +141,12 @@ export default function Withdrawal() {
       addToast('Please enter a valid withdrawal amount.', 'error');
       return;
     }
-    if (numAmt > pendingBalance && pendingBalance > 0) {
-      addToast(`Amount cannot exceed available pending balance (${formatCurrency(pendingBalance)}).`, 'error');
+    if (pendingBalance <= 0) {
+      addToast('No commission balance available for withdrawal (₹0).', 'error');
+      return;
+    }
+    if (numAmt > pendingBalance) {
+      addToast(`Amount cannot exceed available commission balance (${formatCurrency(pendingBalance)}).`, 'error');
       return;
     }
 
@@ -211,6 +215,25 @@ export default function Withdrawal() {
             </div>
           </div>
 
+          {pendingBalance <= 0 && (
+            <div style={{
+              background: '#FFF8E7',
+              border: '1px solid #FFE7A3',
+              borderRadius: '10px',
+              padding: '12px 14px',
+              marginBottom: '16px',
+              color: '#B45309',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span>⚠️</span>
+              <span><strong>Zero Commission Balance:</strong> You do not have any withdrawable commission yet (₹0). Payout requests can only be submitted after commissions are earned.</span>
+            </div>
+          )}
+
           <form onSubmit={handleRequestSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: '600', marginBottom: '6px' }}>
@@ -224,6 +247,7 @@ export default function Withdrawal() {
                 placeholder="Enter amount"
                 className="kfpl-input"
                 min="1"
+                disabled={pendingBalance <= 0}
                 required
               />
             </div>
@@ -238,6 +262,7 @@ export default function Withdrawal() {
                 onChange={(e) => setPayoutMode(e.target.value)}
                 className="kfpl-input"
                 style={{ fontWeight: '600', cursor: 'pointer' }}
+                disabled={pendingBalance <= 0}
               >
                 <option value="Bank Transfer">🏦 Registered Bank Account ({bankInfo.bankName})</option>
                 <option value="UPI">⚡ UPI ID Transfer (Instant Direct Payout)</option>
@@ -263,6 +288,7 @@ export default function Withdrawal() {
                   className="kfpl-input"
                   style={{ background: '#ffffff', fontFamily: 'monospace', fontWeight: '600', fontSize: '0.9rem' }}
                   required={payoutMode === 'UPI'}
+                  disabled={pendingBalance <= 0}
                 />
                 <div style={{ fontSize: '0.75rem', color: '#D48F00', marginTop: '6px' }}>
                   ℹ️ This UPI ID will be sent directly to Super Admin for accurate instant payout approval.
@@ -281,14 +307,15 @@ export default function Withdrawal() {
                 className="kfpl-input"
                 rows="2"
                 style={{ resize: 'vertical' }}
+                disabled={pendingBalance <= 0}
               />
             </div>
 
             <button
               type="submit"
-              disabled={submitting || loading}
+              disabled={submitting || loading || pendingBalance <= 0}
               className="kfpl-btn kfpl-btn--primary"
-              style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}
+              style={{ width: '100%', justifyContent: 'center', marginTop: '8px', ...(pendingBalance <= 0 ? { opacity: 0.6, cursor: 'not-allowed' } : {}) }}
             >
               {submitting ? 'Submitting Request...' : 'Submit Payout Request'}
             </button>
