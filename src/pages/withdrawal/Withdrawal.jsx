@@ -430,7 +430,7 @@ export default function Withdrawal() {
 
                   const badgeBg = isApproved ? '#FFF8E7' : isPending ? '#FEF3C7' : '#FEE2E2';
                   const badgeColor = isApproved ? '#B45309' : isPending ? '#92400E' : '#991B1B';
-                  const statusLabel = isApproved ? '✓ APPROVED' : isPending ? '⏳ PENDING' : '✕ REJECTED';
+                  const statusLabel = isApproved ? 'WITHDRAWAL' : isPending ? 'PENDING' : 'REJECTED';
 
                   const dateFormatted = item.createdAt
                     ? new Date(item.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })
@@ -453,7 +453,19 @@ export default function Withdrawal() {
                         {formatCurrency(item.amount)}
                       </td>
                       <td style={{ padding: '14px 20px', textAlign: 'center' }}>
-                        <span style={{ display: 'inline-block', background: badgeBg, color: badgeColor, fontWeight: '800', fontSize: '0.72rem', padding: '4px 12px', borderRadius: '20px', letterSpacing: '0.04em' }}>
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          background: badgeBg,
+                          color: badgeColor,
+                          fontWeight: '700',
+                          fontSize: '0.72rem',
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                          border: `1px solid ${isApproved ? '#FFE7A3' : isPending ? '#FDE68A' : '#FCA5A5'}`
+                        }}>
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: isApproved ? '#D48F00' : isPending ? '#D97706' : '#DC2626' }}></span>
                           {statusLabel}
                         </span>
                       </td>

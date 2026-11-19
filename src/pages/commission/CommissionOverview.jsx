@@ -961,9 +961,64 @@ export default function CommissionOverview() {
                         </span>
                       </td>
                       <td>
-                        <span className={`kfpl-badge kfpl-badge--${String(com.status).toLowerCase() === 'paid' ? 'success' : 'warning'}`}>
-                          {String(com.status).toUpperCase()}
-                        </span>
+                        {(() => {
+                          const st = String(com.status || 'paid').toLowerCase();
+                          if (st === 'paid' || st === 'approved' || st === 'credited') {
+                            return (
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                padding: '4px 10px',
+                                borderRadius: '20px',
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                background: '#ECFDF5',
+                                color: '#047857',
+                                border: '1px solid #A7F3D0'
+                              }}>
+                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669' }}></span>
+                                RECEIVED IN WALLET
+                              </span>
+                            );
+                          }
+                          if (st === 'pending') {
+                            return (
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                padding: '4px 10px',
+                                borderRadius: '20px',
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                background: '#FEF3C7',
+                                color: '#B45309',
+                                border: '1px solid #FDE68A'
+                              }}>
+                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#D97706' }}></span>
+                                PENDING
+                              </span>
+                            );
+                          }
+                          return (
+                            <span style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              padding: '4px 10px',
+                              borderRadius: '20px',
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              background: '#FEE2E2',
+                              color: '#B91C1C',
+                              border: '1px solid #FCA5A5'
+                            }}>
+                              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#DC2626' }}></span>
+                              {st.toUpperCase()}
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td style={{ textAlign: 'center' }}>
                         <button
@@ -1064,9 +1119,39 @@ export default function CommissionOverview() {
                   }}>
                     <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '6px' }}>Status</div>
                     <div>
-                      <span className={`kfpl-badge kfpl-badge--${String(selectedCommission.status).toLowerCase() === 'paid' ? 'success' : 'warning'}`}>
-                        {selectedCommission.status}
-                      </span>
+                      {String(selectedCommission.status).toLowerCase() === 'paid' ? (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          padding: '4px 10px',
+                          borderRadius: '20px',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          background: '#ECFDF5',
+                          color: '#047857',
+                          border: '1px solid #A7F3D0'
+                        }}>
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669' }}></span>
+                          RECEIVED IN WALLET
+                        </span>
+                      ) : (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          padding: '4px 10px',
+                          borderRadius: '20px',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          background: '#FEF3C7',
+                          color: '#B45309',
+                          border: '1px solid #FDE68A'
+                        }}>
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#D97706' }}></span>
+                          PENDING
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
