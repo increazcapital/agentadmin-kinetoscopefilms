@@ -436,7 +436,7 @@ export default function Withdrawal() {
                     ? new Date(item.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })
                     : (item.date || '—');
 
-                  const reqIdStr = item.requestId || (item._id ? `WD-${item._id.toString().slice(-8)}` : `WD-${1000 + idx}`);
+                  const reqIdStr = item.referenceNumber || item.requestId || (item._id ? `WD-${item._id.toString().slice(-8).toUpperCase()}` : `WD-${1000 + idx}`);
                   const accountStr = item.paymentMethod || (bankInfo.bankName !== 'N/A' ? `${bankInfo.bankName} (****${bankInfo.bankAccount.slice(-4)})` : 'Bank Transfer');
 
                   return (
